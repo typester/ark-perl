@@ -22,9 +22,9 @@ sub dispatch {
             @args = splice @captures, 0, $cap->[0];
         }
         local $req->{args} = \@args;
-        $action->dispatch($req);
+        $action->dispatch($req, @args);
     }
-    $last->dispatch($req);
+    $last->dispatch($req, @{ $req->args });
 }
 
 sub from_chain {

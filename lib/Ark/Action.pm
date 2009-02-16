@@ -38,10 +38,12 @@ sub match {
 }
 
 sub dispatch {
-    my $self = shift;
+    my ($self, $req) = @_;
 
     my $method = $self->code;
-    $self->controller->$method(@_);
+    my $args = @{ $req->args } ? $req->args : $req->captures;
+
+    $self->controller->$method($req, @$args);
 }
 
 1;
