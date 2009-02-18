@@ -233,6 +233,11 @@ sub _parse_PathPart_attr {
     return PathPart => $value;
 }
 
+sub log {
+    my $self = shift;
+    
+}
+
 sub handle_request {
     my ($self, $req) = @_;
     $req = Ark::Request->new({ %$req });

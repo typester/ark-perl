@@ -34,7 +34,7 @@ sub match {
 sub dispatch {
     my ($self, $req) = @_;
 
-    my $method = $self->code;
+    my $method = $self->name;
     my $args = @{ $req->args } ? $req->args : $req->captures;
 
     $self->controller->$method($req, @$args);
