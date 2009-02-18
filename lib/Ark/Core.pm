@@ -163,6 +163,11 @@ sub _parse_Path_attr {
     }
 }
 
+sub _parse_Global_attr {
+    my ($self, $controller, $name, $value) = @_;
+    $self->_parse_Path_attr( $controller, $name, "/$name" );
+}
+
 sub _parse_Local_attr {
     my ($self, $controller, $name, $value) = @_;
     $self->_parse_Path_attr( $controller, $name, $name );
