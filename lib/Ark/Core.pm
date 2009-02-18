@@ -107,10 +107,8 @@ sub register_actions {
 
         $self->register_action(Ark::Action->new(
             name       => $method,
-            code       => $controller->can($method),
             reverse    => $reverse,
             namespace  => $ns,
-            class      => $controller_class,
             attributes => $attrs,
             controller => $controller,
         ));

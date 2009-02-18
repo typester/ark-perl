@@ -1,7 +1,7 @@
 package Ark::Action;
 use Mouse;
 
-has [qw/class namespace reverse name/] => (
+has [qw/namespace reverse name/] => (
     is       => 'rw',
     isa      => 'Str',
     required => 1,
@@ -16,12 +16,6 @@ has attributes => (
 has controller => (
     is       => 'rw',
     isa      => 'Ark::Controller',
-    required => 1,
-);
-
-has code => (
-    is       => 'rw',
-    isa      => 'CodeRef',
     required => 1,
 );
 
