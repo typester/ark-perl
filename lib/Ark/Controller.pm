@@ -6,8 +6,9 @@ extends 'Ark::Component', 'Class::Data::Inheritable';
 
 our @EXPORT = qw/response/;
 
-__PACKAGE__->mk_classdata($_) for qw/_attr_cache/;
-__PACKAGE__->_attr_cache( {} );
+__PACKAGE__->mk_classdata($_) for qw/_attr_cache _method_cache/;
+__PACKAGE__->_attr_cache( [] );
+__PACKAGE__->_method_cache( {} );
 
 has namespace => (
     is      => 'rw',
@@ -28,7 +29,8 @@ no Mouse;
 
 sub MODIFY_CODE_ATTRIBUTES {
     my ($class, $code, @attrs) = @_;
-    $class->_attr_cache->{ $code } = \@attrs;
+
+    push @{ $class->_attr_cache }, [ $code, \@attrs ];
     return;
 }
 

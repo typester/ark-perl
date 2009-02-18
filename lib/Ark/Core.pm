@@ -7,7 +7,7 @@ use Ark::DispatchType::Path;
 use Ark::DispatchType::Regex;
 use Ark::DispatchType::Chained;
 
-use Class::Inspector;
+use Data::Util;
 use Module::Pluggable::Object;
 
 extends 'Ark::Component', 'Class::Data::Inheritable';
@@ -93,13 +93,13 @@ sub register_actions {
     my ($self, $controller) = @_;
     my $controller_class = ref $controller || $controller;
 
-    my $methods = {};
-    $methods->{ $controller->can($_) } = $_
-        for @{ Class::Inspector->methods($controller_class) || [] };
+    while (my $attr = shift @{ $controller->_attr_cache || [] }) {
+        my ($pkg, $method) = Data::Util::get_code_info($attr->[0]);
+        $controller->_method_cache->{ $method } = $attr->[1];
+    }
 
-    for my $code (keys %$methods) {
-        my $attrs  = $controller_class->_attr_cache->{ $code } or next;
-        my $method = $methods->{$code};
+    for my $method (keys %{ $controller->_method_cache }) {
+        my $attrs = $controller->_method_cache->{$method} or next;
         $attrs = $self->_parse_attrs( $controller, $method, @$attrs );
 
         my $ns      = $controller->namespace;
