@@ -27,6 +27,46 @@ has handler => (
     },
 );
 
+has logger_class => (
+    is      => 'rw',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub { 'Ark::Logger' },
+);
+
+has logger => (
+    is      => 'rw',
+    isa     => 'Object',
+    lazy    => 1,
+    default => sub {
+        my $self  = shift;
+        my $class = $self->logger_class;
+        Mouse::load_class($class) unless Mouse::load_class($class);
+        $class->new;
+    },
+);
+
+has log_level => (
+    is      => 'rw',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub { 'error' },
+);
+
+has log_levels => (
+    is      => 'rw',
+    isa     => 'HashRef',
+    lazy    => 1,
+    default => sub {
+        {   debug => 4,
+            info  => 3,
+            warn  => 2,
+            error => 1,
+            fatal => 0,
+        };
+    },
+);
+
 has components => (
     is      => 'rw',
     isa     => 'ArrayRef',
@@ -76,7 +116,7 @@ sub setup_actions {
             if $component->isa('Ark::Controller');
     }
 
-    warn $_ for grep {$_} map { $_->list } @{ $self->dispatch_types };
+    $self->log( debug => $_ ) for grep {$_} map { $_->list } @{ $self->dispatch_types };
 }
 
 sub load_component {
@@ -235,7 +275,11 @@ sub _parse_PathPart_attr {
 
 sub log {
     my $self = shift;
-    
+    my ($type, $msg, @args) = @_;
+    return if !$self->log_levels->{$type} or
+        $self->log_levels->{$type} > $self->log_levels->{ $self->log_level };
+
+    $self->logger->log(@_);
 }
 
 sub handle_request {
@@ -249,7 +293,7 @@ sub handle_request {
         $action->dispatch($req);
     }
     else {
-        warn 'no action found';
+        $self->log( error => 'no action found' );
     }
 }
 

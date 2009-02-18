@@ -50,6 +50,7 @@ has context => (
     isa      => 'Ark::Core',
     weak_ref => 1,
     required => 1,
+    handles  => ['log'],
 );
 
 no Mouse;
@@ -81,8 +82,8 @@ sub prepare_action {
     s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg
         for grep {defined} @{ $self->captures || [] };
 
-    warn 'Path is "' . $self->match . '"' ;
-    warn 'Arguments are "' . join('/', @{ $self->args }) . '"';
+    $self->log( debug => 'Path is "%s"', $self->match );
+    $self->log( debug => 'Arguments are "%s"', join('/', @{ $self->args }) );
 
     $self->action;
 }

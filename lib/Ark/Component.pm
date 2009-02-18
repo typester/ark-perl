@@ -5,6 +5,7 @@ has context => (
     is       => 'rw',
     isa      => 'Ark::Core',
     weak_ref => 1,
+    handles  => ['log'],
 );
 
 has component_name => (
