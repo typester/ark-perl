@@ -13,8 +13,9 @@ use Module::Pluggable::Object;
 
 extends 'Ark::Component', 'Class::Data::Inheritable';
 
-__PACKAGE__->mk_classdata($_) for qw/config/;
+__PACKAGE__->mk_classdata($_) for qw/config plugins/;
 __PACKAGE__->config( {} );
+__PACKAGE__->plugins( [] );
 
 has handler => (
     is      => 'rw',
@@ -88,7 +89,36 @@ has dispatch_types => (
     },
 );
 
+has context_class => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => sub {
+        my $self = shift;
+        my $pkg  = ref($self);
+
+        # create application specific context class for mod_perl
+        my $class = "${pkg}::Context";
+        eval qq{
+            package ${class};
+            use base 'Ark::Context';
+            1;
+        };
+        die $@ if $@;
+
+        $class;
+    },
+);
+
 no Mouse;
+
+sub load_plugins {
+    my ($class, @names) = @_;
+
+    my @plugins =
+        map { $_ =~ /^\+(.+)/ ? $1 : 'Ark::Plugin::' . $_ } grep {$_} @names;
+
+    $class->plugins(\@plugins);
+}
 
 sub setup {
     my $self  = shift;
@@ -106,7 +136,17 @@ sub setup {
         $self->load_component($component);
     }
 
+    $self->setup_plugins;
     $self->setup_actions;
+}
+
+sub setup_plugins {
+    my $self = shift;
+
+    for my $plugin (@{ $self->plugins }) {
+        Mouse::load_class($plugin) unless Mouse::is_class_loaded($plugin);
+        $plugin->meta->apply($self->context_class->meta);
+    }
 }
 
 sub setup_actions {
@@ -291,8 +331,6 @@ sub prepare_context {
         request => $req,
     );
 
-    warn ref $context->req;
-
     my @path = split /\//, $req->path;
     unshift @path, '' unless @path;
 
@@ -321,15 +359,10 @@ sub prepare_context {
 sub handle_request {
     my ($self, $req) = @_;
 
-    my $context = $self->prepare_context($req);
+    my $context = $self->context_class->new( app => $self, request => $req );
 
-    if (my $action = $context->req->action) {
-        $action->dispatch($context);
-    }
-    else {
-        $self->log( error => 'no action found' );
-        $context->response->status(500);
-    }
+    $context->setup unless $context->setup_finished;
+    $context->process;
 
     return $context->response;
 }
