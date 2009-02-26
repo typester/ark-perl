@@ -1,7 +1,7 @@
 package Ark::Component;
 use Mouse;
 
-has context => (
+has app => (
     is       => 'rw',
     isa      => 'Ark::Core',
     weak_ref => 1,

@@ -1,6 +1,7 @@
 package Ark::Core;
 use Mouse;
 
+use Ark::Context;
 use Ark::Action;
 use Ark::Request;
 use Ark::DispatchType::Path;
@@ -124,7 +125,7 @@ sub load_component {
 
     Mouse::load_class($component) unless Mouse::is_class_loaded($component);
 
-    my $instance = $component->new( context => $self );
+    my $instance = $component->new( app => $self );
     $instance->apply_config( $self->config->{ $instance->component_name });
     push @{ $self->components }, $instance;
 }
@@ -282,19 +283,55 @@ sub log {
     $self->logger->log(@_);
 }
 
+sub prepare_context {
+    my ($self, $req) = @_;
+
+    my $context = Ark::Context->new(
+        app     => $self,
+        request => $req,
+    );
+
+    warn ref $context->req;
+
+    my @path = split /\//, $req->path;
+    unshift @path, '' unless @path;
+
+ DESCEND: while (@path) {
+        my $path = join '/', @path;
+        $path =~ s!^/!!;
+
+        for my $type (@{ $self->dispatch_types }) {
+            last DESCEND if $type->match( $context->req, $path );
+        }
+
+        my $arg = pop @path;
+        $arg =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
+        unshift @{ $context->req->args }, $arg;
+    }
+
+    s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg
+        for grep {defined} @{ $context->req->captures || [] };
+
+    $self->log( debug => 'Path is "%s"', $context->req->match );
+    $self->log( debug => 'Arguments are "%s"', join('/', @{ $context->req->args }) );
+
+    $context;
+}
+
 sub handle_request {
     my ($self, $req) = @_;
-    $req = Ark::Request->new({ %$req });
 
-    $req->context($self);
-    $req->prepare_action;
+    my $context = $self->prepare_context($req);
 
-    if (my $action = $req->action) {
-        $action->dispatch($req);
+    if (my $action = $context->req->action) {
+        $action->dispatch($context);
     }
     else {
         $self->log( error => 'no action found' );
+        $context->response->status(500);
     }
+
+    return $context->response;
 }
 
 1;
