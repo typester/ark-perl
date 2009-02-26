@@ -52,6 +52,8 @@ has setup_finished => (
     default => 0,
 );
 
+after 'setup' => sub { shift->setup_finished(1) };
+
 {   # alias
     no warnings 'once';
     *req = \&request;
