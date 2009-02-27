@@ -97,7 +97,7 @@ has context_class => (
         my $pkg  = ref($self);
 
         # create application specific context class for mod_perl
-        my $class = "${pkg}::Context";
+        my $class = "${pkg}::ArkContext";
         eval qq{
             package ${class};
             use base 'Ark::Context';
@@ -323,39 +323,6 @@ sub log {
         $self->log_levels->{$type} > $self->log_levels->{ $self->log_level };
 
     $self->logger->log(@_);
-}
-
-sub prepare_context {
-    my ($self, $req) = @_;
-
-    my $context = Ark::Context->new(
-        app     => $self,
-        request => $req,
-    );
-
-    my @path = split /\//, $req->path;
-    unshift @path, '' unless @path;
-
- DESCEND: while (@path) {
-        my $path = join '/', @path;
-        $path =~ s!^/!!;
-
-        for my $type (@{ $self->dispatch_types }) {
-            last DESCEND if $type->match( $context->req, $path );
-        }
-
-        my $arg = pop @path;
-        $arg =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
-        unshift @{ $context->req->args }, $arg;
-    }
-
-    s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg
-        for grep {defined} @{ $context->req->captures || [] };
-
-    $self->log( debug => 'Path is "%s"', $context->req->match );
-    $self->log( debug => 'Arguments are "%s"', join('/', @{ $context->req->args }) );
-
-    $context;
 }
 
 sub handle_request {
