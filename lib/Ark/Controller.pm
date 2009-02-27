@@ -30,6 +30,7 @@ no Mouse;
 sub MODIFY_CODE_ATTRIBUTES {
     my ($class, $code, @attrs) = @_;
 
+    $class->_attr_cache([ @{ $class->_attr_cache } ]);
     push @{ $class->_attr_cache }, [ $code, \@attrs ];
     return;
 }

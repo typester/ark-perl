@@ -174,6 +174,8 @@ sub register_actions {
     my ($self, $controller) = @_;
     my $controller_class = ref $controller || $controller;
 
+    $controller->_method_cache({ %{$controller->_method_cache } });
+
     while (my $attr = shift @{ $controller->_attr_cache || [] }) {
         my ($pkg, $method) = Data::Util::get_code_info($attr->[0]);
         $controller->_method_cache->{ $method } = $attr->[1];
