@@ -183,7 +183,7 @@ sub register_actions {
 
     for my $method (keys %{ $controller->_method_cache }) {
         my $attrs = $controller->_method_cache->{$method} or next;
-        $attrs = $self->_parse_attrs( $controller, $method, @$attrs );
+        $attrs = $self->parse_action_attrs( $controller, $method, @$attrs );
 
         my $ns      = $controller->namespace;
         my $reverse = $ns ? "$ns/$method" : $method;
@@ -206,7 +206,7 @@ sub register_action {
     }
 }
 
-sub _parse_attrs {
+sub parse_action_attrs {
     my ($self, $controller, $name, @attrs) = @_;
 
     my %parsed;
@@ -216,8 +216,8 @@ sub _parse_attrs {
                 if defined $v;
 
             my $initializer = "_parse_${k}_attr";
-            if ($self->can($initializer)) {
-                ($k, $v) = $self->$initializer($controller, $name, $v);
+            if ($controller->can($initializer)) {
+                ($k, $v) = $controller->$initializer($name, $v);
                 push @{ $parsed{$k} }, $v;
             }
             else {
@@ -227,93 +227,6 @@ sub _parse_attrs {
     }
 
     return \%parsed;
-}
-
-sub _parse_Path_attr {
-    my ($self, $controller, $name, $value) = @_;
-    $value = '' unless defined $value;
-
-    if ($value =~ m!^/!) {
-        return Path => $value;
-    }
-    elsif (length $value) {
-        return Path => join '/', $controller->namespace, $value;
-    }
-    else {
-        return Path => $controller->namespace;
-    }
-}
-
-sub _parse_Global_attr {
-    my ($self, $controller, $name, $value) = @_;
-    $self->_parse_Path_attr( $controller, $name, "/$name" );
-}
-
-sub _parse_Local_attr {
-    my ($self, $controller, $name, $value) = @_;
-    $self->_parse_Path_attr( $controller, $name, $name );
-}
-
-sub _parse_Args_attr {
-    my ($self, $controller, $name, $value) = @_;
-    return Args => $value;
-}
-
-sub _parse_Regex_attr {
-    my ($self, $controller, $name, $value) = @_;
-    return Regex => $value;
-}
-
-sub _parse_LocalRegex_attr {
-    my ($self, $controller, $name, $value) = @_;
-
-    unless ( $value =~ s/^\^// ) { $value = "(?:.*?)$value"; }
-
-    my $prefix = $controller->namespace;
-    $prefix .= '/' if length( $prefix );
-
-    return ( 'Regex', "^${prefix}${value}" );
-}
-
-sub _parse_Chained_attr {
-    my ($self, $controller, $name, $value) = @_;
-
-    if (defined $value && length $value) {
-        if ($value eq '.') {
-            $value = '/' . $controller->namespace;
-        }
-        elsif (my ($rel, $rest) = $value =~ /^((?:\.{2}\/)+)(.*)$/) {
-            my @parts  = split '/', $controller->namespace;
-            my @levels = split '/', $rel;
-
-            $value = '/' . join '/', @parts[0 .. $#parts - @levels], $rest;
-        }
-        elsif ($value !~ m!^/!) {
-            my $action_ns = $controller->namespace;
-
-            if ($action_ns) {
-                $value = '/' . join '/', $action_ns, $value;
-            }
-            else {
-                $value = '/' . $value;
-            }
-        }
-    }
-    else {
-        $value = '/';
-    }
-
-    return Chained => $value;
-}
-
-sub _parse_CaptureArgs_attr {
-    my ($self, $controller, $name, $value) = @_;
-    return CaptureArgs => $value;
-}
-
-sub _parse_PathPart_attr {
-    my ($self, $controller, $name, $value) = @_;
-    return PathPart => $value;
 }
 
 sub log {
