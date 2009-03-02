@@ -249,6 +249,17 @@ sub log {
     $self->logger->log(@_);
 }
 
+sub get_action {
+    my ($self, $action, $namespace) = @_;
+    return unless $action;
+
+    $namespace ||= '';
+    $namespace = '' if $namespace eq '/';
+
+    my $container = $self->actions->{$namespace} or return;
+    $container->actions->{ $action };
+}
+
 sub get_actions {
     my ($self, $action, $namespace) = @_;
     return () unless $action;
@@ -278,7 +289,15 @@ sub handle_request {
     my $context = $self->context_class->new( app => $self, request => $req );
 
     $context->setup unless $context->setup_finished;
-    $context->process;
+
+    eval {
+        $context->process;
+    };
+
+    if ( my $error = $@ ) {
+        chomp $error;
+        $self->log( error => 'Caught exception in engine "%s"', $error );
+    }
 
     return $context->response;
 }

@@ -4,6 +4,7 @@ use Mouse::Util::TypeConstraints;
 
 use Ark::Request;
 use HTTP::Engine::Response;
+use Scalar::Util ();
 
 our $DETACH = 'ARK_DETACH';
 
@@ -38,7 +39,7 @@ has app => (
     isa      => 'Ark::Core',
     required => 1,
     weak_ref => 1,
-    handles  => ['log', 'get_actions'],
+    handles  => ['log', 'get_actions', 'get_action'],
 );
 
 has stash => (
@@ -121,20 +122,44 @@ sub prepare {
 sub forward {
     my ($self, $target, @args) = @_;
 
-    if ($target->isa('Ark::Action')) {
-        $target->dispatch($self, @args);
-    }
-    elsif ($target->can('process')) {
-        $target->dispatch($target, 'process', @args);
+    return 0 unless $target;
+
+    if (Scalar::Util::blessed($target)) {
+        if ($target->isa('Ark::Action')) {
+            $target->dispatch($self, @args);
+            return $self->state;
+        }
+        elsif ($target->can('process')) {
+            $self->execute($target, 'process', @args);
+            return $self->state;
+        }
     }
     else {
-        my $error = qq/Invalid action or component/;
-        $self->log( error => $error );
-        push @{ $self->error }, $error;
-        return 0;
+        if ($target =~ m!^/.+!) {
+            my ($namespace, $name) = $target =~ m!^(.*/)([^/]+)$!;
+            $namespace =~ s!(^/|/$)!!g;
+            if (my $action = $self->get_action($name, $namespace || '')) {
+                $action->dispatch($self, @args);
+                return $self->state;
+            }
+        }
+        else {
+            my $last = $self->stack->[-1];
+            if ($last
+                 and $last->{obj}->isa('Ark::Controller')
+                 and my $action = $self->get_action($target, $last->{obj}->namespace)) {
+
+                $action->dispatch($self, @args);
+                return $self->state;
+            }
+        }
     }
 
-    $self->state;
+    my $error = qq/Couldn't forward to $target, Invalid action or component/;
+    $self->log( error => $error );
+    push @{ $self->error }, $error;
+
+    return 0;
 }
 
 sub detach {
@@ -163,7 +188,12 @@ sub execute {
     my $class = ref $obj;
 
     $self->state(0);
-    push @{ $self->stack }, "${class}->${method}";
+    push @{ $self->stack }, {
+        obj       => $obj,
+        method    => $method,
+        args      => \@args,
+        as_string => "${class}->${method}"
+    };
 
     eval {
         $self->state( $obj->$method($self, @args) );
@@ -172,11 +202,13 @@ sub execute {
     my $last = pop @{ $self->stack };
 
     if (my $error = $@) {
-        if ($error eq $DETACH) {
-            die $error if ($self->depth > 0);
+        if ($error =~ /^${DETACH} at /) {
+            die $DETACH if ($self->depth > 1);
         }
-        push @{ $self->error }, $error;
-        $self->state(0);
+        else {
+            push @{ $self->error }, $error;
+            $self->state(0);
+        }
     }
 
     $self->state;
