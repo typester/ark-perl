@@ -32,13 +32,52 @@ sub match {
 }
 
 sub dispatch {
+    my ($self, $context, @args) = @_;
+
+    my $req  = $context->request;
+    my $args = @{ $req->args } ? $req->args : $req->captures;
+
+    $context->execute( $self->controller, $self->name, @args || @$args );
+}
+
+sub dispatch_chain {
     my ($self, $context) = @_;
 
-    my $req    = $context->request;
-    my $method = $self->name;
-    my $args   = @{ $req->args } ? $req->args : $req->captures;
+    $self->dispatch_begin($context)
+        and $self->dispatch_auto($context)
+        and $self->dispatch($context);
+    $self->dispatch_end($context);
+}
 
-    $self->controller->$method($context, @$args);
+sub dispatch_begin {
+    my ($self, $context) = @_;
+
+    my $action = ($context->get_actions('begin', $self->namespace))[-1]
+        or return 1;
+
+    $action->dispatch($context);
+    return !@{ $context->error };
+}
+
+sub dispatch_auto {
+    my ($self, $context) = @_;
+
+    for my $action ($context->get_actions('auto', $self->namespace)) {
+        $action->dispatch($context);
+        return 0 unless $context->state;
+    }
+
+    1;
+}
+
+sub dispatch_end {
+    my ($self, $context) = @_;
+
+    my $action = ($context->get_actions('end', $self->namespace))[-1]
+        or return 1;
+
+    $action->dispatch($context);
+    return !@{ $context->error };
 }
 
 1;

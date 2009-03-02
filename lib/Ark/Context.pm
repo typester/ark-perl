@@ -5,6 +5,8 @@ use Mouse::Util::TypeConstraints;
 use Ark::Request;
 use HTTP::Engine::Response;
 
+our $DETACH = 'ARK_DETACH';
+
 subtype 'Ark::Request'
     => as 'Object'
     => where { $_->isa('Ark::Request') };
@@ -36,7 +38,7 @@ has app => (
     isa      => 'Ark::Core',
     required => 1,
     weak_ref => 1,
-    handles  => ['log'],
+    handles  => ['log', 'get_actions'],
 );
 
 has stash => (
@@ -44,6 +46,25 @@ has stash => (
     isa     => 'HashRef',
     lazy    => 1,
     default => sub { {} },
+);
+
+has stack => (
+    is      => 'rw',
+    isa     => 'ArrayRef',
+    lazy    => 1,
+    default => sub { [] },
+);
+
+has state => (
+    is      => 'rw',
+    default => 0,
+);
+
+has error => (
+    is      => 'rw',
+    isa     => 'ArrayRef',
+    lazy    => 1,
+    default => sub { [] },
 );
 
 has setup_finished => (
@@ -97,16 +118,68 @@ sub prepare {
     $self->log( debug => 'Arguments are "%s"', join('/', @{ $req->args }) );
 }
 
+sub forward {
+    my ($self, $target, @args) = @_;
+
+    if ($target->isa('Ark::Action')) {
+        $target->dispatch($self, @args);
+    }
+    elsif ($target->can('process')) {
+        $target->dispatch($target, 'process', @args);
+    }
+    else {
+        my $error = qq/Invalid action or component/;
+        $self->log( error => $error );
+        push @{ $self->error }, $error;
+        return 0;
+    }
+
+    $self->state;
+}
+
+sub detach {
+    shift->forward(@_);
+    die $DETACH;
+}
+
 sub dispatch {
     my $self = shift;
 
     my $action = $self->request->action;
     if ($action) {
-        $action->dispatch($self);
+        $action->dispatch_chain($self);
     }
     else {
         $self->log( error => 'no action found' );
     }
+}
+
+sub depth {
+    scalar @{ shift->stack };
+}
+
+sub execute {
+    my ($self, $obj, $method, @args) = @_;
+    my $class = ref $obj;
+
+    $self->state(0);
+    push @{ $self->stack }, "${class}->${method}";
+
+    eval {
+        $self->state( $obj->$method($self, @args) );
+    };
+
+    my $last = pop @{ $self->stack };
+
+    if (my $error = $@) {
+        if ($error eq $DETACH) {
+            die $error if ($self->depth > 0);
+        }
+        push @{ $self->error }, $error;
+        $self->state(0);
+    }
+
+    $self->state;
 }
 
 sub finalize { }

@@ -3,6 +3,7 @@ use Mouse;
 
 use Ark::Context;
 use Ark::Action;
+use Ark::ActionContainer;
 use Ark::Request;
 use Ark::DispatchType::Path;
 use Ark::DispatchType::Regex;
@@ -73,6 +74,12 @@ has components => (
     is      => 'rw',
     isa     => 'ArrayRef',
     default => sub { [] },
+);
+
+has actions => (
+    is      => 'rw',
+    isa     => 'HashRef',
+    default => sub { {} },
 );
 
 has dispatch_types => (
@@ -204,6 +211,10 @@ sub register_action {
     for my $type (@{ $self->dispatch_types || [] }) {
         $type->register($action);
     }
+
+    my $container = $self->actions->{ $action->namespace }
+        ||= Ark::ActionContainer->new( namespace => $action->namespace );
+    $container->actions->{ $action->name } = $action;
 }
 
 sub parse_action_attrs {
@@ -236,6 +247,29 @@ sub log {
         $self->log_levels->{$type} > $self->log_levels->{ $self->log_level };
 
     $self->logger->log(@_);
+}
+
+sub get_actions {
+    my ($self, $action, $namespace) = @_;
+    return () unless $action;
+    grep { defined } map { $_->actions->{ $action } } $self->get_containers($namespace);
+}
+
+sub get_containers {
+    my ($self, $namespace) = @_;
+    $namespace ||= '';
+    $namespace = '' if $namespace eq '/';
+
+    my @containers;
+    if (length $namespace) {
+        do {
+            my $container = $self->actions->{$namespace};
+            push @containers, $container if $container;
+        } while $namespace =~ s!/[^/]+$!!;
+    }
+    push @containers, $self->actions->{''} if $self->actions->{''};
+
+    reverse @containers;
 }
 
 sub handle_request {
