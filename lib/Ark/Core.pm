@@ -118,6 +118,13 @@ has context_class => (
     },
 );
 
+# current context
+has context => (
+    is       => 'rw',
+    isa      => 'Ark::Context',
+    weak_ref => 1,
+);
+
 no Mouse;
 
 sub debug {
@@ -335,7 +342,7 @@ sub handle_request {
 
     my $context = $self->context_class->new( app => $self, request => $req );
 
-    $context->process;
+    $self->context($context)->process;
 
     if ( my $error = $context->error->[-1] ) {
         chomp $error;
