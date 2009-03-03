@@ -29,7 +29,7 @@ no Mouse;
 sub list {
     my $self = shift;
 
-    return unless $self->endpoints;
+    return unless @{ $self->endpoints };
 
     eval "require Text::SimpleTable"; die $@ if $@;
     my $paths = Text::SimpleTable->new([ 35, 'Path Spec' ], [ 36, 'Private' ]);
@@ -71,7 +71,7 @@ sub list {
         $paths->row(@$_) for @rows;
     }
 
-    "Loaded Chained actions:\n" . $paths->draw . "\n";
+    "Loaded Chained actions:\n" . $paths->draw;
 }
 
 sub match {

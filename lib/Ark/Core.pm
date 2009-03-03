@@ -120,6 +120,11 @@ has context_class => (
 
 no Mouse;
 
+sub debug {
+    my $self = shift;
+    !!( $self->log_levels->{ $self->log_level } >= $self->log_levels->{debug} );
+}
+
 sub load_plugins {
     my ($class, @names) = @_;
 
@@ -147,6 +152,8 @@ sub setup {
 
     $self->setup_plugins;
     $self->setup_actions;
+
+    $self->log( debug => 'Setup finished' );
 }
 
 sub setup_plugins {
@@ -283,6 +290,11 @@ sub get_containers {
     push @containers, $self->actions->{''} if $self->actions->{''};
 
     reverse @containers;
+}
+
+sub ensure_class_loaded {
+    my ($self, $class) = @_;
+    Mouse::load_class($class) unless Mouse::is_class_loaded($class);
 }
 
 sub handle_request {

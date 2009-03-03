@@ -60,7 +60,7 @@ sub list {
             $paths->row( $display_path, '/' . $action->reverse );
         }
     }
-    "Loaded Path actions:\n" . $paths->draw . "\n";
+    "Loaded Path actions:\n" . $paths->draw;
 }
 
 1;

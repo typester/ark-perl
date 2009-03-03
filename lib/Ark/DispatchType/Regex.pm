@@ -62,7 +62,7 @@ sub list {
     for my $regex (@{ $self->compiled }) {
         $re->row( $regex->{path}, "/" . $regex->{action}->reverse );
     }
-    return "Loaded Regex actions:\n" . $re->draw . "\n" if @{ $self->compiled };
+    return "Loaded Regex actions:\n" . $re->draw if @{ $self->compiled };
 }
 
 1;
