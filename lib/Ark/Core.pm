@@ -44,7 +44,7 @@ has logger => (
     default => sub {
         my $self  = shift;
         my $class = $self->logger_class;
-        Mouse::load_class($class) unless Mouse::load_class($class);
+        $self->ensure_class_loaded($class);
         $class->new;
     },
 );
@@ -160,7 +160,7 @@ sub setup_plugins {
     my $self = shift;
 
     for my $plugin (@{ $self->plugins }) {
-        Mouse::load_class($plugin) unless Mouse::is_class_loaded($plugin);
+        $self->ensure_class_loaded($plugin);
         $plugin->meta->apply($self->context_class->meta);
     }
 }
@@ -179,7 +179,7 @@ sub setup_actions {
 sub load_component {
     my ($self, $component) = @_;
 
-    Mouse::load_class($component) unless Mouse::is_class_loaded($component);
+    $self->ensure_class_loaded($component);
 
     my $instance = $component->new( app => $self );
     $instance->apply_config( $self->config->{ $instance->component_name });

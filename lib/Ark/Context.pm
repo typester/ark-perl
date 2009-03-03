@@ -73,8 +73,8 @@ has debug_report => (
     isa     => 'Text::SimpleTable',
     lazy    => 1,
     default => sub {
-        Mouse::load_class('Text::SimpleTable')
-                unless Mouse::is_class_loaded('Text::SimpleTable');
+        my $self = shift;
+        $self->ensure_class_loaded('Text::SimpleTable');
         Text::SimpleTable->new([62, 'Action'], [9, 'Time']);
     },
 );
@@ -218,7 +218,7 @@ sub execute {
     };
 
     if ($self->debug) {
-        Mouse::load_class('Time::HiRes') unless Mouse::is_class_loaded('Time::HiRes');
+        $self->ensure_class_loaded('Time::HiRes');
         $self->stack->[-1]->{start} = [Time::HiRes::gettimeofday()];
     }
 
