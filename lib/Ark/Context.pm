@@ -68,21 +68,11 @@ has error => (
     default => sub { [] },
 );
 
-has setup_finished => (
-    is      => 'rw',
-    isa     => 'Bool',
-    default => 0,
-);
-
-after 'setup' => sub { shift->setup_finished(1) };
-
 {   # alias
     no warnings 'once';
     *req = \&request;
     *res = \&response;
 }
-
-sub setup { }
 
 sub process {
     my $self = shift;

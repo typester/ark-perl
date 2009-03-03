@@ -15,8 +15,8 @@ use Module::Pluggable::Object;
 extends 'Ark::Component', 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata($_) for qw/config plugins/;
-__PACKAGE__->config( {} );
-__PACKAGE__->plugins( [] );
+__PACKAGE__->config({});
+__PACKAGE__->plugins([]);
 
 has handler => (
     is      => 'rw',
@@ -290,11 +290,7 @@ sub handle_request {
 
     my $context = $self->context_class->new( app => $self, request => $req );
 
-    $context->setup unless $context->setup_finished;
-
-    eval {
-        $context->process;
-    };
+    eval { $context->process };
 
     if ( my $error = $@ ) {
         chomp $error;
