@@ -11,6 +11,7 @@ use Ark::DispatchType::Chained;
 
 use Data::Util;
 use Module::Pluggable::Object;
+use Path::Class qw/file dir/;
 
 extends 'Ark::Component', 'Class::Data::Inheritable';
 
@@ -157,10 +158,31 @@ sub setup {
         $self->load_component($component);
     }
 
+    $self->setup_home;
     $self->setup_plugins;
     $self->setup_actions;
 
     $self->log( debug => 'Setup finished' );
+}
+
+sub setup_home {
+    my $self = shift;
+    return if $self->config->{home};
+
+    my $class = ref $self;
+    (my $file = "${class}.pm") =~ s!::!/!g;
+
+    my $path = $INC{$file} or return;
+    $path =~ s/$file$//;
+
+    $path = dir($path);
+    return unless -d $path;
+
+    while ($path->dir_list(-1) =~ /^b?lib$/) {
+        $path = $path->parent;
+    }
+
+    $self->config->{home} = $path;
 }
 
 sub setup_plugins {
@@ -335,6 +357,13 @@ sub get_containers {
 sub ensure_class_loaded {
     my ($self, $class) = @_;
     Mouse::load_class($class) unless Mouse::is_class_loaded($class);
+}
+
+sub path_to {
+    my ($self, @path) = @_;
+    my $path = dir( $self->config->{home}, @path );
+    return $path if -d $path;
+    return file($path);
 }
 
 sub handle_request {
