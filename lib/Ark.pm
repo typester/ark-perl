@@ -7,6 +7,8 @@ sub import {
 
     strict->import;
     warnings->import;
+
+    require utf8;
     utf8->import;
 
     my $caller = caller;

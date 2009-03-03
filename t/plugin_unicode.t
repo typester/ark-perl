@@ -14,8 +14,11 @@ use Test::Base;
     sub default :Path {
         my ($self, $c) = @_;
 
-        Test::More::ok(utf8::is_utf8( $c->req->params->{foo} ));
-        Test::More::ok($c->req->param('foo'), 'テスト');
+        my $test = 'テスト';
+        Test::More::ok( utf8::is_utf8($test) );
+
+        Test::More::ok(utf8::is_utf8( $c->req->params->{foo} ), 'request is utf8');
+        Test::More::is($c->req->params->{foo}, 'テスト', 'request ok');
 
         $c->res->body( $c->req->params->{foo} );
     }
