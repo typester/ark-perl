@@ -53,7 +53,9 @@ has log_level => (
     is      => 'rw',
     isa     => 'Str',
     lazy    => 1,
-    default => sub { 'error' },
+    default => sub {
+        $ENV{ARK_DEBUG} ? 'debug' : 'error';
+    },
 );
 
 has log_levels => (
