@@ -74,8 +74,8 @@ has log_levels => (
 
 has components => (
     is      => 'rw',
-    isa     => 'ArrayRef',
-    default => sub { [] },
+    isa     => 'HashRef',
+    default => sub { {} },
 );
 
 has actions => (
@@ -168,7 +168,7 @@ sub setup_plugins {
 sub setup_actions {
     my $self = shift;
 
-    for my $component (@{ $self->components }) {
+    for my $component (values %{ $self->components }) {
         $self->register_actions( $component )
             if $component->isa('Ark::Controller');
     }
@@ -183,7 +183,40 @@ sub load_component {
 
     my $instance = $component->new( app => $self );
     $instance->apply_config( $self->config->{ $instance->component_name });
-    push @{ $self->components }, $instance;
+
+    $self->components->{ $component } = $instance;
+}
+
+sub component {
+    my ($self, $name) = @_;
+    return unless $name;
+
+    if ($name =~ /^\+/) {
+        $name =~ s/^\+//;
+    }
+    else {
+        $name = ref($self) . '::' . $name;
+    }
+
+    $self->components->{$name};
+}
+
+sub controller {
+    my ($self, $name) = @_;
+    return unless $name;
+    $self->components('Controller::' . $name);
+}
+
+sub model {
+    my ($self, $name) = @_;
+    return unless $name;
+    $self->component('Model::' . $name);
+}
+
+sub view {
+    my ($self, $name) = @_;
+    return unless $name;
+    $self->component('View::' . $name);
 }
 
 sub register_actions {
@@ -302,9 +335,9 @@ sub handle_request {
 
     my $context = $self->context_class->new( app => $self, request => $req );
 
-    eval { $context->process };
+    $context->process;
 
-    if ( my $error = $@ ) {
+    if ( my $error = $context->error->[-1] ) {
         chomp $error;
         $self->log( error => 'Caught exception in engine "%s"', $error );
     }

@@ -31,6 +31,10 @@ sub import {
                 },
             )->run($req, env => \%ENV);
         };
+
+        *{ $caller . '::get' } = sub {
+            &{$caller . '::request'}(GET => @_)->content;
+        }
     }
 }
 

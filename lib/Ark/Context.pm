@@ -39,7 +39,8 @@ has app => (
     isa      => 'Ark::Core',
     required => 1,
     weak_ref => 1,
-    handles  => ['debug', 'log', 'get_actions', 'get_action', 'ensure_class_loaded'],
+    handles  => ['debug', 'log', 'get_actions', 'get_action', 'ensure_class_loaded',
+                 'component', 'view', 'model', ],
 );
 
 has stash => (
