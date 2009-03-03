@@ -15,10 +15,10 @@ use Test::Base;
         my ($self, $c) = @_;
 
         my $test = 'テスト';
-        Test::More::ok( utf8::is_utf8($test) );
+        Test::More::ok( utf8::is_utf8($test), 'utf8 flag automatically on by Ark' );
 
         Test::More::ok(utf8::is_utf8( $c->req->params->{foo} ), 'request is utf8');
-        Test::More::is($c->req->params->{foo}, 'テスト', 'request ok');
+        Test::More::is($c->req->params->{foo}, $test, 'request ok');
 
         $c->res->body( $c->req->params->{foo} );
     }
