@@ -4,16 +4,13 @@ use Mouse;
 
 our $VERSION = '0.01';
 
-
 sub import {
     my $class  = shift;
     my @target = @_;
 
-    strict->import;
-    warnings->import;
-
-    require utf8;
-    utf8->import;
+    require strict; strict->import;
+    require warnings; warnings->import;
+    require utf8; utf8->import;
 
     my $caller = caller;
 
@@ -47,4 +44,3 @@ sub unimport {
 }
 
 1;
-
