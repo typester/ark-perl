@@ -5,12 +5,7 @@ use Ark::Context;
 use Ark::Action;
 use Ark::ActionContainer;
 use Ark::Request;
-use Ark::DispatchType::Path;
-use Ark::DispatchType::Regex;
-use Ark::DispatchType::Chained;
 
-use Data::Util;
-use Module::Pluggable::Object;
 use Path::Class qw/file dir/;
 
 extends 'Ark::Component', 'Class::Data::Inheritable';
@@ -22,7 +17,6 @@ __PACKAGE__->plugins([]);
 has handler => (
     is      => 'rw',
     isa     => 'CodeRef',
-    lazy    => 1,
     default => sub {
         my $self = shift;
         sub {
@@ -53,7 +47,6 @@ has logger => (
 has log_level => (
     is      => 'rw',
     isa     => 'Str',
-    lazy    => 1,
     default => sub {
         $ENV{ARK_DEBUG} ? 'debug' : 'error';
     },
@@ -62,7 +55,6 @@ has log_level => (
 has log_levels => (
     is      => 'rw',
     isa     => 'HashRef',
-    lazy    => 1,
     default => sub {
         {   debug => 4,
             info  => 3,
@@ -91,6 +83,9 @@ has dispatch_types => (
     lazy    => 1,
     default => sub {
         my $self = shift;
+        $self->ensure_class_loaded($_) for qw/Ark::DispatchType::Path
+                                              Ark::DispatchType::Regex
+                                              Ark::DispatchType::Chained/;
         [
             Ark::DispatchType::Path->new,
             Ark::DispatchType::Regex->new,
@@ -126,6 +121,19 @@ has context => (
     weak_ref => 1,
 );
 
+has setup_finished => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
+);
+
+after setup => sub {
+    my $self = shift;
+
+    $self->log( debug => 'Setup finished' );
+    $self->setup_finished(1);
+};
+
 no Mouse;
 
 sub debug {
@@ -138,7 +146,6 @@ sub load_plugins {
 
     my @plugins =
         map { $_ =~ /^\+(.+)/ ? $1 : 'Ark::Plugin::' . $_ } grep {$_} @names;
-
     $class->plugins(\@plugins);
 }
 
@@ -148,6 +155,8 @@ sub setup {
     my $args  = @_ > 1 ? {@_} : $_[0];
 
     # setup components
+    $self->ensure_class_loaded('Module::Pluggable::Object');
+
     my @paths = qw/::Controller ::View ::Model/;
     my $locator = Module::Pluggable::Object->new(
         search_path => [ map { $class . $_ } @paths ],
@@ -161,8 +170,63 @@ sub setup {
     $self->setup_home;
     $self->setup_plugins;
     $self->setup_actions;
+}
 
-    $self->log( debug => 'Setup finished' );
+sub setup_store {
+    my $self = shift;
+
+    $self->setup unless $self->setup_finished;
+
+    my $cache = $self->path_to('action.cache');
+    $self->ensure_class_loaded('Storable');
+
+    my $used_dispatch_types
+        = [ grep { $_->used } @{ $self->dispatch_types } ];
+
+    for my $namespace (keys %{ $self->actions }) { # TODO: clone this
+        my $container = $self->actions->{$namespace};
+        for my $name (keys %{ $container->actions }) {
+            my $action = $container->actions->{$name};
+            $action->{controller} = ref $action->{controller};
+        }
+    }
+
+    my $state = {
+        dispatch_types => $used_dispatch_types,
+        actions        => $self->actions,
+    };
+
+    Storable::store($state, $cache);
+}
+
+sub setup_retrieve {
+    my $self = shift;
+
+    my $cache = $self->path_to('action.cache');
+    $self->ensure_class_loaded('Storable');
+
+    my $state = eval { Storable::retrieve($cache) }
+        or return;
+
+    $self->ensure_class_loaded(ref $_) for @{ $state->{dispatch_types} || [] };
+    $self->dispatch_types($state->{dispatch_types});
+    $self->log( debug => $_ ) for grep {$_} map { $_->list } @{ $self->dispatch_types };
+
+    $self->actions($state->{actions});
+
+    $self->log( debug => 'Minimal setup finished');
+    $self->setup_finished(1)
+}
+
+sub setup_minimal {
+    my $self = shift;
+
+    $self->setup_home;
+    $self->setup_plugins;
+
+    # cache
+    $self->setup_retrieve;
+    $self->setup_store unless $self->setup_finished;
 }
 
 sub setup_home {
@@ -207,6 +271,10 @@ sub setup_actions {
 
 sub load_component {
     my ($self, $component) = @_;
+
+    if ($self->components->{ $component }) {
+        return $self->components->{ $component };
+    }
 
     $self->ensure_class_loaded($component);
 
@@ -254,6 +322,7 @@ sub register_actions {
 
     $controller->_method_cache({ %{$controller->_method_cache } });
 
+    $self->ensure_class_loaded('Data::Util');
     while (my $attr = shift @{ $controller->_attr_cache || [] }) {
         my ($pkg, $method) = Data::Util::get_code_info($attr->[0]);
         $controller->_method_cache->{ $method } = $attr->[1];

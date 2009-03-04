@@ -37,6 +37,11 @@ sub dispatch {
     my $req  = $context->request;
     my $args = @{ $req->args } ? $req->args : $req->captures;
 
+    # recreate controller instance if it is cached object
+    unless (ref $self->{controller}) {
+        $self->controller( $context->app->load_component($self->{controller}) );
+    }
+
     $context->execute( $self->controller, $self->name, @args || @$args );
 }
 

@@ -20,16 +20,38 @@ sub import {
             my @components = map { "${app_class}::${_}" } @{ $option{components} || [] };
             $app->load_component($_) for @components;
 
-            $app->setup;
+            if ($option{minimal_setup}) {
+                $app->path_to('action.cache')->remove;
+
+                my $child = fork;
+                if ($child == 0) {
+                    $app->setup_minimal;
+                    exit;
+                }
+                elsif (!defined($child)) {
+                    die $!;
+                }
+
+                waitpid $child, 0;
+
+                $app->setup_minimal;
+            }
+            else {
+                $app->setup;
+            }
 
             my $req = ref($_[0]) eq 'HTTP::Request' ? $_[0] : HTTP::Request->new(@_);
 
-            HTTP::Engine->new(
+            my $res = HTTP::Engine->new(
                 interface => {
                     module          => 'Test',
                     request_handler => $app->handler,
                 },
             )->run($req, env => \%ENV);
+
+            $app->path_to('action.cache')->remove;
+
+            $res;
         };
 
         *{ $caller . '::get' } = sub {

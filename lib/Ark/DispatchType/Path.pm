@@ -60,7 +60,12 @@ sub list {
             $paths->row( $display_path, '/' . $action->reverse );
         }
     }
-    "Loaded Path actions:\n" . $paths->draw;
+    "Loaded Path actions:\n" . $paths->draw if $self->used;
+}
+
+sub used {
+    my $self = shift;
+    scalar( keys %{$self->paths} );
 }
 
 1;
