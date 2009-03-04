@@ -295,7 +295,8 @@ sub component {
         $name = ref($self) . '::' . $name;
     }
 
-    $self->components->{$name};
+    $self->ensure_class_loaded($name);
+    $self->components->{$name} ||= $self->load_component($name);
 }
 
 sub controller {
