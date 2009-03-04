@@ -21,6 +21,7 @@ sub import {
             $app->load_component($_) for @components;
 
             if ($option{minimal_setup}) {
+                $app->setup_home;
                 $app->path_to('action.cache')->remove;
 
                 my $child = fork;
@@ -49,7 +50,7 @@ sub import {
                 },
             )->run($req, env => \%ENV);
 
-            $app->path_to('action.cache')->remove;
+            $app->path_to('action.cache')->remove if $option{minimal_setup};
 
             $res;
         };
