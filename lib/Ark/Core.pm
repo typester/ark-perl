@@ -8,10 +8,9 @@ use Ark::Request;
 
 use Path::Class qw/file dir/;
 
-extends 'Ark::Component', 'Class::Data::Inheritable';
+extends 'Mouse::Object', 'Class::Data::Inheritable';
 
-__PACKAGE__->mk_classdata($_) for qw/config plugins/;
-__PACKAGE__->config({});
+__PACKAGE__->mk_classdata($_) for qw/configdata plugins/;
 __PACKAGE__->plugins([]);
 
 has handler => (
@@ -139,6 +138,21 @@ no Mouse;
 sub debug {
     my $self = shift;
     !!( $self->log_levels->{ $self->log_level } >= $self->log_levels->{debug} );
+}
+
+sub config {
+    my $class  = shift;
+    my $config = @_ > 1 ? {@_} : $_[0];
+
+    $class->configdata({}) unless $class->configdata;
+
+    if ($config) {
+        for my $key (keys %{ $config || {} }) {
+            $class->configdata->{$key} = $config->{$key};
+        }
+    }
+
+    $class->configdata;
 }
 
 sub load_plugins {
@@ -278,9 +292,10 @@ sub load_component {
 
     $self->ensure_class_loaded($component);
 
-    my $instance = $component->new( app => $self );
-    $instance->apply_config( $self->config->{ $instance->component_name });
+    # merge config
+    $component->config( $self->config->{ $component->component_name } );
 
+    my $instance = $component->new( app => $self, %{ $component->config } );
     $self->components->{ $component } = $instance;
 }
 
@@ -431,6 +446,7 @@ sub ensure_class_loaded {
 
 sub path_to {
     my ($self, @path) = @_;
+
     my $path = dir( $self->config->{home}, @path );
     return $path if -d $path;
     return file($path);

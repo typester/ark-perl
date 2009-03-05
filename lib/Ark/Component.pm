@@ -12,40 +12,29 @@ has app => (
     handles  => ['log', 'context', 'ensure_class_loaded', 'path_to'],
 );
 
-has component_name => (
-    is      => 'rw',
-    isa     => 'Str',
-    lazy    => 1,
-    default => sub {
-        my $self  = shift;
-        (my $name = ref $self) =~ s/^.*?::(Controller|View|Model)::/$1::/;
-        $name;
-    },
-);
-
 no Mouse;
 
 sub config {
     my $class  = shift;
     my $config = @_ > 1 ? {@_} : $_[0];
 
+    $class->__component_config({}) unless $class->__component_config;
+
     if ($config) {
-        $class->__component_config($config);
+        for my $key (%{ $config || {} }) {
+            $class->__component_config->{ $key } = $config->{$key};
+        }
     }
 
-    $class->__component_config || {};
+    $class->__component_config;
 }
 
-sub apply_config {
-    my ($self, $config) = @_;
+sub component_name {
+    my $class = shift;
+    $class = ref $class if ref $class;
 
-    for my $k (keys %{ $config || {} }) {
-        $self->{ $k } = $config->{$k};
-    }
-
-    for my $k (keys %{ $self->config || {} }) {
-        $self->{ $k } = $self->config->{$k};
-    }
+    (my $name = $class) =~ s/^.*?::(Controller|View|Model)::/$1::/;
+    $name;
 }
 
 1;
