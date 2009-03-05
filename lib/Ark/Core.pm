@@ -296,6 +296,10 @@ sub load_component {
     $component->config( $self->config->{ $component->component_name } );
 
     my $instance = $component->new( app => $self, %{ $component->config } );
+    if ($instance->can('ARK_DELEGATE')) {
+        $instance = $instance->ARK_DELEGATE($self);
+    }
+
     $self->components->{ $component } = $instance;
 }
 
