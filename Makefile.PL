@@ -13,6 +13,13 @@ requires 'Text::SimpleTable';
 requires 'Module::Pluggable::Object';
 requires 'Data::Util';
 
+features(
+    'View::MT' => [
+        -default => 1,
+        recommends('Text::MicroTemplate'),
+    ],
+);
+
 use_test_base;
 auto_include;
 WriteAll;
