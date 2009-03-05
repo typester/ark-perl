@@ -30,8 +30,8 @@ use FindBin;
     package TestApp::View::MT;
     use Ark 'View::MT';
 
-    __PACKAGE__->config(
-        include_path => ["$FindBin::Bin/view_mt"],
+    has '+include_path' => (
+        default => sub { ["$FindBin::Bin/view_mt"] },
     );
 }
 

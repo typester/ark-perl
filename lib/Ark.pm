@@ -17,11 +17,18 @@ sub import {
     {
         no strict 'refs';
 
+        my @super;
         push @target, 'Core' unless @target;
         for my $target (@target) {
-            my $pkg = "Ark::$target";
+            my $pkg;
+            if ($target =~ /^\+/) {
+                ($pkg = $target) =~ s/^\+//;
+            }
+            else {
+                $pkg = "Ark::${target}";
+            }
+            push @super, $pkg;
             Mouse::load_class($pkg) unless Mouse::is_class_loaded($pkg);
-            push @{$caller.'::ISA'}, $pkg;
 
             for my $keyword (@{$pkg . '::EXPORT'}) {
                 *{ $caller . '::' . $keyword } = *{ $pkg . '::' . $keyword };
@@ -31,6 +38,10 @@ sub import {
         for my $keyword (@Mouse::EXPORT) {
             *{ $caller . '::' . $keyword } = *{ 'Mouse::' . $keyword };
         }
+
+        my $meta = Mouse::Meta::Class->initialize($caller);
+        $meta->superclasses(@super);
+        *{ $caller . '::meta' } = sub { $meta };
     }
 }
 
