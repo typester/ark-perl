@@ -1,6 +1,10 @@
 package Ark::Component;
 use Mouse;
 
+extends 'Mouse::Object', 'Class::Data::Inheritable';
+
+__PACKAGE__->mk_classdata(qw/__component_config/);
+
 has app => (
     is       => 'rw',
     isa      => 'Ark::Core',
@@ -21,11 +25,26 @@ has component_name => (
 
 no Mouse;
 
+sub config {
+    my $class  = shift;
+    my $config = @_ > 1 ? {@_} : $_[0];
+
+    if ($config) {
+        $class->__component_config($config);
+    }
+
+    $class->__component_config || {};
+}
+
 sub apply_config {
     my ($self, $config) = @_;
 
     for my $k (keys %{ $config || {} }) {
         $self->{ $k } = $config->{$k};
+    }
+
+    for my $k (keys %{ $self->config || {} }) {
+        $self->{ $k } = $self->config->{$k};
     }
 }
 
