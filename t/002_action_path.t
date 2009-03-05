@@ -9,10 +9,15 @@ use Test::Base;
 
     has '+namespace' => default => '';
 
-    sub default :Path :Args {
+    sub default :Path {
         my ($self, $c) = @_;
         $c->res->status(404);
         $c->res->content('404');
+    }
+
+    sub index :Path :Args(0) {
+        my ($self, $c) = @_;
+        $c->res->content('index');
     }
 
     sub local :Local {
@@ -67,6 +72,13 @@ use Ark::Test 'TestApp',
             Controller::Sub::Deep
             /
     ];
+
+{
+    my $res = request( GET => '/');
+    ok($res, 'response ok');
+    isa_ok($res, 'HTTP::Response');
+    is($res->content, 'index', 'index content ok');
+}
 
 {
     my $res = request( GET => '/404');

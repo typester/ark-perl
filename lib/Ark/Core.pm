@@ -321,16 +321,16 @@ sub register_actions {
     my ($self, $controller) = @_;
     my $controller_class = ref $controller || $controller;
 
-    $controller->_method_cache({ %{$controller->_method_cache } });
+    $controller->_method_cache([ @{$controller->_method_cache} ]);
 
     $self->ensure_class_loaded('Data::Util');
     while (my $attr = shift @{ $controller->_attr_cache || [] }) {
         my ($pkg, $method) = Data::Util::get_code_info($attr->[0]);
-        $controller->_method_cache->{ $method } = $attr->[1];
+        push @{ $controller->_method_cache }, [$method, $attr->[1]];
     }
 
-    for my $method (keys %{ $controller->_method_cache }) {
-        my $attrs = $controller->_method_cache->{$method} or next;
+    for my $cache (@{ $controller->_method_cache || [] }) {
+        my ($method, $attrs) = @$cache;
         $attrs = $self->parse_action_attrs( $controller, $method, @$attrs );
 
         my $ns      = $controller->namespace;
