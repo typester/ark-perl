@@ -3,6 +3,7 @@ use Mouse;
 
 use HTTP::Request;
 use HTTP::Engine;
+use HTTP::Cookies;
 
 sub import {
     my ($class, $app_class, @rest) = @_;
@@ -13,6 +14,7 @@ sub import {
     Mouse::load_class($app_class) unless Mouse::is_class_loaded($app_class);
 
     my $persist_app = undef;
+    my $cookie;
 
     {
         no strict 'refs';
@@ -53,10 +55,16 @@ sub import {
                 }
                 else {
                     $persist_app = $app;
+                    $cookie = HTTP::Cookies->new;
                 }
             }
 
             my $req = ref($_[0]) eq 'HTTP::Request' ? $_[0] : HTTP::Request->new(@_);
+            if ($cookie) {
+                $req->uri( URI->new('http://localhost' . $req->uri->path ) );
+                $req->header( Host => 'localhost' );
+                $cookie->add_cookie_header($req);
+            }
 
             my $res = HTTP::Engine->new(
                 interface => {
@@ -64,6 +72,11 @@ sub import {
                     request_handler => $app->handler,
                 },
             )->run($req, env => \%ENV);
+
+            if ($cookie) {
+                $res->{_request} = $req;
+                $cookie && $cookie->extract_cookies($res);
+            }
 
             $app->path_to('action.cache')->remove if $option{minimal_setup};
 
@@ -74,8 +87,9 @@ sub import {
             &{$caller . '::request'}(GET => @_)->content;
         };
 
-        *{ $caller . '::reset_app' } = sub {
+        *{ $caller . '::reset_app' } = sub() {
             undef $persist_app;
+            undef $cookie;
         };
     }
 }

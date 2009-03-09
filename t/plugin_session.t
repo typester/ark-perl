@@ -54,9 +54,10 @@ my $cookie;
 }
 
 {
-    my $req = HTTP::Request->new( GET => '/incr' );
-    $req->header( Cookie => 'test_session_cookie_name=' . $cookie );
+    is(get('/incr'), 1, 'increment first ok');
+    is(get('/incr'), 2, 'increment second ok');
+    reset_app;
 
-    is(request($req)->content, 1, 'increment first ok');
-    is(request($req)->content, 2, 'increment second ok');
+    is(get('/incr'), 1, 're-increment first ok'); # XXX: this is test for Ark::Test: should be sepalate test.
+    is(get('/incr'), 2, 're-increment second ok');
 }
