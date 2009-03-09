@@ -32,6 +32,8 @@ sub ARK_DELEGATE {
     my $class       = $self->class;
     my $constructor = $self->constructor;
 
+    $self->ensure_class_loaded($class);
+
     my $instance;
     if ($self->deref && $self->args) {
         if (ref($self->args) eq 'HASH') {
