@@ -168,6 +168,8 @@ sub setup {
     my $class = ref($self) || $self;
     my $args  = @_ > 1 ? {@_} : $_[0];
 
+    $self->setup_home;
+
     # setup components
     $self->ensure_class_loaded('Module::Pluggable::Object');
 
@@ -181,7 +183,6 @@ sub setup {
         $self->load_component($component);
     }
 
-    $self->setup_home;
     $self->setup_plugins;
     $self->setup_actions;
 }
@@ -256,6 +257,7 @@ sub setup_home {
     $path = dir($path);
     return unless -d $path;
 
+    $path = $path->absolute;
     while ($path->dir_list(-1) =~ /^b?lib$/) {
         $path = $path->parent;
     }
