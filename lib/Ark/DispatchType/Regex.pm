@@ -3,11 +3,34 @@ use Mouse;
 
 extends 'Ark::DispatchType::Path';
 
+has name => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => 'Regex',
+);
+
 has compiled => (
     is      => 'rw',
     isa     => 'ArrayRef',
     lazy    => 1,
     default => sub { [] },
+);
+
+has list => (
+    is      => 'rw',
+    isa     => 'Text::SimpleTable | Undef',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return unless $self->used;
+
+        eval "require Text::SimpleTable"; die if $@;
+        my $re = Text::SimpleTable->new( [ 35, 'Regex' ], [ 36, 'Private' ] );
+        for my $regex (@{ $self->compiled }) {
+            $re->row( $regex->{path}, "/" . $regex->{action}->reverse );
+        }
+        $re;
+    },
 );
 
 no Mouse;
@@ -52,17 +75,6 @@ sub match {
     }
 
     return;
-}
-
-sub list {
-    my $self = shift;
-
-    eval "require Text::SimpleTable"; die if $@;
-    my $re = Text::SimpleTable->new( [ 35, 'Regex' ], [ 36, 'Private' ] );
-    for my $regex (@{ $self->compiled }) {
-        $re->row( $regex->{path}, "/" . $regex->{action}->reverse );
-    }
-    return "Loaded Regex actions:\n" . $re->draw if $self->used;
 }
 
 sub used {

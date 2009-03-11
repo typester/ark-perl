@@ -3,6 +3,12 @@ use Mouse;
 
 use Ark::ActionChain;
 
+has name => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => 'Chained',
+);
+
 has children_of => (
     is      => 'rw',
     isa     => 'HashRef',
@@ -24,55 +30,60 @@ has endpoints => (
     default => sub { [] },
 );
 
+has list => (
+    is      => 'rw',
+    isa     => 'Text::SimpleTable | Undef',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return unless $self->used;
+
+        eval "require Text::SimpleTable"; die $@ if $@;
+        my $paths = Text::SimpleTable->new([ 35, 'Path Spec' ], [ 36, 'Private' ]);
+
+        my @endpoints = sort { $a->reverse cmp $b->reverse } @{$self->endpoints};
+    ENDPOINT: for my $endpoint (@endpoints) {
+            my $args = $endpoint->attributes->{Args}->[0];
+            my @parts = defined $args ? '*' x $args : '...';
+
+            my @parents;
+            my $parent = 'DUMMY';
+            my $cur    = $endpoint;
+            while ($cur) {
+                if (my $cap = $cur->attributes->{CaptureArgs}) {
+                    unshift @parts, '*' x $cap->[0];
+                }
+                if (my $pp = $cur->attributes->{PathPart}) {
+                    unshift @parts, $pp->[0]
+                        if defined $pp->[0] && length $pp->[0];
+                }
+                $parent = $cur->attributes->{Chained}[0];
+                $cur = $self->actions->{$parent};
+                unshift @parents, $cur if $cur;
+            }
+            next ENDPOINT unless $parent eq '/';
+
+            my @rows;
+            for my $p (@parents) {
+                my $name = "/$p->{reverse}";
+                if (my $cap = $p->attributes->{CaptureArgs}) {
+                    $name .= ' (' . $cap->[0] . ')';
+                }
+                unless ($p eq $parents[0]) {
+                    $name = "-> ${name}";
+                }
+                push @rows, [ '', $name ];
+            }
+            push @rows, [ '', (@rows ? '=> ' : '') . "/$endpoint->{reverse}" ];
+            $rows[0][0] = join('/', '', @parts);
+            $paths->row(@$_) for @rows;
+        }
+
+        $paths;
+    },
+);
+
 no Mouse;
-
-sub list {
-    my $self = shift;
-
-    return unless $self->used;
-
-    eval "require Text::SimpleTable"; die $@ if $@;
-    my $paths = Text::SimpleTable->new([ 35, 'Path Spec' ], [ 36, 'Private' ]);
-
- ENDPOINT: for my $endpoint (sort { $a->reverse cmp $b->reverse } @{$self->endpoints}) {
-        my $args = $endpoint->attributes->{Args}->[0];
-        my @parts = defined $args ? '*' x $args : '...';
-
-        my @parents;
-        my $parent = 'DUMMY';
-        my $cur    = $endpoint;
-        while ($cur) {
-            if (my $cap = $cur->attributes->{CaptureArgs}) {
-                unshift @parts, '*' x $cap->[0];
-            }
-            if (my $pp = $cur->attributes->{PathPart}) {
-                unshift @parts, $pp->[0]
-                    if defined $pp->[0] && length $pp->[0];
-            }
-            $parent = $cur->attributes->{Chained}[0];
-            $cur = $self->actions->{$parent};
-            unshift @parents, $cur if $cur;
-        }
-        next ENDPOINT unless $parent eq '/';
-
-        my @rows;
-        for my $p (@parents) {
-            my $name = "/$p->{reverse}";
-            if (my $cap = $p->attributes->{CaptureArgs}) {
-                $name .= ' (' . $cap->[0] . ')';
-            }
-            unless ($p eq $parents[0]) {
-                $name = "-> ${name}";
-            }
-            push @rows, [ '', $name ];
-        }
-        push @rows, [ '', (@rows ? '=> ' : '') . "/$endpoint->{reverse}" ];
-        $rows[0][0] = join('/', '', @parts);
-        $paths->row(@$_) for @rows;
-    }
-
-    "Loaded Chained actions:\n" . $paths->draw;
-}
 
 sub match {
     my ($self, $req, $path) = @_;

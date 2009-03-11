@@ -3,11 +3,37 @@ use Mouse;
 
 use URI;
 
+has name => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => 'Path',
+);
+
 has paths => (
     is      => 'rw',
     isa     => 'HashRef',
     lazy    => 1,
     default => sub { {} },
+);
+
+has list => (
+    is      => 'rw',
+    isa     => 'Text::SimpleTable | Undef',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        return unless $self->used;
+
+        eval "require Text::SimpleTable"; die $@ if $@;
+        my $paths = Text::SimpleTable->new( [ 35, 'Path' ], [ 36, 'Private' ] );
+        foreach my $path ( sort keys %{ $self->paths } ) {
+            my $display_path = $path eq '/' ? $path : "/$path";
+            foreach my $action ( @{ $self->{paths}->{$path} } ) {
+                $paths->row( $display_path, '/' . $action->reverse );
+            }
+        }
+        $paths;
+    },
 );
 
 no Mouse;
@@ -47,26 +73,9 @@ sub register_path {
     unshift @{ $self->paths->{$path} ||= [] }, $action;
 }
 
-sub list {
-    my $self = shift;
-
-    return unless keys %{ $self->paths };
-
-    eval "require Text::SimpleTable"; die $@ if $@;
-    my $paths = Text::SimpleTable->new( [ 35, 'Path' ], [ 36, 'Private' ] );
-    foreach my $path ( sort keys %{ $self->{paths} } ) {
-        my $display_path = $path eq '/' ? $path : "/$path";
-        foreach my $action ( @{ $self->{paths}->{$path} } ) {
-            $paths->row( $display_path, '/' . $action->reverse );
-        }
-    }
-    "Loaded Path actions:\n" . $paths->draw if $self->used;
-}
-
 sub used {
     my $self = shift;
     scalar( keys %{$self->paths} );
 }
 
 1;
-

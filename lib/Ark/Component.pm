@@ -38,4 +38,3 @@ sub component_name {
 }
 
 1;
-

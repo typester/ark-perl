@@ -282,7 +282,13 @@ sub setup_actions {
             if $component->isa('Ark::Controller');
     }
 
-    $self->log( debug => $_ ) for grep {$_} map { $_->list } @{ $self->dispatch_types };
+    if ($self->debug) {
+        for my $type (@{ $self->dispatch_types }) {
+            my $table = $type->list or next;
+
+            $self->log( debug => "Loaded %s actions:\n%s", $type->name, $table->draw );
+        }
+    }
 }
 
 sub load_component {
