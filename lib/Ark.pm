@@ -33,6 +33,10 @@ sub import {
             for my $keyword (@{$pkg . '::EXPORT'}) {
                 *{ $caller . '::' . $keyword } = *{ $pkg . '::' . $keyword };
             }
+
+            if (my $exporter = $pkg->can('EXPORT')) {
+                $exporter->($pkg, $caller);
+            }
         }
 
         for my $keyword (@Mouse::EXPORT) {

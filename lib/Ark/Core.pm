@@ -11,7 +11,6 @@ use Path::Class qw/file dir/;
 extends 'Mouse::Object', 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata($_) for qw/configdata plugins/;
-__PACKAGE__->plugins([]);
 
 has handler => (
     is      => 'rw',
@@ -135,6 +134,19 @@ after setup => sub {
 
 no Mouse;
 
+sub EXPORT {
+    my ($class, $target) = @_;
+
+    {
+        no strict 'refs';
+        *{"${target}::load_plugins"} = sub {
+            $class->load_plugins(@_);
+        };
+
+        *{"${target}::config"} = sub { $class->config(@_) };
+    }
+}
+
 sub debug {
     my $self = shift;
     !!( $self->log_levels->{ $self->log_level } >= $self->log_levels->{debug} );
@@ -158,9 +170,12 @@ sub config {
 sub load_plugins {
     my ($class, @names) = @_;
 
+    $class->plugins([]) unless $class->plugins;
+
     my @plugins =
         map { $_ =~ /^\+(.+)/ ? $1 : 'Ark::Plugin::' . $_ } grep {$_} @names;
-    $class->plugins(\@plugins);
+
+    push @{ $class->plugins }, @plugins;
 }
 
 sub setup {

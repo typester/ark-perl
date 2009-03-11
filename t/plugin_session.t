@@ -4,21 +4,20 @@ use Test::Base;
     package TestApp;
     use Ark;
 
-    __PACKAGE__->load_plugins('Session');
-    __PACKAGE__->config(
-        'Plugin::Session' => {
-            state => {
-                class => 'Cookie',
-                args => {
-                    name => 'test_session_cookie_name',
-                },
-            },
-            store => {
-                class => 'OnMemory',
-                args  => { data => {} },
+    load_plugins 'Session';
+
+    config 'Plugin::Session' => {
+        state => {
+            class => 'Cookie',
+            args => {
+                name => 'test_session_cookie_name',
             },
         },
-    );
+        store => {
+            class => 'OnMemory',
+            args  => { data => {} },
+        },
+    };
 
     package TestApp::Controller::Root;
     use Ark 'Controller';
