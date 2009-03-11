@@ -4,9 +4,9 @@ use Test::Base;
     package TestApp;
     use Ark;
 
-    load_plugins 'Session';
+    use_plugins 'Session';
 
-    config 'Plugin::Session' => {
+    conf 'Plugin::Session' => {
         state => {
             class => 'Cookie',
             args => {

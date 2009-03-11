@@ -103,7 +103,8 @@ has context_class => (
         my $class = "${pkg}::ArkContext";
         eval qq{
             package ${class};
-            use base 'Ark::Context';
+            use Mouse;
+            extends 'Ark::Context';
             1;
         };
         die $@ if $@;
@@ -139,11 +140,9 @@ sub EXPORT {
 
     {
         no strict 'refs';
-        *{"${target}::load_plugins"} = sub {
-            $class->load_plugins(@_);
-        };
 
-        *{"${target}::config"} = sub { $class->config(@_) };
+        *{"${target}::use_plugins"} = sub { $target->load_plugins(@_) };
+        *{"${target}::conf"}        = sub { $target->config(@_) };
     }
 }
 
@@ -280,13 +279,32 @@ sub setup_home {
     $self->config->{home} = $path;
 }
 
+sub setup_plugin {
+    my ($self, $plugin) = @_;
+
+    $self->ensure_class_loaded($plugin);
+    $plugin->meta->apply( $self->context_class->meta );
+}
+
 sub setup_plugins {
     my $self = shift;
 
-    for my $plugin (@{ $self->plugins }) {
-        $self->ensure_class_loaded($plugin);
-        $plugin->meta->apply($self->context_class->meta);
+    for my $plugin (@{ $self->plugins || [] }) {
+        $self->setup_plugin($plugin);
     }
+
+    $self->setup_default_plugins;
+}
+
+sub setup_default_plugins {
+    my $self = shift;
+
+    my $filter_required  = 1;
+    for my $role (@{ $self->context_class->meta->roles }) {
+        $filter_required = 0 if $role->name =~ /::Filter::/;
+    }
+
+    $self->setup_plugin('Ark::Plugin::Filter::Unicode') if $filter_required;
 }
 
 sub setup_actions {

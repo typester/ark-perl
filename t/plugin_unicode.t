@@ -4,7 +4,7 @@ use Test::Base;
     package TestApp;
     use Ark;
 
-    load_plugins 'Unicode';
+    use_plugins 'Filter::Unicode';
 
     package TestApp::Controller::Root;
     use Ark 'Controller';

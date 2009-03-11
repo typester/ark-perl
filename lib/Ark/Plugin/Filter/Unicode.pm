@@ -1,7 +1,7 @@
-package Ark::Plugin::Unicode;
+package Ark::Plugin::Filter::Unicode;
 use Ark::Plugin;
 
-after 'prepare' => sub {
+sub prepare_encoding {
     my $self = shift;
     my $req  = $self->request;
 
@@ -11,11 +11,10 @@ after 'prepare' => sub {
     }
 };
 
-after 'finalize' => sub {
+sub finalize_encoding {
     my $self = shift;
 
     utf8::encode( $self->response->{body} ) if defined $self->response->{body};
 };
 
 1;
-

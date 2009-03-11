@@ -116,6 +116,13 @@ sub process {
 
 sub prepare {
     my $self = shift;
+
+    $self->prepare_action;
+    $self->prepare_encoding;
+}
+
+sub prepare_action {
+    my $self = shift;
     my $req  = $self->request;
 
     my @path = split /\//, $req->path;
@@ -267,7 +274,11 @@ sub execute {
     $self->state;
 }
 
-sub finalize { }
+sub finalize {
+    my $self = shift;
+
+    $self->finalize_encoding;
+}
 
 1;
 

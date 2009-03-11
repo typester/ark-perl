@@ -18,6 +18,8 @@ sub import {
 
     {
         no strict 'refs';
+        no warnings 'redefine';
+
         *{ $caller . '::request'} = sub {
             my $app;
             unless ($persist_app) {
