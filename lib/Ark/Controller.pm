@@ -1,6 +1,5 @@
 package Ark::Controller;
 use Mouse;
-use HTTP::Engine::Response;
 
 extends 'Ark::Component', 'Class::Data::Inheritable';
 
