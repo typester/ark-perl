@@ -97,19 +97,12 @@ has context_class => (
     isa     => 'Str',
     default => sub {
         my $self = shift;
-        my $pkg  = ref($self);
 
         # create application specific context class for mod_perl
-        my $class = "${pkg}::ArkContext";
-        eval qq{
-            package ${class};
-            use Mouse;
-            extends 'Ark::Context';
-            1;
-        };
-        die $@ if $@;
-
-        $class;
+        my $class = $self->class_wrapper(
+            name => 'ArkContext',
+            base => 'Ark::Context',
+        );
     },
 );
 
@@ -164,6 +157,27 @@ sub config {
     }
 
     $class->configdata;
+}
+
+sub class_wrapper {
+    my $self = shift;
+    my $args = @_ > 1 ? {@_} : $_[0];
+
+    my $pkg = ref($self) || $self;
+
+    $self->log( fatal => q["name" and "base" parameters are required] )
+        unless $args->{name} and $args->{base};
+
+    my $classname = "${pkg}::$args->{name}";
+    eval qq{
+        package ${classname};
+        use Mouse;
+        extends '$args->{base}';
+        1;
+    };
+    die $@ if $@;
+
+    $classname;
 }
 
 sub load_plugins {
