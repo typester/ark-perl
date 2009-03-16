@@ -100,7 +100,7 @@ has context_class => (
 
         # create application specific context class for mod_perl
         my $class = $self->class_wrapper(
-            name => 'ArkContext',
+            name => 'Context',
             base => 'Ark::Context',
         );
     },
@@ -168,7 +168,7 @@ sub class_wrapper {
     $self->log( fatal => q["name" and "base" parameters are required] )
         unless $args->{name} and $args->{base};
 
-    my $classname = "${pkg}::$args->{name}";
+    my $classname = "${pkg}::Ark::$args->{name}";
     eval qq{
         package ${classname};
         use Mouse;
