@@ -1,27 +1,38 @@
 use Test::Base;
 
 {
-    package TestApp;
+    package T1;
     use Ark;
 
     use_plugins qw/
         Session
         Session::State::Cookie
-        Session::Store::Memory
+        Session::Store::Model
         /;
 
-    conf 'Plugin::Session::State::Cookie' => {
-        cookie_expires => '+3d',
+    conf 'Plugin::Session::Store::Model' => {
+        model => 'Session',
     };
 
-    package TestApp::Controller::Root;
+    conf 'Model::Session' => {
+        class => 'Cache::MemoryCache',
+        args  => {
+            namespace          => 'session',
+            default_expires_in => 24*60 * 1,
+        },
+    };
+
+    package T1::Model::Session;
+    use Ark 'Model::Adaptor';
+
+    package T1::Controller::Root;
     use Ark 'Controller';
 
     has '+namespace' => default => '';
 
     sub test_set :Local {
         my ($self, $c) = @_;
-        $c->session->set('test', 'dummy');
+        $c->session->set('test', 'testdata');
     }
 
     sub test_get :Local {
@@ -41,15 +52,15 @@ use Test::Base;
 
 plan 'no_plan';
 
-use Ark::Test 'TestApp',
-    components       => [qw/Controller::Root/],
+use Ark::Test 'T1',
+    components => [qw/Controller::Root Model::Session/],
     reuse_connection => 1;
 
 {
     my $res = request(GET => '/test_set');
-    like( $res->header('Set-Cookie'), qr/testapp_session=/, 'session id ok');
+    like( $res->header('Set-Cookie'), qr/t1_session=/, 'session id ok');
 
-    is(get('/test_get'), 'dummy', 'session get ok');
+    is(get('/test_get'), 'testdata', 'session get ok');
 }
 
 {

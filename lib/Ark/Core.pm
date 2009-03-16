@@ -126,6 +126,13 @@ after setup => sub {
     $self->setup_finished(1);
 };
 
+has lazy_roles => (
+    is      => 'rw',
+    isa     => 'HashRef',
+    lazy    => 1,
+    default => sub { {} },
+);
+
 no Mouse;
 
 sub EXPORT {
@@ -169,6 +176,9 @@ sub class_wrapper {
         unless $args->{name} and $args->{base};
 
     my $classname = "${pkg}::Ark::$args->{name}";
+    return $classname
+        if Mouse::is_class_loaded($classname) && $classname->isa($args->{base});
+
     eval qq{
         package ${classname};
         use Mouse;
@@ -176,6 +186,10 @@ sub class_wrapper {
         1;
     };
     die $@ if $@;
+
+    for my $plugin (@{ $self->lazy_roles->{ $args->{name} } || [] }) {
+        $plugin->meta->apply( $classname->meta );
+    }
 
     $classname;
 }
@@ -297,6 +311,11 @@ sub setup_plugin {
     my ($self, $plugin) = @_;
 
     $self->ensure_class_loaded($plugin);
+
+    if (my $target_context = $plugin->plugin_context) {
+        push @{ $self->lazy_roles->{ $target_context } }, $plugin;
+        return;
+    }
     $plugin->meta->apply( $self->context_class->meta );
 }
 
@@ -345,7 +364,7 @@ sub load_component {
         return $self->components->{ $component };
     }
 
-    $self->ensure_class_loaded($component);
+    $self->ensure_class_loaded($component) or return;
 
     # merge config
     $component->config( $self->config->{ $component->component_name } );

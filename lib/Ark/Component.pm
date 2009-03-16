@@ -33,8 +33,27 @@ sub component_name {
     my $class = shift;
     $class = ref $class if ref $class;
 
-    (my $name = $class) =~ s/^.*?::(Controller|View|Model)::/$1::/;
+    (my $name = $class) =~ s/^.*?::(Controller|View|Model|Plugin)::/$1::/;
     $name;
+}
+
+sub class_config {
+    my $self   = shift;
+    my $config = @_ > 1 ? {@_} : $_[0];
+    my $class  = caller;
+
+    return unless $self->app;
+
+    (my $name = $class) =~ s/^.*?::(Controller|View|Model|Plugin)::/$1::/;
+
+    my $classconfig = $self->app->config->{ $name } ||= {};
+    if ($config) {
+        for my $key (%{ $config || {} }) {
+            $classconfig->{ $key } = $config->{$key};
+        }
+    }
+
+    $classconfig;
 }
 
 1;

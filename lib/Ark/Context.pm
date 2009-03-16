@@ -277,8 +277,13 @@ sub execute {
 sub finalize {
     my $self = shift;
 
+    $self->finalize_headers;
+    $self->finalize_body;
     $self->finalize_encoding;
 }
+
+sub finalize_headers {}
+sub finalize_body {}
 
 1;
 
