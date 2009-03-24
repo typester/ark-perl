@@ -16,7 +16,7 @@ has store => (
 
 sub authenticated {
     my $self = shift;
-    !!$self->{obj};
+    !!$self->obj;
 }
 
 sub hash {
