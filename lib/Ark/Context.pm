@@ -274,6 +274,31 @@ sub execute {
     $self->state;
 }
 
+sub redirect {
+    my ($self, $uri, $status) = @_;
+
+    $status ||= '302';
+
+    $self->res->status($status);
+    $self->res->header( Location => $uri );
+}
+
+sub redirect_and_detach {
+    my $self = shift;
+    $self->redirect(@_);
+    $self->detach;
+}
+
+sub uri_for {
+    my ($self, @path) = @_;
+    my $params = ref $path[-1] eq 'HASH' ? pop @path : {};
+
+    my $uri = URI::WithBase->new(join('/', @path), $self->req->base);
+    $uri->query_form($params);
+
+    $uri->abs;
+}
+
 sub finalize {
     my $self = shift;
 
