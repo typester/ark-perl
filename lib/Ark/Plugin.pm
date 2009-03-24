@@ -19,8 +19,14 @@ sub import {
         }
         *{ $caller . '::meta' }           = sub { $meta };
         *{ $caller . '::plugin_context' } = sub { $target_context };
+        *{ $caller . '::method' } = sub {
+            my ($self, $method) = @_;
+            my $caller = caller;
+            my $sub = $caller->can($method) or die qq/No such method "$method" on $caller/;
+
+            return sub { $sub->($self, @_) };
+        };
     }
 }
-
 
 1;
