@@ -46,8 +46,11 @@ sub ARK_DELEGATE {
             die "Couldn't dereference: " . ref($self->args);
         }
     }
-    else {
+    elsif ($self->args) {
         $instance = $class->$constructor($self->args);
+    }
+    else {
+        $instance = $class->$constructor;
     }
 
     $instance;
