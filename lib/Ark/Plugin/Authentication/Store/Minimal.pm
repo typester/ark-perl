@@ -1,7 +1,7 @@
 package Ark::Plugin::Authentication::Store::Minimal;
 use Ark::Plugin 'Auth';
 
-has minimal_users => (
+has store_minimal_users => (
     is      => 'rw',
     isa     => 'HashRef',
     lazy    => 1,
@@ -13,9 +13,9 @@ has minimal_users => (
 
 around find_user => sub {
     my $next = shift;
-    my ($self, $info) = @_;
+    my ($self, $id, $info) = @_;
 
-    if (my $user = $self->minimal_users->{ $info->{username} || $info->{id} }) {
+    if (my $user = $self->store_minimal_users->{ $id }) {
         $self->ensure_class_loaded('Ark::Plugin::Authentication::User');
         return Ark::Plugin::Authentication::User->new(
             obj   => $user,
