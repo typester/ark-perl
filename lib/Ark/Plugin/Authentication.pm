@@ -21,7 +21,7 @@ has auth => (
             %$conf,
         );
     },
-    handles => [qw/user authenticate/],
+    handles => [qw/user authenticate logout/],
 );
 
 1;

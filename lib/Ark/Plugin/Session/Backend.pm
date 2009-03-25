@@ -36,7 +36,7 @@ has digest_model => (
 );
 
 after $_ => sub { shift->session_updated(1); }
-    for qw/get set/;
+    for qw/get set remove/;
 
 no Ark;
 
@@ -50,6 +50,12 @@ sub set {
     my ($self, $key, $value) = @_;
     $self->initialize_session_data unless $self->session_data;
     $self->session_data->{ $key } = $value;
+}
+
+sub remove {
+    my ($self, $key) = @_;
+    return unless $self->session_data;
+    delete $self->session_data->{ $key };
 }
 
 sub initialize_session_data {

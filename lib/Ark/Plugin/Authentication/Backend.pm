@@ -24,6 +24,11 @@ sub persist_user {
     $self->context->session->set( __user => $self->for_session($user) );
 }
 
+sub logout {
+    my $self = shift;
+    $self->context->session->remove( '__user' );
+}
+
 # Credential
 sub authenticate { }
 

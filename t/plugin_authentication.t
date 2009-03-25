@@ -44,6 +44,13 @@ use Test::Base;
             $c->res->body( 'login done' );
         }
     }
+
+    sub logout :Local {
+        my ($self, $c) = @_;
+
+        $c->logout;
+        $c->res->body('logouted');
+    }
 }
 
 plan 'no_plan';
@@ -55,4 +62,5 @@ use Ark::Test 'T1',
 is(get('/'), 'require login', 'not login ok');
 is(get('/login'), 'login done', 'login ok');
 is(get('/'), 'logined: user1', 'logined ok');
-
+is(get('/logout'), 'logouted', 'logout ok');
+is(get('/'), 'require login', 'not login after logout ok');
