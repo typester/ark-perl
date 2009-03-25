@@ -7,52 +7,26 @@ around find_user => sub {
 
     $self->ensure_class_loaded('Ark::Plugin::Authentication::User');
     return Ark::Plugin::Authentication::User->new(
-        obj   => $info,
-        store => 'Null',
+        hash        => $info,
+        obj_builder => sub { $info },
+        store       => 'Null',
     );
 
     $next->(@_);
 };
 
-around for_session => sub {
+around from_session => sub {
     my $next = shift;
     my ($self, $user) = @_;
 
-    if ($user && $user->store eq 'Null') {
-        return {
-            hash  => $user->hash,
-            store => $user->store,
-        };
-    }
-
-    $next->(@_);
-};
-
-sub from_session {
-    my $self = shift;
-
-    my $user = $self->context->session->get('__user') or return;
-
-    return unless ref $user eq 'HASH';
-    return unless $user->{store} eq 'Null';
-    return unless $user->{hash} && ref $user->{hash} eq 'HASH';
+    return $next->(@_) unless $user->{store} eq 'Null';
 
     $self->ensure_class_loaded('Ark::Plugin::Authentication::User');
     Ark::Plugin::Authentication::User->new(
-        obj => $user->{hash},
-        store => 'Null',
+        hash        => $user->{hash},
+        obj_builder => sub { $user->{hash} },
+        store       => 'Null',
     );
-}
-
-around restore_user => sub {
-    my $next = shift;
-    my ($self) = @_;
-
-    if (my $user = $self->method('from_session')->()) {
-        return $user;
-    }
-
-    $next->(@_);
 };
 
 1;

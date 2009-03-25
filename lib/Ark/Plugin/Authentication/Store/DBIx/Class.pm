@@ -47,10 +47,9 @@ around find_user => sub {
     }
 
     if ($user) {
-        $self->ensure_class_loaded(
-            'Ark::Plugin::Authentication::Store::DBIx::Class::User');
+        $self->ensure_class_loaded('Ark::Plugin::Authentication::User');
 
-        return Ark::Plugin::Authentication::Store::DBIx::Class::User->new(
+        return Ark::Plugin::Authentication::User->new(
             store => 'DBIx::Class',
             obj   => $user,
             hash  => { $user->get_columns },
@@ -60,33 +59,15 @@ around find_user => sub {
     $next->(@_);
 };
 
-around for_session => sub {
+around 'from_session' => sub {
     my $next = shift;
     my ($self, $user) = @_;
 
-    if ($user && $user->store eq 'DBIx::Class') {
-        return {
-            hash  => $user->hash,
-            store => $user->store,
-        };
-    }
+    return $next->(@_) unless $user->{store} eq 'DBIx::Class';
 
-    $next->(@_);
-};
+    $self->ensure_class_loaded('Ark::Plugin::Authentication::User');
 
-sub from_session {
-    my $self = shift;
-
-    my $user = $self->context->session->get('__user') or return;
-
-    return unless ref $user eq 'HASH';
-    return unless $user->{store} eq 'DBIx::Class';
-    return unless $user->{hash} && ref $user->{hash} eq 'HASH';
-
-    $self->ensure_class_loaded(
-        'Ark::Plugin::Authentication::Store::DBIx::Class::User');
-
-    return Ark::Plugin::Authentication::Store::DBIx::Class::User->new(
+    Ark::Plugin::Authentication::User->new(
         store       => 'DBIx::Class',
         hash        => $user->{hash},
         obj_builder => sub {
@@ -99,17 +80,6 @@ sub from_session {
             });
         },
     );
-}
-
-around restore_user => sub {
-    my $next = shift;
-    my ($self) = @_;
-
-    if (my $user = $self->method('from_session')->()) {
-        return $user;
-    }
-
-    $next->(@_);
 };
 
 1;

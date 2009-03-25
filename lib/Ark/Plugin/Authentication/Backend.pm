@@ -21,7 +21,18 @@ has realms => (
 
 sub persist_user {
     my ($self, $user) = @_;
-    $self->context->session->set( __user => $self->for_session($user) );
+    $self->context->session->set( __user => $user->for_session );
+}
+
+sub restore_user {
+    my $self = shift;
+
+    my $user = $self->context->session->get('__user') or return;
+
+    return unless ref $user eq 'HASH';
+    return unless $user->{hash} && $user->{store};
+
+    $self->from_session($user);
 }
 
 sub logout {
@@ -34,7 +45,6 @@ sub authenticate { }
 
 # Store
 sub find_user { }
-sub restore_user { }
-sub for_session { }
+sub from_session { }
 
 1;

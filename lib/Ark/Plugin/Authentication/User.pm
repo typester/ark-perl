@@ -3,6 +3,21 @@ use Mouse;
 
 has obj => (
     is      => 'rw',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        my $builder = $self->obj_builder;
+        return $self->obj_builder->() if $builder;
+    },
+);
+
+has obj_builder => (
+    is  => 'rw',
+    isa => 'CodeRef',
+);
+
+has hash => (
+    is      => 'rw',
     isa     => 'HashRef',
     lazy    => 1,
     default => sub { {} },
@@ -19,9 +34,13 @@ sub authenticated {
     !!$self->obj;
 }
 
-sub hash {
+sub for_session {
     my $self = shift;
-    $self->obj;
+
+    return {
+        hash  => $self->hash,
+        store => $self->store,
+    };
 }
 
 1;
