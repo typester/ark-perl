@@ -27,6 +27,11 @@ use FindBin;
         $c->forward('forward');
     }
 
+    sub include :Local {
+        my ($self, $c) = @_;
+        $c->forward( $c->view('MT') );
+    }
+
     package TestApp::View::MT;
     use Ark 'View::MT';
 
@@ -53,5 +58,10 @@ use Ark::Test 'TestApp',
 {
     my $content = get('/template');
     is($content, 'index mt', 'set template view ok');
+}
+
+{
+    my $content = get('/include');
+    is($content, 'before included[foo,bar] after', 'include ok');
 }
 

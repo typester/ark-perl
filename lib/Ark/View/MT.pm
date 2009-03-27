@@ -67,13 +67,15 @@ sub template {
 }
 
 sub render {
-    my ($self, $template) = @_;
+    my $self     = shift;
+    my $template = shift;
+
     $template ||= $self->context->stash->{__view_mt_template}
               || $self->context->request->action->reverse
                   or return;
 
     my $renderer = $self->build_template($template . $self->extension);
-    $renderer->($self->context)->as_string;
+    $renderer->($self->context, @_)->as_string;
 }
 
 sub build_template {
