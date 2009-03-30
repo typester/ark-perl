@@ -110,7 +110,6 @@ has context_class => (
 has context => (
     is       => 'rw',
     isa      => 'Ark::Context',
-    weak_ref => 1,
 );
 
 has setup_finished => (
