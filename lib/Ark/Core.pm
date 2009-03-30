@@ -209,6 +209,8 @@ sub setup {
     my $class = ref($self) || $self;
     my $args  = @_ > 1 ? {@_} : $_[0];
 
+    $self->setup_debug_mode if $self->debug;
+
     $self->setup_home;
 
     # setup components
@@ -277,12 +279,21 @@ sub setup_retrieve {
 sub setup_minimal {
     my $self = shift;
 
+    $self->setup_debug_mode if $self->debug;
+
     $self->setup_home;
     $self->setup_plugins;
 
     # cache
     $self->setup_retrieve;
     $self->setup_store unless $self->setup_finished;
+}
+
+sub setup_debug_mode {
+    my $self = shift;
+
+    $self->ensure_class_loaded('Ark::Context::Debug');
+    Ark::Context::Debug->meta->apply( $self->context_class->meta );
 }
 
 sub setup_home {
