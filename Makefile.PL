@@ -6,7 +6,7 @@ test_requires 'Test::More';
 
 requires 'perl' => '5.008001';
 requires 'HTTP::Engine' => '0.001004';
-requires 'Mouse'        => '0.17';
+requires 'Mouse'        => '0.21';
 requires 'Path::Class'  => '0.16';
 requires 'URI';
 requires 'Text::SimpleTable';
@@ -23,4 +23,3 @@ features(
 use_test_base;
 auto_include;
 WriteAll;
-

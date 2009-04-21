@@ -8,10 +8,6 @@ use Scalar::Util ();
 
 our $DETACH = 'ARK_DETACH';
 
-subtype 'Ark::Request'
-    => as 'Object'
-    => where { $_->isa('Ark::Request') };
-
 coerce 'Ark::Request'
     => from 'Object'
     => via {
