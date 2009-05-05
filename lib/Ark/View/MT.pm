@@ -129,7 +129,8 @@ sub build {
 package $__mt->{package_name};
 sub {
     my \$c = shift;
-    my \$s = \$c->stash;
+    my \$s = my \$stash = \$c->stash;
+    my \$v = my \$view  = \$self;
     local \$SIG{__WARN__} = sub { print STDERR \$__mt->_error(shift, 4, \$__from) };
     Text::MicroTemplate::encoded_string((
         $__code
