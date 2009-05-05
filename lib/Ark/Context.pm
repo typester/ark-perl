@@ -90,7 +90,9 @@ sub prepare_action {
     my $self = shift;
     my $req  = $self->request;
 
-    my @path = split /\//, $req->path;
+    (my $vpath = $req->uri) =~ s!^@{[ $req->uri->base ]}!/!;
+
+    my @path = split /\//, $vpath;
     unshift @path, '' unless @path;
 
  DESCEND: while (@path) {
@@ -231,7 +233,8 @@ sub uri_for {
     my $params = ref $path[-1] eq 'HASH' ? pop @path : {};
 
     (my $path = join '/', @path) =~ s!/{2,}!/!g;
-    my $uri = URI::WithBase->new(join('/', @path), $self->req->base);
+    $path =~ s!^/+!!;
+    my $uri = URI::WithBase->new($path, $self->req->base);
     $uri->query_form($params);
 
     $uri->abs;
