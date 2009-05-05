@@ -90,7 +90,9 @@ sub prepare_action {
     my $self = shift;
     my $req  = $self->request;
 
-    (my $vpath = $req->uri) =~ s!^@{[ $req->uri->base ]}!/!;
+    my $vpath = $req->uri;
+    $vpath =~ s!^@{[ $req->uri->base ]}!/!
+        or $vpath = '';         # for special case: base=/path/ path=/path
 
     my @path = split /\//, $vpath;
     unshift @path, '' unless @path;
