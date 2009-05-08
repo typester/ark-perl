@@ -21,6 +21,7 @@ requires 'HTML::Entities';
 requires 'Data::UUID';
 requires 'Digest::SHA1';
 requires 'Devel::StackTrace';
+requires 'Class::Method::Modifiers::Fast';
 
 features(
     'Support MicroTemplate template engine' => [
