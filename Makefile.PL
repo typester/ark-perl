@@ -1,10 +1,14 @@
 use inc::Module::Install;
+
 name 'Ark';
+license 'perl';
+
 all_from 'lib/Ark.pm';
 
 test_requires 'Test::More';
 
-requires 'perl' => '5.008001';
+perl_version '5.008001';
+
 requires 'HTTP::Engine' => '0.001004';
 requires 'Mouse'        => '0.21';
 requires 'Path::Class'  => '0.16';
@@ -12,14 +16,33 @@ requires 'URI';
 requires 'Text::SimpleTable';
 requires 'Module::Pluggable::Object';
 requires 'Data::Util';
+requires 'Class::Data::Inheritable';
+requires 'HTML::Entities';
+requires 'Data::UUID';
+requires 'Digest::SHA1';
+requires 'Devel::StackTrace';
 
 features(
-    'View::MT' => [
+    'Support MicroTemplate template engine' => [
         -default => 1,
         recommends('Text::MicroTemplate'),
+    ],
+    'Support DBIx::Class ORMapper' => [
+        -default => 0,
+        recommends('DBIx::Class'),
+        recommends('DBIx::Class::Schema::Loader'),
+        recommends('DBD::SQlite'),
+    ],
+    'Support OpenID Authentication' => [
+        -default => 0,
+        recommends('Net::OpenID::Consumer'),
+        recommends('LWPx::ParanoidAgent'),
     ],
 );
 
 use_test_base;
+
 auto_include;
+auto_install;
+
 WriteAll;

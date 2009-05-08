@@ -1,12 +1,14 @@
 use Test::Base;
 use File::Temp;
 
+eval "use DBI; use DBIx::Class::Schema::Loader";
+plan skip_all => 'DBIx::Class::Schema::Loader required to run this test' if $@;
+
 my $db = "testdatabase";
 END { unlink $db }
 
 {
     # create Database
-    use DBI;
     my $dbh = DBI->connect("dbi:SQLite:dbname=$db")
         or die DBI->errstr;
 

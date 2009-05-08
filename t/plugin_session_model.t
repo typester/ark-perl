@@ -1,5 +1,9 @@
 use Test::Base;
 
+eval "use Cache::MemoryCache";
+plan skip_all => 'Cache::MemoryCache required to run this test' if $@;
+
+
 {
     package T1;
     use Ark;
