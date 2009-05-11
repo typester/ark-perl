@@ -93,6 +93,7 @@ sub prepare_action {
     my $vpath = $req->uri;
     $vpath =~ s!^@{[ $req->uri->base ]}!/!
         or $vpath = '';         # for special case: base=/path/ path=/path
+    $vpath =~ s/\?.*//;
 
     my @path = split /\//, $vpath;
     unshift @path, '' unless @path;
