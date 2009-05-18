@@ -28,11 +28,11 @@ features(
         -default => 1,
         recommends('Text::MicroTemplate'),
     ],
-    'Support DBIx::Class ORMapper' => [
+    'Support DBIx::Class OR Mapper' => [
         -default => 0,
         recommends('DBIx::Class'),
         recommends('DBIx::Class::Schema::Loader'),
-        recommends('DBD::SQlite'),
+        recommends('DBD::SQLite'),
     ],
     'Support OpenID Authentication' => [
         -default => 0,
