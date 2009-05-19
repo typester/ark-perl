@@ -22,6 +22,10 @@ requires 'Data::UUID';
 requires 'Digest::SHA1';
 requires 'Devel::StackTrace';
 requires 'Class::Method::Modifiers::Fast';
+
+# for build-in server
+requires 'HTTP::Engine::Middleware';
+requires 'MIME::Types';
 requires 'MouseX::Types::Path::Class';
 
 features(
