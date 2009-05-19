@@ -22,6 +22,7 @@ requires 'Data::UUID';
 requires 'Digest::SHA1';
 requires 'Devel::StackTrace';
 requires 'Class::Method::Modifiers::Fast';
+requires 'MouseX::Types::Path::Class';
 
 features(
     'Support MicroTemplate template engine' => [
