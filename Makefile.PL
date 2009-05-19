@@ -28,6 +28,9 @@ requires 'HTTP::Engine::Middleware';
 requires 'MIME::Types';
 requires 'MouseX::Types::Path::Class';
 
+# build-in helper script
+requires 'Module::Setup';
+
 features(
     'Support MicroTemplate template engine' => [
         -default => 1,
