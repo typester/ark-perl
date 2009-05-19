@@ -51,4 +51,6 @@ use_test_base;
 auto_include;
 auto_install;
 
+install_script 'script/ark.pl';
+
 WriteAll;
