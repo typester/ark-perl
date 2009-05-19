@@ -44,6 +44,8 @@ template: |
   package [% module %]::Controller::Root;
   use Ark 'Controller';
 
+  has '+namespace' => default => '';
+
   # default 404 handler
   sub default :Path :Args {
       my ($self, $c) = @_;

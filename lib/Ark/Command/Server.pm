@@ -5,6 +5,8 @@ with 'Ark::Command::Interface';
 
 use Cwd qw/cwd/;
 use Path::Class qw/dir/;
+
+use HTTP::Engine;
 use HTTP::Engine::Middleware;
 
 no Mouse;
@@ -66,7 +68,7 @@ sub run {
     });
 
     HTTP::Engine->new(
-        Interface => {
+        interface => {
             module => 'ServerSimple',
             args => {
                 host => $self->options->{address} || '0.0.0.0',
