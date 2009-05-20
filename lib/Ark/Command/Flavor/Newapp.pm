@@ -60,6 +60,13 @@ template: |
   }
 
   1;
+
+---
+file: root/.gitignore
+template: ''
+---
+file: tmp/.gitignore
+template: ''
 ---
 config:
   plugins:
