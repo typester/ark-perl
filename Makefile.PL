@@ -9,7 +9,7 @@ test_requires 'Test::More';
 
 perl_version '5.008001';
 
-requires 'HTTP::Engine' => '0.001004';
+requires 'HTTP::Engine' => '0.001008';
 requires 'Mouse'        => '0.21';
 requires 'Path::Class'  => '0.16';
 requires 'URI';
@@ -24,7 +24,7 @@ requires 'Devel::StackTrace';
 requires 'Class::Method::Modifiers::Fast';
 
 # for build-in server
-requires 'HTTP::Engine::Middleware';
+requires 'HTTP::Engine::Middleware' => '0.13';
 requires 'MIME::Types';
 requires 'MouseX::Types::Path::Class';
 
