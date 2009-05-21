@@ -7,7 +7,7 @@ has model => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        $self->app->model( $self->class_config->{model} );
+        $self->app->model( $self->class_config->{model} || 'Session' );
     },
 );
 
