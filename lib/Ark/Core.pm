@@ -323,7 +323,12 @@ sub setup_plugin {
     $self->ensure_class_loaded($plugin);
 
     if (my $target_context = $plugin->plugin_context) {
-        push @{ $self->lazy_roles->{ $target_context } }, $plugin;
+        if ($target_context eq 'Core') {
+            $plugin->meta->apply( $self->meta );
+        }
+        else {
+            push @{ $self->lazy_roles->{ $target_context } }, $plugin;
+        }
         return;
     }
     $plugin->meta->apply( $self->context_class->meta );
