@@ -1,8 +1,8 @@
 #!/usr/bin/env perl
-
 use strict;
 use warnings;
-use FindBin::libs;
+use FindBin;
+use lib "$FindBin::RealBin/../lib";
 
 use TAP::Harness::JUnit;
 my $harness = TAP::Harness::JUnit->new(
