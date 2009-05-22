@@ -30,6 +30,7 @@ requires 'MouseX::Types::Path::Class';
 
 # build-in helper script
 requires 'Module::Setup';
+requires 'FindBin::libs';
 
 features(
     'Support MicroTemplate template engine' => [
