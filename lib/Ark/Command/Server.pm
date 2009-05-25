@@ -64,8 +64,9 @@ sub run {
     my $mw = HTTP::Engine::Middleware->new;
     $mw->install('HTTP::Engine::Middleware::Static' => {
         docroot => $app->path_to('root'),
-        regexp => qr!^/.*!,
-        is_404_handler => 0,
+        regexp => '/(?:(?:css|js|img|images?|swf|static|tmp|)/.*|[^/]+\.[^/]+)',
+#        regexp => qr!^/.*!,
+#        is_404_handler => 0, # this option requires HEM 0.14 or later
     });
 
     HTTP::Engine->new(
