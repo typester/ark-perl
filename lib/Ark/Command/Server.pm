@@ -69,11 +69,11 @@ sub run {
     });
 
     HTTP::Engine->new(
-        interface => {
+        interface  => {
             module => 'ServerSimple',
-            args => {
+            args   => {
                 host => $self->options->{address} || '0.0.0.0',
-                port => $self->options->{port} || 4423,
+                port => $self->options->{port}    || 4423,
             },
             request_handler => $mw->handler( $app->handler ),
         },

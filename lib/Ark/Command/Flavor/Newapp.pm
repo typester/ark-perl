@@ -1,7 +1,24 @@
 package Ark::Command::Flavor::Newapp;
-use Mouse;
+use strict;
+use warnings;
 
-extends 'Mouse::Object', 'Module::Setup::Flavor';
+use base qw/Module::Setup::Plugin Module::Setup::Flavor/;
+
+sub register {
+    my $self = shift;
+    $self->add_trigger(after_setup_module_attribute
+                           => $self->can('setup_module_attribute') );
+    $self->add_trigger(after_setup_template_vars
+                           => $self->can('setup_template_vars') );
+}
+
+sub setup_module_attribute { }
+
+sub setup_template_vars {
+    my $setup = shift;
+
+    
+}
 
 1;
 
@@ -62,13 +79,13 @@ template: |
   1;
 
 ---
-file: root/.gitignore
-template: ''
+dir: root
 ---
-file: tmp/.gitignore
-template: ''
+dir: tmp
 ---
 config:
   plugins:
     - Template
     - Additional
+    - +Ark::Command::Flavor::Newapp
+
