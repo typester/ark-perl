@@ -148,7 +148,7 @@ sub recurse_match {
             }
             else {
                 {
-                    local $req->{args} = [ @{$req->args}, @parts ];
+                    local $req->{arguments} = [ @{$req->args}, @parts ];
                     next TRY_ACTION unless $action->match($req);
                 }
 
