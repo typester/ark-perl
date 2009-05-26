@@ -34,8 +34,7 @@ sub match {
 sub dispatch {
     my ($self, $context, @args) = @_;
 
-    my $req  = $context->request;
-
+    my $req = $context->request;
     @args = @{ $req->args }
         or @args = @{ $req->captures }
             unless @args;

@@ -10,7 +10,9 @@ has chain => (
 );
 
 sub dispatch {
-    my ($self, $req) = @_;
+    my ($self, $context, @args) = @_;
+
+    my $req = $context->request;
 
     my @captures = @{ $req->captures || [] };
     my @chain    = @{ $self->chain };
@@ -22,9 +24,9 @@ sub dispatch {
             @args = splice @captures, 0, $cap->[0];
         }
         local $req->{args} = \@args;
-        $action->dispatch($req, @args);
+        $action->dispatch($context, @args);
     }
-    $last->dispatch($req, @{ $req->args });
+    $last->dispatch($context, @{ $req->args });
 }
 
 sub from_chain {
