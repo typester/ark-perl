@@ -84,6 +84,8 @@ sub prepare {
 
     $self->prepare_action;
     $self->prepare_encoding;
+    $self->prepare_headers;
+    $self->prepare_body;
 }
 
 sub prepare_action {
@@ -114,6 +116,10 @@ sub prepare_action {
     s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg
         for grep {defined} @{ $req->captures || [] };
 }
+
+sub prepare_headers {}
+
+sub prepare_body {}
 
 sub forward {
     my ($self, $target, @args) = @_;
