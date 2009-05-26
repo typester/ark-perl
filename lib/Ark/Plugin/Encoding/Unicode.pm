@@ -1,4 +1,4 @@
-package Ark::Plugin::Filter::Unicode;
+package Ark::Plugin::Encoding::Unicode;
 use Ark::Plugin;
 
 sub prepare_encoding {

@@ -16,7 +16,7 @@ require Ark::Test;
         my ($self, $c) = @_;
         my %plugins = map { $_->name => 1 } @{ $c->meta->roles };
 
-        ok( $plugins{'Ark::Plugin::Filter::Unicode'}, 'default plugin loaded ok' );
+        ok( $plugins{'Ark::Plugin::Encoding::Unicode'}, 'default plugin loaded ok' );
     }
 }
 
@@ -24,7 +24,7 @@ require Ark::Test;
     package T2;
     use Ark;
 
-    use_plugins 'Filter::Null';
+    use_plugins 'Encoding::Null';
 
     package T2::Controller::Root;
     use Ark 'Controller';
@@ -37,7 +37,7 @@ require Ark::Test;
         my ($self, $c) = @_;
         my %plugins = map { $_->name => 1 } @{ $c->meta->roles };
 
-        ok( !$plugins{'Ark::Plugin::Filter::Unicode'}, 'default plugin not loaded ok' );
+        ok( !$plugins{'Ark::Plugin::Encoding::Unicode'}, 'default plugin not loaded ok' );
     }
 }
 

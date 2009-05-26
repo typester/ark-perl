@@ -347,12 +347,12 @@ sub setup_plugins {
 sub setup_default_plugins {
     my $self = shift;
 
-    my $filter_required  = 1;
+    my $encoding_filter_required  = 1;
     for my $role (@{ $self->context_class->meta->roles }) {
-        $filter_required = 0 if $role->name =~ /::Filter::/;
+        $encoding_filter_required = 0 if $role->name =~ /::Encoding::/;
     }
 
-    $self->setup_plugin('Ark::Plugin::Filter::Unicode') if $filter_required;
+    $self->setup_plugin('Ark::Plugin::Encoding::Unicode') if $encoding_filter_required;
 }
 
 sub setup_actions {
