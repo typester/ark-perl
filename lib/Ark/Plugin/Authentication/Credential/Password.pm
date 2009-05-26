@@ -63,7 +63,9 @@ has cred_password_password_post_salt => (
 );
 
 around authenticate => sub {
-    my $next = shift;
+    my $prev = shift->(@_);
+    return $prev if $prev;
+
     my ($self, $info) = @_;
 
     my $id = $info->{ $self->cred_password_user_field };
@@ -74,7 +76,7 @@ around authenticate => sub {
         }
     }
 
-    $next->(@_);
+    return;
 };
 
 sub check_password {

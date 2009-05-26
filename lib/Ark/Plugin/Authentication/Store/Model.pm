@@ -12,7 +12,9 @@ has store_model => (
 );
 
 around find_user => sub {
-    my $next = shift;
+    my $prev = shift->(@_);
+    return $prev if $prev;
+
     my ($self, $id, $info) = @_;
 
     my $model = $self->app->model( $self->store_model );
@@ -32,14 +34,16 @@ around find_user => sub {
         );
     }
 
-    $next->(@_);
+    return;
 };
 
 around from_session => sub {
-    my $next = shift;
+    my $prev = shift->(@_);
+    return $prev if $prev;
+
     my ($self, $user) = @_;
 
-    return $next->(@_) unless $user->{store} eq 'Model';
+    return unless $user->{store} eq 'Model';
 
     my $model = $self->app->model( $self->store_model );
 

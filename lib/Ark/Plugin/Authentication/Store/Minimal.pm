@@ -12,7 +12,9 @@ has store_minimal_users => (
 );
 
 around find_user => sub {
-    my $next = shift;
+    my $prev = shift->(@_);
+    return $prev if $prev;
+
     my ($self, $id, $info) = @_;
 
     if (my $user = $self->store_minimal_users->{ $id }) {
@@ -24,14 +26,16 @@ around find_user => sub {
         );
     }
 
-    $next->(@_);
+    return;
 };
 
 around 'from_session' => sub {
-    my $next = shift;
+    my $prev = shift->(@_);
+    return $prev if $prev;
+
     my ($self, $user) = @_;
 
-    return $next->(@_) unless $user->{store} eq 'Minimal';
+    return unless $user->{store} eq 'Minimal';
 
     $self->ensure_class_loaded('Ark::Plugin::Authentication::User');
     Ark::Plugin::Authentication::User->new(

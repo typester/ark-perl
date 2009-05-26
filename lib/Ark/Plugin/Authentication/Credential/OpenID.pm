@@ -13,7 +13,9 @@ has cred_openid_user_field => (
 
 # XXX: need to ponder re-designing
 around authenticate => sub {
-    my $next = shift;
+    my $prev = shift->(@_);
+    return $prev if $prev;
+
     my ($self, $info) = @_;
 
     my $c = $self->context;
@@ -23,7 +25,7 @@ around authenticate => sub {
         : $c->req->body_params->{openid_identifier};
 
     unless ($claimed_uri or $c->req->param('openid-check')) {
-        return $next->(@_);
+        return;
     }
 
     # my job
@@ -78,7 +80,7 @@ around authenticate => sub {
         }
     }
 
-    $next->(@_);
+    return;
 };
 
 1;

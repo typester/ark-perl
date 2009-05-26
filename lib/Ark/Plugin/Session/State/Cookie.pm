@@ -66,7 +66,9 @@ has update_cookie => (
 );
 
 around 'get_session_id' => sub {
-    my $next = shift;
+    my $prev = shift->(@_);
+    return $prev if $prev;
+
     my ($self)  = @_;
     my $request = $self->context->request;
 
@@ -78,7 +80,7 @@ around 'get_session_id' => sub {
         }
     }
 
-    $next->(@_);
+    return;
 };
 
 around 'set_session_id' => sub {
