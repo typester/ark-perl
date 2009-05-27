@@ -241,6 +241,14 @@ sub setup_store {
     my $used_dispatch_types
         = [ grep { $_->used } @{ $self->dispatch_types } ];
 
+    # decompile regexp action because storable doen't recognize compiled regexp
+    my ($regex_type) = grep { $_->name eq 'Regex' } @{ $self->dispatch_types };
+    if ($regex_type->used) {
+        for my $compiled (@{ $regex_type->compiled }) {
+            $compiled->{re} = "$compiled->{re}";
+        }
+    }
+
     for my $namespace (keys %{ $self->actions }) { # TODO: clone this
         my $container = $self->actions->{$namespace};
         for my $name (keys %{ $container->actions }) {
