@@ -15,7 +15,7 @@ has attributes => (
 
 has controller => (
     is       => 'rw',
-    isa      => 'Ark::Controller',
+    isa      => 'Ark::Controller | Str',
     required => 1,
 );
 
@@ -35,6 +35,7 @@ sub dispatch {
     my ($self, $context, @args) = @_;
 
     my $req = $context->request;
+
     @args = @{ $req->args }
         or @args = @{ $req->captures }
             unless @args;

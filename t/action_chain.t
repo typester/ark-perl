@@ -84,19 +84,34 @@ is(get('/one/one/end/end'), 'oneend', 'simple request ok');
 
 import Ark::Test 'T2', components => [qw/Controller::Root Controller::Status/];
 
-is(get('/typester/profile'), q[typester's profile], '/{user}/profile ok');
-is(get('/typester/status/4423'), q[typester's status: 4423], '/{user}/status/{status_id} ok');
+my $tests = sub {
+    is( get('/typester/profile'),
+        q[typester's profile],
+        '/{user}/profile ok'
+    );
+    is( get('/typester/status/4423'),
+        q[typester's status: 4423],
+        '/{user}/status/{status_id} ok'
+    );
 
-is(get('/typester/profile/edit'), q[typester's profile edit], '/{user}/profile/edit ok');
+    is( get('/typester/profile/edit'),
+        q[typester's profile edit],
+        '/{user}/profile/edit ok'
+    );
 
-is(
-    get('/typester/status/4423/remove'),
-    q[typester's status: "4423" will remove],
-    '/{user}/status/{status_id}/remove ok'
-);
+    is( get('/typester/status/4423/remove'),
+        q[typester's status: "4423" will remove],
+        '/{user}/status/{status_id}/remove ok'
+    );
 
-is(
-    get('/typester/status/4423/update'),
-    q[typester's status: "4423" will update],
-    '/{user}/status/{status_id}/update ok'
-);
+    is( get('/typester/status/4423/update'),
+        q[typester's status: "4423" will update],
+        '/{user}/status/{status_id}/update ok'
+    );
+};
+$tests->();
+
+import Ark::Test 'T2', components => [qw/Controller::Root Controller::Status/],
+    minimal_setup => 1;
+
+$tests->();
