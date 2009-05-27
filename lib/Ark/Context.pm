@@ -36,7 +36,7 @@ has app => (
     required => 1,
     weak_ref => 1,
     handles  => ['debug', 'log', 'get_actions', 'get_action', 'ensure_class_loaded',
-                 'component', 'view', 'model', 'path_to', ],
+                 'component', 'view', 'model', 'path_to', 'config',],
 );
 
 has stash => (
