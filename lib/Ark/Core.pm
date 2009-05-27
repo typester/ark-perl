@@ -311,18 +311,23 @@ sub setup_home {
     my $class = ref $self;
     (my $file = "${class}.pm") =~ s!::!/!g;
 
-    my $path = $INC{$file} or return;
-    $path =~ s/$file$//;
+    if (my $path = $INC{$file}) {
+        $path =~ s/$file$//;
 
-    $path = dir($path);
-    return unless -d $path;
+        $path = dir($path);
 
-    $path = $path->absolute;
-    while ($path->dir_list(-1) =~ /^b?lib$/) {
-        $path = $path->parent;
+        if (-d $path) {
+            $path = $path->absolute;
+            while ($path->dir_list(-1) =~ /^b?lib$/) {
+                $path = $path->parent;
+            }
+
+            $self->config->{home} = $path;
+        }
     }
 
-    $self->config->{home} = $path;
+    die q[Can't detect home directory, please set it manually]
+        unless $self->config->{home};
 }
 
 sub setup_plugin {
@@ -547,6 +552,9 @@ sub ensure_class_loaded {
 
 sub path_to {
     my ($self, @path) = @_;
+
+    die qq[Can't call path_to method before setup_home]
+        unless $self->config->{home};
 
     my $path = dir( $self->config->{home}, @path );
     return $path if -d $path;

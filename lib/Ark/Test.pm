@@ -5,6 +5,9 @@ use HTTP::Request;
 use HTTP::Engine;
 use HTTP::Cookies;
 
+use FindBin;
+use Path::Class qw/dir/;
+
 sub import {
     my ($class, $app_class, @rest) = @_;
     my $caller = caller;
@@ -24,6 +27,7 @@ sub import {
             my $app;
             unless ($persist_app) {
                 $app = $app_class->new;
+                $app->config->{home} = dir($FindBin::Bin);
 
                 my @components = map { "${app_class}::${_}" }
                     @{ $option{components} || [] };
