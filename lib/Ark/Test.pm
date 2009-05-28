@@ -27,7 +27,6 @@ sub import {
             my $app;
             unless ($persist_app) {
                 $app = $app_class->new;
-                $app->config->{home} = dir($FindBin::Bin);
 
                 my @components = map { "${app_class}::${_}" }
                     @{ $option{components} || [] };
@@ -35,6 +34,7 @@ sub import {
 
                 if ($option{minimal_setup}) {
                     $app->setup_home;
+
                     $app->path_to('action.cache')->remove;
 
                     my $child = fork;
@@ -53,6 +53,7 @@ sub import {
                 else {
                     $app->setup;
                 }
+                $app->config->{home} ||= dir($FindBin::Bin);
             }
 
             if ($option{reuse_connection}) {

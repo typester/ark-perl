@@ -325,9 +325,6 @@ sub setup_home {
             $self->config->{home} = $path;
         }
     }
-
-    die q[Can't detect home directory, please set it manually]
-        unless $self->config->{home};
 }
 
 sub setup_plugin {
