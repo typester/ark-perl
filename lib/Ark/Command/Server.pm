@@ -26,6 +26,11 @@ sub run {
     eval "use lib q[$libdir]";
     die $@ if $@;
 
+    my $extlib = $libdir->parent->subdir('extlib');
+    if (-d $extlib) {
+        eval "use lib q[$extlib]";
+    }
+
     my $app_name = $args[0];
     if ($app_name) {
         eval "use $app_name";
