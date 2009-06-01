@@ -60,11 +60,14 @@ __END__
 
 =head1 SYNOPSIS
 
-    ark.pl [command] [args]
-    
-    supported commands:
-    
-    create_app - create new application skeleton
-    help       - show help
+ ark.pl [command] [command_args...]
+ 
+ Commands:
+  newapp      - create new application
+  controller  - create controller
+  view        - create view
+  model       - create model
+ 
+ "ark.pl [command] --help" for command specific usage.
 
 =cut
