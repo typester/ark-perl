@@ -65,6 +65,12 @@ has error => (
     default => sub { [] },
 );
 
+has detached => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
+);
+
 {   # alias
     no warnings 'once';
     *req = \&request;
@@ -204,6 +210,7 @@ sub execute {
     if (my $error = $@) {
         if ($error =~ /^${DETACH} at /) {
             die $DETACH if ($self->depth > 1);
+            $self->detached(1);
         }
         else {
             push @{ $self->error }, $error;

@@ -34,6 +34,8 @@ sub match {
 sub dispatch {
     my ($self, $context, @args) = @_;
 
+    return if $context->detached;
+
     my $req = $context->request;
 
     @args = @{ $req->args }
