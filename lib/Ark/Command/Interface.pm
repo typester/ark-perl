@@ -51,7 +51,12 @@ sub search_app {
         return if $app;
         return unless -f $file && $file->basename =~ /\.pm$/;
 
-        (my $module = $file) =~ s!^$libdir/!!;
+        my $path = $libdir;
+        if ($^O eq 'MSWin32') {
+            $file =~ s!\\!/!g;
+            $path =~ s!\\!/!g;
+        }
+        (my $module = $file) =~ s!^$path/!!;
         $module =~ s!/!::!g;
         $module =~ s!\.pm$!!;
 
