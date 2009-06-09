@@ -78,6 +78,7 @@ t/004_forward.t
 t/005_detach.t
 t/action_chain.t
 t/component_config.t
+t/detach_action_chain.t
 t/extends_controller.t
 t/lazy_action_loader.t
 t/lazy_action_loader/lib/TestApp.pm
@@ -100,6 +101,7 @@ t/plugin_default.t
 t/plugin_session.t
 t/plugin_session_model.t
 t/plugin_unicode.t
+t/regexp_action.t
 t/serialize_data.t
 t/serialize_data/lib/TestApp.pm
 t/serialize_data/lib/TestApp/Controller/Root.pm

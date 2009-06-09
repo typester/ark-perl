@@ -2,7 +2,7 @@ package Ark;
 use 5.008001;
 use Mouse;
 
-our $VERSION = '0.001000_001';
+our $VERSION = '0.001000_002';
 
 sub import {
     my $class  = shift;
