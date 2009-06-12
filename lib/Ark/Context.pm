@@ -225,7 +225,8 @@ sub execute_action {
     my ($self, $obj, $method, @args) = @_;
 
     eval {
-        $self->state( $obj->$method($self, @args) );
+        my $state = $obj->$method($self, @args);
+        $self->state( defined $state ? $state : undef );
     };
 }
 

@@ -78,6 +78,20 @@ use Test::Base;
         $c->res->body(join ',', $foo, $bar);
     }
 
+    use Test::More;
+    sub return_undef_check :Local {
+        my ($self, $c) = @_;
+
+        is($c->state, 0, 'initial state ok');
+
+        my $state = $c->forward('just_return');
+        is($state, undef, 'undef state ok');
+    }
+
+    sub just_return :Private {
+        my ($self, $c) = @_;
+        return;
+    }
 }
 
 require Ark::Test;
@@ -113,6 +127,10 @@ sub run_tests() {
         my $res = request( GET => '/forward_capture_args/FOO/BAR' );
         ok( $res->is_success, 'request ok');
         is( $res->content, 'FOO,BAR', 'forward capture args ok');
+    }
+
+    {
+        get('/root/return_undef_check');
     }
 }
 
