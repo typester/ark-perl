@@ -245,7 +245,7 @@ around execute_action => sub {
 sub debug_print_context {
     my ($self, $file, $linenum, $context) = @_;
 
-    my $code;
+    my $code = q[];
     if (-f $file) {
         $self->ensure_class_loaded('HTML::Entities');
 
