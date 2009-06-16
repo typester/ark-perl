@@ -228,7 +228,7 @@ around execute_action => sub {
     }
     else {
         $self->debug_report->row( $name, sprintf("%fs", $elapsed) );
-        while (my $report = pop @{ $self->debug_report_stack }) {
+        while (my $report = shift @{ $self->debug_report_stack }) {
             $self->debug_report->row( @$report );
         }
 
