@@ -27,6 +27,7 @@ requires 'Class::Method::Modifiers::Fast';
 requires 'HTTP::Engine::Middleware' => '0.13';
 requires 'MIME::Types';
 requires 'MouseX::Types::Path::Class';
+requires 'Getopt::Long' => '2.36';
 
 # build-in helper script
 requires 'Module::Setup';
