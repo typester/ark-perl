@@ -110,6 +110,7 @@ has context_class => (
 has context => (
     is       => 'rw',
     isa      => 'Ark::Context',
+    weak_ref => 1,
 );
 
 has setup_finished => (
@@ -562,7 +563,6 @@ sub handle_request {
     my ($self, $req) = @_;
 
     my $context = $self->context_class->new( app => $self, request => $req );
-
     $self->context($context)->process;
 
     if ( my $error = $context->error->[-1] ) {
