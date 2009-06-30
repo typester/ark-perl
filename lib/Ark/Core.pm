@@ -188,7 +188,8 @@ sub class_wrapper {
     die $@ if $@;
 
     for my $plugin (@{ $self->lazy_roles->{ $args->{name} } || [] }) {
-        $plugin->meta->apply( $classname->meta );
+        $plugin->meta->apply( $classname->meta )
+            unless $classname->meta->does_role( $plugin );
     }
 
     $classname;
@@ -300,6 +301,7 @@ sub setup_minimal {
 
 sub setup_debug_mode {
     my $self = shift;
+    return if $self->context_class->meta->does_role('Ark::Context::Debug');
 
     $self->ensure_class_loaded('Ark::Context::Debug');
     Ark::Context::Debug->meta->apply( $self->context_class->meta );
@@ -335,14 +337,16 @@ sub setup_plugin {
 
     if (my $target_context = $plugin->plugin_context) {
         if ($target_context eq 'Core') {
-            $plugin->meta->apply( $self->meta );
+            $plugin->meta->apply( $self->meta )
+                unless $self->meta->does_role($plugin);
         }
         else {
             push @{ $self->lazy_roles->{ $target_context } }, $plugin;
         }
         return;
     }
-    $plugin->meta->apply( $self->context_class->meta );
+    $plugin->meta->apply( $self->context_class->meta )
+        unless $self->context_class->meta->does_role($plugin);
 }
 
 sub setup_plugins {
