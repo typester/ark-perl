@@ -10,7 +10,7 @@ use Path::Class qw/file dir/;
 
 extends 'Mouse::Object', 'Class::Data::Inheritable';
 
-__PACKAGE__->mk_classdata($_) for qw/configdata plugins/;
+__PACKAGE__->mk_classdata($_) for qw/configdata plugins _class_stash/;
 
 has handler => (
     is      => 'rw',
@@ -193,6 +193,11 @@ sub class_wrapper {
     }
 
     $classname;
+}
+
+sub class_stash {
+    my $self = shift;
+    $self->_class_stash || $self->_class_stash({});
 }
 
 sub load_plugins {

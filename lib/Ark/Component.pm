@@ -56,4 +56,12 @@ sub class_config {
     $classconfig;
 }
 
+sub class_stash {
+    my $self  = shift;
+    my $class = caller;
+    return unless $self->app;
+
+    $self->app->class_stash->{ $class } ||= {};
+}
+
 1;

@@ -8,6 +8,8 @@ use Scalar::Util ();
 
 our $DETACH = 'ARK_DETACH';
 
+extends 'Ark::Component';
+
 coerce 'Ark::Request'
     => from 'Object'
     => via {
