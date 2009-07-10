@@ -15,9 +15,6 @@ sub BUILD {
     my $class = ref($self->app);
     my $path  = $self->path_to('lib', $class, 'I18N');
 
-    warn 'HERE';
-    warn $path;
-
     eval <<"";
         package $class;
         Locale::Maketext::Simple->import(
