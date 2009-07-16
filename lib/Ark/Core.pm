@@ -407,6 +407,7 @@ sub load_component {
     }
 
     $self->ensure_class_loaded($component) or return;
+    $component->isa('Ark::Component') or return;
 
     # merge config
     $component->config( $self->config->{ $component->component_name } );
