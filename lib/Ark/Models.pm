@@ -4,17 +4,11 @@ use warnings;
 use base 'Object::Container';
 
 sub import {
-    my $pkg    = shift;
-    my $export = shift || 'model';
+    my $pkg  = shift;
+    my $flag = shift || 'model';
 
-    my $caller = caller;
-    {
-        no strict 'refs';
-        *{"${caller}::${export}"} = sub {
-            my ($model) = @_;
-            return $model ? $pkg->get($model) : $pkg;
-        };
-    }
+    unshift @_, $pkg, $flag;
+    goto $pkg->can('SUPER::import');
 }
 
 1;
