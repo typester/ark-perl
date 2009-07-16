@@ -30,6 +30,12 @@ has logger_class => (
     default => sub { 'Ark::Logger' },
 );
 
+has external_model_class => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => '',
+);
+
 has logger => (
     is      => 'rw',
     isa     => 'Object',
@@ -142,6 +148,7 @@ sub EXPORT {
         no strict 'refs';
 
         *{"${target}::use_plugins"} = sub { $target->load_plugins(@_) };
+        *{"${target}::use_model"}   = sub { $target->use_model(@_) };
         *{"${target}::conf"}        = sub { $target->config(@_) };
     }
 }
@@ -435,6 +442,11 @@ sub controller {
 
 sub model {
     my ($self, $name) = @_;
+
+    if (my $class = $self->external_model_class) {
+        return $name ? $class->get($name) : $class;
+    }
+
     return unless $name;
     $self->component('Model::' . $name);
 }
@@ -443,6 +455,11 @@ sub view {
     my ($self, $name) = @_;
     return unless $name;
     $self->component('View::' . $name);
+}
+
+sub use_model {
+    my ($self, $model_class) = @_;
+    $self->external_model_class( $model_class );
 }
 
 sub register_actions {
