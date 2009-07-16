@@ -22,6 +22,8 @@ requires 'Data::UUID';
 requires 'Digest::SHA1';
 requires 'Devel::StackTrace';
 requires 'Class::Method::Modifiers::Fast';
+requires 'Exporter::AutoClean';
+requires 'Object::Container' => '0.03';
 
 # for build-in server
 requires 'HTTP::Engine::Middleware' => '0.13';
@@ -36,7 +38,7 @@ requires 'FindBin::libs';
 features(
     'Support MicroTemplate template engine' => [
         -default => 1,
-        recommends('Text::MicroTemplate::Extended' => '0.01001'),
+        recommends('Text::MicroTemplate::Extended' => '0.02001'),
     ],
     'Support DBIx::Class OR Mapper' => [
         -default => 0,
