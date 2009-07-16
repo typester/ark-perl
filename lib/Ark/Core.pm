@@ -6,6 +6,7 @@ use Ark::Action;
 use Ark::ActionContainer;
 use Ark::Request;
 
+use Exporter::AutoClean;
 use Path::Class qw/file dir/;
 
 extends 'Mouse::Object', 'Class::Data::Inheritable';
@@ -144,13 +145,18 @@ no Mouse;
 sub EXPORT {
     my ($class, $target) = @_;
 
-    {
-        no strict 'refs';
+    my $load_plugins = $class->can('load_plugins');
+    my $use_model    = $class->can('use_model');
+    my $config       = $class->can('config');
+    my $config_sub   = sub { $config->( $target, @_ ) };
 
-        *{"${target}::use_plugins"} = sub { $target->load_plugins(@_) };
-        *{"${target}::use_model"}   = sub { $target->use_model(@_) };
-        *{"${target}::conf"}        = sub { $target->config(@_) };
-    }
+    Exporter::AutoClean->export(
+        $target,
+        use_plugins => sub { $load_plugins->( $target, @_ ) },
+        use_model   => sub { $use_model->( $target, @_ ) },
+        config      => $config_sub,
+        conf        => $config_sub, # backward compatibility
+    );
 }
 
 sub debug {
