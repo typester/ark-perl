@@ -12,7 +12,7 @@ use Path::Class qw/file dir/;
 extends 'Mouse::Object', 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata($_)
-    for qw/configdata plugins _class_stash external_model_class/;
+    for qw/context configdata plugins _class_stash external_model_class/;
 
 has handler => (
     is      => 'rw',
@@ -106,13 +106,6 @@ has context_class => (
             base => 'Ark::Context',
         );
     },
-);
-
-# current context
-has context => (
-    is       => 'rw',
-    isa      => 'Ark::Context',
-    weak_ref => 1,
 );
 
 has setup_finished => (
@@ -593,6 +586,7 @@ sub handle_request {
 
     my $context = $self->context_class->new( app => $self, request => $req );
     $self->context($context)->process;
+    $self->context(undef);
 
     if ( my $error = $context->error->[-1] ) {
         chomp $error;
