@@ -36,6 +36,13 @@ has open_layer => (
     default => ':utf8',
 );
 
+has macro => (
+    is      => 'rw',
+    isa     => 'HashRef',
+    lazy    => 1,
+    default => sub { {} },
+);
+
 has options => (
     is      => 'rw',
     isa     => 'HashRef',
@@ -59,6 +66,7 @@ has mt => (
             extension     => $self->extension,
             use_cache     => $self->use_cache,
             open_layer    => $self->open_layer,
+            macro         => $self->macro,
             template_args => {
                 c     => $c,
                 s     => $stash,
