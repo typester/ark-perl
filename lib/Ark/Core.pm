@@ -456,6 +456,7 @@ sub use_model {
     my ($self, $model_class) = @_;
     $self->ensure_class_loaded( $model_class );
     $self->external_model_class( $model_class );
+    $model_class->initialize if $model_class->can('initialize');
 }
 
 sub register_actions {
