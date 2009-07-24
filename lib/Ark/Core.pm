@@ -461,6 +461,7 @@ sub view {
 
 sub use_model {
     my ($self, $model_class) = @_;
+    $self->ensure_class_loaded( $model_class );
     $self->external_model_class( $model_class );
 }
 
