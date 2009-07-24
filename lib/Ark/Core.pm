@@ -11,7 +11,8 @@ use Path::Class qw/file dir/;
 
 extends 'Mouse::Object', 'Class::Data::Inheritable';
 
-__PACKAGE__->mk_classdata($_) for qw/configdata plugins _class_stash/;
+__PACKAGE__->mk_classdata($_)
+    for qw/configdata plugins _class_stash external_model_class/;
 
 has handler => (
     is      => 'rw',
@@ -29,12 +30,6 @@ has logger_class => (
     isa     => 'Str',
     lazy    => 1,
     default => sub { 'Ark::Logger' },
-);
-
-has external_model_class => (
-    is      => 'rw',
-    isa     => 'Str',
-    default => '',
 );
 
 has logger => (
