@@ -38,7 +38,7 @@ sub languages {
     my ($self, $languages) = @_;
 
     if ($languages) {
-        $self->{languages} = ref($languages eq 'ARRAY') ? $languages : [$languages];
+        $self->{languages} = ref($languages) eq 'ARRAY' ? $languages : [$languages];
     }
     else {
         $self->{languages} ||= [
