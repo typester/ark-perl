@@ -8,6 +8,8 @@ use HTTP::Cookies;
 use FindBin;
 use Path::Class qw/dir/;
 
+use Ark::Test::Context;
+
 sub import {
     my ($class, $app_class, @rest) = @_;
     my $caller = caller;
@@ -98,8 +100,32 @@ sub import {
             undef $persist_app;
             undef $cookie;
         };
+
+        *{ $caller . '::ctx_request'} = sub {
+            unless (Ark::Context->meta->does_role('Ark::Test::Context')) {
+                Ark::Test::Context->meta->apply( Ark::Context->meta );
+            }
+
+            my $res = &{$caller . '::request'}(@_);
+            return $res, context();
+        };
+
+        *{ $caller . '::ctx_get' } = sub {
+            my ($res, $c) = &{$caller . '::ctx_request'}(GET => @_);
+            return $res->content, $c;
+        };
     }
 }
+
+do {
+    my $context;
+    sub context {
+        if ($_[0]) {
+            $context = $_[0];
+        }
+        $context;
+    }
+};
 
 1;
 
