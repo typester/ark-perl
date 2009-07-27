@@ -2,6 +2,7 @@ package Ark::Form;
 use utf8;
 use Mouse;
 
+use Clone 'clone';
 use Exporter::AutoClean;
 use HTML::Shakan;
 use HTML::Shakan::Utils;
@@ -10,6 +11,7 @@ extends 'Mouse::Object', 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata('_fields_data');
 __PACKAGE__->mk_classdata('_fields_data_order');
+__PACKAGE__->mk_classdata('_fields_messages');
 
 has _shakan => (
     is       => 'rw',
@@ -50,34 +52,22 @@ has fields => (
         my $fields = {};
 
         for my $name (@{ $self->_fields_data_order }) {
-            my %params = %{ $self->_fields_data->{ $name } };
+            my %params = %{ clone $self->_fields_data->{ $name } };
 
             my $field;
             my $type = delete $params{type}
                 or die 'type parameter is required';
 
-            my $constraints = delete $params{constraints};
             if (my $cv = delete $params{custom_validation}) {
                 $params{custom_validation} = sub { $cv->($self, @_) };
             }
 
-            my %attr = map { $_ => $params{$_} }
-                      grep { not ref( $params{$_} ) } keys %params;
-
             if (my ($func) = grep { $type eq $_ } @HTML::Shakan::Fields::EXPORT) {
-                $field = $self->can($func)->(
-                    %params,
-                    attr => \%attr,
-                );
+                $field = $self->can($func)->(%params);
             }
             else {
-                $field = HTML::Shakan::Field::Input->new(
-                    %params,
-                    attr => \%attr,
-                );
+                $field = HTML::Shakan::Field::Input->new(%params );
             }
-
-            $field->add_constraint($_) for @{ $constraints || [] };
 
             $fields->{ $name } = $field;
         }
@@ -139,11 +129,23 @@ sub set_param_data {
 
     $params{name} = $name;
 
+    $params{attr} ||= {};
+    defined $params{$_} and $params{attr}{$_} ||= $params{$_} for qw/id name value/;
+
+    $self->_fields_messages({}) unless $self->_fields_messages;
+    if (my $messages = delete $params{messages}) {
+        for my $func (keys %{ $messages || {} }) {
+            my $message = $messages->{$func};
+            $self->_fields_messages->{ "$name.$func" } = $message;
+        }
+    }
+
     $self->_fields_data({}) unless $self->_fields_data;
     $self->_fields_data->{ $name } = \%params;
 
     $self->_fields_data_order([]) unless $self->_fields_data_order;
     push @{ $self->_fields_data_order }, $name;
+
 }
 
 sub label {
@@ -189,23 +191,36 @@ sub localize {
     $self->needs_localize && $self->context->localize(@_);
 }
 
-sub error_message {
+sub error_message_plain {
     my ($self, $name) = @_;
-    return unless $self->submitted && $self->has_error;
+    return unless $self->submitted && $self->is_error($name);
+
+    my ($error) =
+        grep { $_->[0] eq $name } @{ $self->_shakan->_fvl->{_error_ary} || [] }
+            or return;
+
+    $self->_create_error_message($name, lc $error->[1]);
+}
+
+sub error_messages_plain {
+    my ($self, $name) = @_;
+    return unless $self->submitted && $self->is_error($name);
 
     my (@errors) =
         grep { $_->[0] eq $name } @{ $self->_shakan->_fvl->{_error_ary} || [] }
             or return;
 
-    # I18N
-    my $error = $errors[0];
-    my $func  = lc $error->[1];
+    [map { $self->_create_error_message($name, lc $_->[1]) } @errors];
+}
+
+sub _create_error_message {
+    my ($self, $name, $func) = @_;
 
     my $field = $self->field($name);
     my $label = $field ? $field->label || $field->name : $func;
 
-    my $message = $self->messages->{"$name.$func"} # "param.function"
-               || $self->messages->{$func};        # "function"
+    my $message = $self->messages->{"$name.$func"}
+               || $self->messages->{ $func };
 
     unless ($message) {
         warn qq{Message "$name.$func" does not defined};
@@ -216,12 +231,28 @@ sub error_message {
         $label   = $self->localize( $label );
         $message = $self->localize( $message, $label );
     }
-
-    if (my $fmt = $self->message_format) {
-        $message = sprintf($fmt, $message);
+    else {
+        my $gen_msg = sub {
+            my ($tmpl, @args) = @_;
+            local $_ = $tmpl;
+            s!\[_(\d+)\]!$args[$1-1]!ge;
+            $_;
+        };
+        $message = $gen_msg->( $message, $label );
     }
 
     $message;
+}
+
+sub error_message {
+    my ($self, $name) = @_;
+    sprintf($self->message_format, $self->error_message_plain($name) || return);
+}
+
+sub error_messages {
+    my ($self, $name) = @_;
+    [ map { sprintf( $self->message_format, $_ ) }
+            @{ $self->error_messages_plain($name) || [] } ];
 }
 
 sub x { $_[0] };
@@ -229,20 +260,17 @@ sub x { $_[0] };
 sub messages {
     my $self = shift;
 
-    if ($self->needs_localize) {
-        return {
-            not_null => x('please input [_1]', '$form'),
-            int      => x('please input [_1] as integer', '$form'),
-            http_url => x('please input [_1] as url', '$form'),
-        };
-    }
-    else {
-        return {
-            not_null => 'please input',
-            int      => 'please input as integer',
-            http_url => 'please input as url',
-        };
-    }
+    return {
+        not_null => '[_1] is required',
+        map({ $_ => '[_1] is invalid' } qw/
+                int ascii date duplication length regex uint
+                http_url
+                email_loose
+                hiragana jtel jzip katakana
+                file_size file_mime
+                / ),
+        %{ $self->_fields_messages },
+    };
 }
 
 sub message_format {
