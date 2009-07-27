@@ -47,7 +47,7 @@ sub dispatch {
         $self->controller( $context->app->load_component($self->{controller}) );
     }
 
-    $context->execute( $self->controller, $self->name, @args );
+    $self->controller->ACTION( $self, @args );
 }
 
 sub dispatch_chain {

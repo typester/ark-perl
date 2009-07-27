@@ -3,6 +3,8 @@ use Mouse;
 
 extends 'Ark::Component', 'Class::Data::Inheritable';
 
+with 'Ark::ActionClass::Form';
+
 __PACKAGE__->mk_classdata($_) for qw/_attr_cache _method_cache/;
 __PACKAGE__->_attr_cache( [] );
 __PACKAGE__->_method_cache( [] );
@@ -30,6 +32,11 @@ sub MODIFY_CODE_ATTRIBUTES {
     $class->_attr_cache([ @{ $class->_attr_cache } ]);
     push @{ $class->_attr_cache }, [ $code, \@attrs ];
     return;
+}
+
+sub ACTION {
+    my ($self, $action, @args) = @_;
+    $self->context->execute( $self, $action->name, @args );
 }
 
 sub _parse_Path_attr {
