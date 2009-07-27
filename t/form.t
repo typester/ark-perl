@@ -2,8 +2,6 @@ use Test::Base;
 use FindBin;
 use lib "$FindBin::Bin/form/lib";
 
-$SIG{__DIE__} = sub { Carp::confess(@_) };
-
 plan 'no_plan';
 
 use Ark::Test 'T';
