@@ -3,8 +3,6 @@ use Mouse;
 
 extends 'Ark::Component', 'Class::Data::Inheritable';
 
-with 'Ark::ActionClass::Form';
-
 __PACKAGE__->mk_classdata($_) for qw/_attr_cache _method_cache/;
 __PACKAGE__->_attr_cache( [] );
 __PACKAGE__->_method_cache( [] );
