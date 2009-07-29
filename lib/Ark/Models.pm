@@ -8,7 +8,7 @@ use Path::Class qw/file dir/;
 
 sub import {
     my $pkg  = shift;
-    my $flag = shift || 'model';
+    my $flag = shift || 'models';
 
     if (($flag || '') =~ /^-base$/i) {
         utf8->import;
@@ -16,6 +16,12 @@ sub import {
     else {
         if ($pkg eq __PACKAGE__) {
             die q[Don't use Ark::Model directly. You must create your own subclasses];
+        }
+
+        my $caller = caller;
+        if ($caller->can($flag)) {
+            die
+              qq[Can't initialize $pkg, method "$flag" is already defined in "$caller"];
         }
 
         $pkg->initialize;
