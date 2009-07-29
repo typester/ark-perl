@@ -17,7 +17,7 @@ plan 'no_plan';
 
     sub index :Path :Args(0) {
         my ($self, $c) = @_;
-        my $foo = model('foo');
+        my $foo = models('foo');
         $c->res->body( $foo->{foo} );
     }
 }

@@ -23,7 +23,7 @@ sub custom_validation {
     my ($self, $form) = @_;
     return if $form->has_error;
 
-    my $user = model('users')->find(
+    my $user = models('users')->find(
         username => $form->param('username'),
         password => $form->param('password'),
     );
