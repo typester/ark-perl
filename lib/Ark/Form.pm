@@ -66,7 +66,10 @@ has fields => (
                 $field = $self->can($func)->(%params);
             }
             else {
-                $field = HTML::Shakan::Field::Input->new(%params );
+                $field = HTML::Shakan::Field::Input->new(
+                    type => $type,
+                    %params,
+                );
             }
 
             $fields->{ $name } = $field;
