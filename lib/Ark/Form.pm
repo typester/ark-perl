@@ -127,10 +127,9 @@ sub field {
 sub set_param_data {
     my ($self, $name, %params) = @_;
 
-    $params{name} = $name;
+    my $overwrite = $name =~ s/^\+//;
 
-    $params{attr} ||= {};
-    defined $params{$_} and $params{attr}{$_} ||= $params{$_} for qw/id name value/;
+    $params{name} = $name;
 
     $self->_fields_messages({}) unless $self->_fields_messages;
     if (my $messages = delete $params{messages}) {
@@ -141,11 +140,24 @@ sub set_param_data {
     }
 
     $self->_fields_data({}) unless $self->_fields_data;
-    $self->_fields_data->{ $name } = \%params;
+    if ($overwrite) {
+        my $data = $self->_fields_data->{ $name }
+            or die qq{param "$name" does not defined by parent class};
+
+        while (my ($k, $v) = each %params) {
+            $data->{ $k } = $v;
+        }
+    }
+    else {
+        $params{attr} ||= {};
+        defined $params{$_} and $params{attr}{$_} ||= $params{$_} for qw/id name value/;
+
+        $self->_fields_data->{ $name } = \%params;
+    }
 
     $self->_fields_data_order([]) unless $self->_fields_data_order;
-    push @{ $self->_fields_data_order }, $name;
-
+    push @{ $self->_fields_data_order }, $name
+        unless grep { $_ eq $name } @{ $self->_fields_data_order };
 }
 
 sub label {
