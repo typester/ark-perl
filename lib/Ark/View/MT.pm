@@ -66,7 +66,10 @@ has mt => (
             extension     => $self->extension,
             use_cache     => $self->use_cache,
             open_layer    => $self->open_layer,
-            macro         => $self->macro,
+            macro         => {
+                raw_string => sub($) { Text::MicroTemplate::EncodedString->new($_[0]) },
+                %{ $self->macro },
+            },
             template_args => {
                 c     => $c,
                 s     => $stash,
@@ -90,6 +93,12 @@ sub render {
     $template ||= $self->context->stash->{__view_mt_template}
               || $self->context->request->action->reverse
                   or return;
+
+    my $form_renderer = \&Ark::Form::render;
+    no warnings 'redefine';
+    local *Ark::Form::render = sub {
+        Text::MicroTemplate::EncodedString->new( $form_renderer->(@_) );
+    } if $form_renderer;
 
     $self->mt->render($template, @_);
 }
