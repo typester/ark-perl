@@ -38,7 +38,7 @@ requires 'FindBin::libs';
 features(
     'Support MicroTemplate template engine' => [
         -default => 1,
-        recommends('Text::MicroTemplate::Extended' => '0.02001'),
+        recommends('Text::MicroTemplate::Extended' => '0.04'),
     ],
     'Support DBIx::Class OR Mapper' => [
         -default => 0,

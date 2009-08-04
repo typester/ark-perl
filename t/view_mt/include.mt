@@ -1,1 +1,1 @@
-before <?=r $self->render('include_target', 'foo', 'bar'); ?> after
+before <?= $self->render('include_target', 'foo', 'bar'); ?> after
