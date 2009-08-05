@@ -9,6 +9,8 @@ plan 'no_plan';
     package T;
     use Ark;
 
+    use_model 'T::Models';
+
     package T::Controller::Root;
     use Ark 'Controller';
     T::Models->import; # use T::Models;
@@ -17,7 +19,7 @@ plan 'no_plan';
 
     sub index :Path :Args(0) {
         my ($self, $c) = @_;
-        my $foo = models('foo');
+        my $foo = $c->model('foo');
         $c->res->body( $foo->{foo} );
     }
 }
