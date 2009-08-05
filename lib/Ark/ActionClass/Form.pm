@@ -1,6 +1,8 @@
 package Ark::ActionClass::Form;
 use Mouse::Role;
 
+use Ark::Form;
+
 has form => (
     is  => 'rw',
     isa => 'Ark::Form',
