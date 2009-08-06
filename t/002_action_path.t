@@ -9,13 +9,13 @@ use Test::Base;
 
     has '+namespace' => default => '';
 
-    sub default :Path {
+    sub default :Path :Args {
         my ($self, $c) = @_;
         $c->res->status(404);
         $c->res->content('404');
     }
 
-    sub index :Path :Args(0) {
+    sub index :Path {
         my ($self, $c) = @_;
         $c->res->content('index');
     }
@@ -25,12 +25,12 @@ use Test::Base;
         $c->res->content('local');
     }
 
-    sub local2 :Local {
+    sub local2 :Local :Args(2) {
         my ($self, $c, @args) = @_;
         $c->res->content(join ',', @args);
     }
 
-    sub local3 :Local :Args(0) {
+    sub local3 :Local {
         my ($self, $c) = @_;
         $c->res->content('local3');
     }
@@ -43,7 +43,7 @@ use Test::Base;
     package TestApp::Controller::Sub;
     use Ark 'Controller';
 
-    sub index :Path :Args(0) {
+    sub index :Path {
         my ($self, $c) = @_;
         $c->res->content('sub/index');
     }
@@ -56,7 +56,7 @@ use Test::Base;
     package TestApp::Controller::Sub::Deep;
     use Ark 'Controller';
 
-    sub index :Path :Args(0) {
+    sub index :Path {
         my ($self, $c) = @_;
         $c->res->content('sub/deep/index');
     }

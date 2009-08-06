@@ -24,9 +24,8 @@ no Mouse;
 sub match {
     my ($self, $req) = @_;
 
-    return 1 unless exists $self->attributes->{Args};
+    my $args = $self->attributes->{Args} ? $self->attributes->{Args}[0] : 0;
 
-    my $args = $self->attributes->{Args}[0];
     return 1 unless defined($args) && length($args);
     return scalar( @{ $req->args } ) == $args;
 }
