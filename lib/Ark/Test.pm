@@ -13,8 +13,9 @@ use Ark::Test::Context;
 sub import {
     my ($class, $app_class, @rest) = @_;
     my $caller = caller;
-
     my %option = @rest;
+
+    return unless $app_class;
 
     Mouse::load_class($app_class) unless Mouse::is_class_loaded($app_class);
 
