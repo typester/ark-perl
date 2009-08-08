@@ -1,24 +1,37 @@
 package Ark::Models;
-use strict;
-use warnings;
-use utf8;
-use base 'Object::Container';
+use Any::Moose;
 
+extends 'Object::Container';
+
+use Exporter::AutoClean;
 use Path::Class qw/file dir/;
 
+has registered_namespaces => (
+    is      => 'rw',
+    isa     => 'HashRef',
+    default => sub { {} },
+);
+
+no Any::Moose;
+
 sub import {
-    my $pkg  = shift;
-    my $flag = shift || 'models';
+    my $pkg    = shift;
+    my $flag   = shift || 'models';
+    my $caller = caller;
 
     if (($flag || '') =~ /^-base$/i) {
         utf8->import;
+
+        Exporter::AutoClean->export(
+            scalar caller,
+            register_namespaces => sub { $caller->register_namespaces(@_) },
+        );
     }
     else {
         if ($pkg eq __PACKAGE__) {
             die q[Don't use Ark::Model directly. You must create your own subclasses];
         }
 
-        my $caller = caller;
         if ($caller->can($flag)) {
             die
               qq[Can't initialize $pkg, method "$flag" is already defined in "$caller"];
@@ -82,6 +95,8 @@ sub initialize {
             $conf;
         },
     );
+
+    $pkg->register_namespaces( '' => $pkg );
 }
 
 sub adaptor {
@@ -112,6 +127,49 @@ sub adaptor {
     }
 
     $instance;
+}
+
+sub register_namespaces {
+    my ($self, %namespaces) = @_;
+    $self = $self->instance unless ref $self;
+
+    while (my ($name, $ns) = each %namespaces) {
+        $self->registered_namespaces->{ $name } = $ns;
+    }
+}
+
+sub get {
+    my $self = shift;
+    $self    = $self->instance unless ref $self;
+
+    my $obj  = eval { $self->SUPER::get(@_) };
+    my $err  = $@;
+
+    return $obj if $obj;
+
+    my $target = $_[0];
+    if ($target =~ /::/) {
+        my ($ns, @classes);
+        while ($target =~ s/::(.*?)$//) {
+            unshift @classes, $1;
+            $ns = $self->registered_namespaces->{$target} and last;
+        }
+        die $err unless $ns;
+
+        my $class = $ns . '::' . _camelize(join '::', @classes);
+
+        $self->ensure_class_loaded($class);
+        return $self->objects->{ $_[0] } = $class->new;
+    }
+    else {
+        die $err;
+    }
+}
+
+# steel from String::CamelCase
+sub _camelize {
+    my $s = shift;
+    join('', map{ ucfirst $_ } split(/(?<=[A-Za-z])_(?=[A-Za-z])|\b/, $s));
 }
 
 1;
