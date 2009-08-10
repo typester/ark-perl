@@ -77,6 +77,16 @@ has actions => (
     default => sub { {} },
 );
 
+has action_cache => (
+    is      => 'rw',
+    isa     => 'Path::Class::File',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        $self->path_to('action.cache');
+    },
+);
+
 has dispatch_types => (
     is      => 'rw',
     isa     => 'ArrayRef',
@@ -243,7 +253,7 @@ sub setup_store {
 
     $self->setup unless $self->setup_finished;
 
-    my $cache = $self->path_to('action.cache');
+    my $cache = $self->action_cache or die q[action_cache does not specified];
     $self->ensure_class_loaded('Storable');
 
     my $used_dispatch_types
@@ -276,7 +286,7 @@ sub setup_store {
 sub setup_retrieve {
     my $self = shift;
 
-    my $cache = $self->path_to('action.cache');
+    my $cache = $self->action_cache or die q[action_cache does not specified];
     $self->ensure_class_loaded('Storable');
 
     my $state = eval { Storable::retrieve($cache) }
@@ -293,7 +303,7 @@ sub setup_retrieve {
 }
 
 sub setup_minimal {
-    my $self = shift;
+    my ($self, %option) = @_;
 
     $self->setup_debug_mode if $self->debug;
 
@@ -301,6 +311,9 @@ sub setup_minimal {
     $self->setup_plugins;
 
     # cache
+    $self->action_cache( $self->path_to($option{action_cache}) )
+        if $option{action_cache};
+
     $self->setup_retrieve;
     $self->setup_store unless $self->setup_finished;
 }
