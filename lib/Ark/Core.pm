@@ -79,7 +79,7 @@ has actions => (
 
 has action_cache => (
     is      => 'rw',
-    isa     => 'Path::Class::File',
+    isa     => 'Object',
     lazy    => 1,
     default => sub {
         my $self = shift;
