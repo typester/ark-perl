@@ -156,7 +156,7 @@ sub get {
         }
         die $err unless $ns;
 
-        my $class = $ns . '::' . _camelize(join '::', @classes);
+        my $class = $ns . '::' . join '::', @classes;
 
         $self->ensure_class_loaded($class);
         return $self->objects->{ $_[0] } = $class->new;
@@ -164,12 +164,6 @@ sub get {
     else {
         die $err;
     }
-}
-
-# steel from String::CamelCase
-sub _camelize {
-    my $s = shift;
-    join('', map{ ucfirst $_ } split(/(?<=[A-Za-z])_(?=[A-Za-z])|\b/, $s));
 }
 
 1;
