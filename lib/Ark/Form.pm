@@ -39,7 +39,7 @@ has context => (
 
 has request => (
     is       => 'rw',
-    isa      => 'HTTP::Engine::Request',
+    isa      => 'Object',
     required => 1,
 );
 
@@ -128,7 +128,7 @@ sub BUILDARGS {
 
     return {
         request => $request,
-        context => $context || undef,
+        $context ? (context => $context) : (),
     };
 }
 
