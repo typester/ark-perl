@@ -34,7 +34,8 @@ has debug_screen_tamplate => (
         my $self = shift;
         $self->ensure_class_loaded('Text::MicroTemplate');
         Text::MicroTemplate::build_mt(<<'__EOF__');
-<?=r qq[<\?xml version="1.0" encoding="utf-8"?\>\n] ?>
+? sub encoded_string { goto &Text::MicroTemplate::encoded_string }
+<?= encoded_string(qq[<\?xml version="1.0" encoding="utf-8"?\>\n]) ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
 <head>
@@ -140,7 +141,7 @@ h2 {
 ?     last if $frame->package =~ /^HTTP::Engine::Role::Interface/;
 <div class="trace">
 <h3><?= $frame->package ?> - line:<?= $frame->line ?></h3>
-<pre><code><?=r $_[0]->debug_print_context( $frame->filename, $frame->line, 3 ) ?>
+<pre><code><?= encoded_string( $_[0]->debug_print_context( $frame->filename, $frame->line, 3 ) ) ?>
 </code></pre>
 </div>
 ? }
