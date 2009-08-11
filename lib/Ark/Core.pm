@@ -605,6 +605,12 @@ sub handle_request {
     if ( my $error = $context->error->[-1] ) {
         chomp $error;
         $self->log( error => 'Caught exception in engine "%s"', $error );
+
+        unless ($self->debug) {
+            my $res = $context->response;
+            $res->status(500);
+            $res->body('Internal Server Error');
+        }
     }
 
     return $context->response;
