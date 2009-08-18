@@ -19,12 +19,22 @@ has controller => (
     required => 1,
 );
 
+has args => (
+    is      => 'rw',
+    isa     => 'Maybe[Int]',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        $self->attributes->{Args} ? $self->attributes->{Args}[0] : 0;
+    },
+);
+
 no Mouse;
 
 sub match {
     my ($self, $req) = @_;
 
-    my $args = $self->attributes->{Args} ? $self->attributes->{Args}[0] : 0;
+    my $args = $self->args;
 
     return 1 unless defined($args) && length($args);
     return scalar( @{ $req->args } ) == $args;

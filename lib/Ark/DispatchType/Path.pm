@@ -70,7 +70,26 @@ sub register_path {
     $path = '/' unless length $path;
     $path = URI->new($path)->canonical;
 
-    unshift @{ $self->paths->{$path} ||= [] }, $action;
+    my $actions = $self->paths->{$path} ||= [];
+    my $args    = $action->args;
+
+    if (defined $args) {
+        my $p;
+        for (my $i = 0; $i <= $#$actions; $i++) {
+            last unless defined $actions->[$i]->args;
+            $p = $i if $actions->[$i]->args >= $args;
+        }
+
+        unless ($p) {
+            unshift @$actions, $action;
+        }
+        else {
+            @$actions = @$actions[0..$p-1], $action, @$actions[$p..$#$actions];
+        }
+    }
+    else {
+        push @$actions, $action;
+    }
 }
 
 sub used {
