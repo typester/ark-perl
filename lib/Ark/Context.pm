@@ -102,7 +102,7 @@ sub prepare_action {
 
     my $vpath = $req->uri->rel->path;
     $vpath =~ s!^\.\./[^/]+!!;                    # fix ../foo/path => /path
-    $vpath =~ s/^\.+//;                           # fix ./path => /path
+    $vpath =~ s!^\./!!;                           # fix ./path => /path
     $vpath = '/' . $vpath unless $vpath =~ m!^/!; # path should be / first
 
     my @path = split /\//, $vpath;
