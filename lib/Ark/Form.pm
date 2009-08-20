@@ -224,6 +224,12 @@ sub render {
             . ($self->error_message($name) || '');
 }
 
+sub valid_param {
+    my ($self, $name) = @_;
+    return if $self->is_error($name);
+    return $self->param($name);
+}
+
 sub ignore_error {
     my ($self, $form, $name) = @_;
 
