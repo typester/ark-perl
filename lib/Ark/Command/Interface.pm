@@ -37,37 +37,50 @@ sub show_usage {
 }
 
 sub search_app {
-    my ($self,) = @_;
+    my ($self, $app) = @_;
 
     my $libdir = dir(cwd)->subdir('lib');
-    return unless -d $libdir;
+    $self->show_usage(-1, "There is no 'lib' directory in current directory, this command should be called from application directory.")
+        unless -d $libdir;
 
     eval "use lib q[$libdir]";
     die $@ if $@;
 
-    my $app;
-    $libdir->recurse( callback => sub {
-        my $file = $_[0];
-        return if $app;
-        return unless -f $file && $file->basename =~ /\.pm$/;
+    my $extlib = $libdir->parent->subdir('extlib');
+    if (-d $extlib) {
+        eval "use lib q[$extlib]";
+    }
 
-        my $path = $libdir;
-        if ($^O eq 'MSWin32') {
-            $file =~ s!\\!/!g;
-            $path =~ s!\\!/!g;
+    if ($app) {
+        eval "use $app";
+        if ($@) {
+            $self->show_usage(-1, qq[Can't find app: "$app"]);
         }
-        (my $module = $file) =~ s!^$path/!!;
-        $module =~ s!/!::!g;
-        $module =~ s!\.pm$!!;
+    }
+    else {
+        $libdir->recurse( callback => sub {
+            my $file = $_[0];
+            return if $app;
+            return unless -f $file && $file->basename =~ /\.pm$/;
 
-        Mouse::load_class($module) unless Mouse::is_class_loaded($module);
+            my $path = $libdir;
+            if ($^O eq 'MSWin32') {
+                $file =~ s!\\!/!g;
+                $path =~ s!\\!/!g;
+            }
+            (my $module = $file) =~ s!^$path/!!;
+            $module =~ s!/!::!g;
+            $module =~ s!\.pm$!!;
 
-        return unless $module->can('meta')
-            and ref($module->meta) eq 'Mouse::Meta::Class';
+            Mouse::load_class($module) unless Mouse::is_class_loaded($module);
 
-        my @super = $module->meta->superclasses;
-        $app = $module if grep /^Ark::Core$/, @super;
-    });
+            return unless $module->can('meta')
+                and ref($module->meta) eq 'Mouse::Meta::Class';
+
+            my @super = $module->meta->superclasses;
+            $app = $module if grep /^Ark::Core$/, @super;
+        });
+    }
 
     $app;
 }

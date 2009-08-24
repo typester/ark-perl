@@ -19,53 +19,7 @@ sub run {
     my ($self, @args) = @_;
     $self->show_usage(0) if $self->options->{help};
 
-    my $libdir = dir(cwd)->subdir('lib');
-    $self->show_usage(-1, "There is no 'lib' directory in current directory")
-        unless -d $libdir;
-
-    eval "use lib q[$libdir]";
-    die $@ if $@;
-
-    my $extlib = $libdir->parent->subdir('extlib');
-    if (-d $extlib) {
-        eval "use lib q[$extlib]";
-    }
-
-    my $app_name = $args[0];
-    if ($app_name) {
-        eval "use $app_name";
-        if ($@) {
-            $self->show_usage(-1, qq[Can't find app: "$app_name"]);
-        }
-    }
-    else {
-        # search ark application
-        $libdir->recurse( callback => sub {
-            my $file = $_[0];
-            return if $app_name;
-            return unless -f $file && $file->basename =~ /\.pm$/;
-
-            my $path = $libdir;
-            if ($^O eq 'MSWin32') {
-                $file =~ s!\\!/!g;
-                $path =~ s!\\!/!g;
-            }
-            (my $module = $file) =~ s!^$path/!!;
-            $module =~ s!/!::!g;
-            $module =~ s!\.pm$!!;
-
-            Mouse::load_class($module) unless Mouse::is_class_loaded($module);
-
-            return unless $module->can('meta')
-                and ref($module->meta) eq 'Mouse::Meta::Class';
-
-            my @super = $module->meta->superclasses;
-            $app_name = $module if grep /^Ark::Core$/, @super;
-        });
-
-        $self->show_usage(-1, qq[Error: Can't find ark application in 'lib' directory\n])
-            unless $app_name;
-    }
+    my $app_name = $self->search_app($args[0]);
 
     my $app = $app_name->new;
     $app->log_level( $self->options->{debug} ? 'debug' : 'error' );
@@ -74,9 +28,9 @@ sub run {
     my $mw = HTTP::Engine::Middleware->new;
     $mw->install('HTTP::Engine::Middleware::Static' => {
         docroot => $app->path_to('root'),
-        regexp => '/(?:(?:css|js|img|images?|swf|static|tmp|)/.*|[^/]+\.[^/]+)',
-#        regexp => qr!^/.*!,
-#        is_404_handler => 0, # this option requires HEM 0.14 or later
+#        regexp => '/(?:(?:css|js|img|images?|swf|static|tmp|)/.*|[^/]+\.[^/]+)',
+        regexp => qr!^/.*!,
+        is_404_handler => 0, # this option requires HEM 0.14 or later
     });
 
     HTTP::Engine->new(
