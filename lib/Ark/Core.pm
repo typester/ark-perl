@@ -40,7 +40,7 @@ has logger => (
         my $self  = shift;
         my $class = $self->logger_class;
         $self->ensure_class_loaded($class);
-        $class->new;
+        $class->new( log_level => $self->log_level );
     },
 );
 
@@ -52,17 +52,11 @@ has log_level => (
     },
 );
 
-has log_levels => (
+has debug => (
     is      => 'rw',
-    isa     => 'HashRef',
-    default => sub {
-        {   debug => 4,
-            info  => 3,
-            warn  => 2,
-            error => 1,
-            fatal => 0,
-        };
-    },
+    isa     => 'Bool',
+    lazy    => 1,
+    default => sub { !!$ENV{ARK_DEBUG} },
 );
 
 has components => (
@@ -155,11 +149,6 @@ sub EXPORT {
         config      => $config_sub,
         conf        => $config_sub, # backward compatibility
     );
-}
-
-sub debug {
-    my $self = shift;
-    !!( $self->log_levels->{ $self->log_level } >= $self->log_levels->{debug} );
 }
 
 sub config {
@@ -538,11 +527,14 @@ sub parse_action_attrs {
 
 sub log {
     my $self = shift;
-    my ($type, $msg, @args) = @_;
-    return if !$self->log_levels->{$type} or
-        $self->log_levels->{$type} > $self->log_levels->{ $self->log_level };
 
-    $self->logger->log(@_);
+    unless (@_) {
+        return $self->logger;
+    }
+    else {
+        # keep backward compatibility
+        $self->logger->log(@_);
+    }
 }
 
 sub get_action {
