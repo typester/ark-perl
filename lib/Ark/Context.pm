@@ -211,7 +211,7 @@ sub execute {
 
     if (my $error = $@) {
         if ($error =~ /^${DETACH} at /) {
-            die $DETACH if ($self->depth > 1);
+            die $DETACH if ($self->depth >= 1);
             $self->detached(1);
         }
         else {
