@@ -5,6 +5,8 @@ extends 'Ark::Command::Plugin';
 
 with 'Ark::Command::Interface::ModuleSetup';
 
+sub search_app {}
+
 1;
 
 __END__
