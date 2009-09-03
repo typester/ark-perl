@@ -1,7 +1,7 @@
 package Ark::Plugin::Session::Store::Model;
 use Ark::Plugin 'Session';
 
-has model => (
+has store_model => (
     is      => 'rw',
     isa     => 'Object',
     lazy    => 1,
@@ -11,11 +11,18 @@ has model => (
     },
 );
 
+has store_model_key_prefix => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => 'session:',
+);
+
 around 'get_session_data' => sub {
     my $next = shift;
     my ($self, $key) = @_;
+    $key = $self->store_model_key_prefix . $key;
 
-    if (my $session = $self->model->get($key)) {
+    if (my $session = $self->store_model->get($key)) {
         return $session;
     }
 
@@ -25,8 +32,9 @@ around 'get_session_data' => sub {
 around 'set_session_data' => sub {
     my $next = shift;
     my ($self, $key, $value) = @_;
+    $key = $self->store_model_key_prefix . $key;
 
-    $self->model->set( $key, $value );
+    $self->store_model->set( $key, $value );
 
     $next->(@_);
 };
@@ -34,8 +42,9 @@ around 'set_session_data' => sub {
 around 'remove_session_data' => sub {
     my $next = shift;
     my ($self, $key) = @_;
+    $key = $self->store_model_key_prefix . $key;
 
-    $self->model->remove( $key );
+    $self->store_model->remove( $key );
 
     $next->(@_);
 };

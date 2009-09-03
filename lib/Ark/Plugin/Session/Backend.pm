@@ -15,7 +15,7 @@ has session_data => (
     builder => sub {
         my $self = shift;
         return unless $self->session_id;
-        $self->get_session_data( 'session:' . $self->session_id );
+        $self->get_session_data( $self->session_id );
     },
 );
 
@@ -85,7 +85,7 @@ sub initialize_session_data {
     $self->session_data({});
 }
 
-# Store
+# State
 sub get_session_id { }
 
 sub set_session_id {
@@ -106,7 +106,7 @@ sub finalize_session {
     my ($self, $res) = @_;
 
     if ($self->session_updated and my $sid = $self->session_id) {
-        $self->set_session_data( "session:${sid}", $self->session_data );
+        $self->set_session_data( $sid, $self->session_data );
     }
 }
 
