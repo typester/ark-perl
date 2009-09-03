@@ -56,7 +56,9 @@ has debug => (
     is      => 'rw',
     isa     => 'Bool',
     lazy    => 1,
-    default => sub { !!$ENV{ARK_DEBUG} },
+    default => sub {
+        shift->log_level eq 'debug';
+    },
 );
 
 has components => (
