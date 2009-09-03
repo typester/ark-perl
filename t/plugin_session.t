@@ -84,4 +84,9 @@ use Ark::Test 'TestApp',
 
     is get('/incr'), 2, 'session continued ok';
     isnt $sid, $new_sid, 'but session_id updated ok';
+
+    # old sid is now removed
+    my $request = HTTP::Request->new(GET => '/incr');
+    $request->header( Cookie => "testapp_session=$sid" );
+    is request($request)->content, 1, 'old session already expired';
 }
