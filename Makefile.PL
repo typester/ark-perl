@@ -6,6 +6,7 @@ license 'perl';
 all_from 'lib/Ark.pm';
 
 test_requires 'Test::More';
+test_requires 'Test::Output';
 
 perl_version '5.008001';
 
@@ -23,10 +24,10 @@ requires 'Digest::SHA1';
 requires 'Devel::StackTrace';
 requires 'Class::Method::Modifiers::Fast';
 requires 'Exporter::AutoClean';
-requires 'Object::Container' => '0.03';
+requires 'Object::Container' => '0.03002';
 
 # for build-in server
-requires 'HTTP::Engine::Middleware' => '0.13';
+requires 'HTTP::Engine::Middleware' => '0.17';
 requires 'MIME::Types';
 requires 'MouseX::Types::Path::Class';
 requires 'Getopt::Long' => '2.36';
@@ -34,6 +35,9 @@ requires 'Getopt::Long' => '2.36';
 # build-in helper script
 requires 'Module::Setup';
 requires 'FindBin::libs';
+
+# build-in form generator/validator
+requires 'HTML::Shakan';
 
 features(
     'Support MicroTemplate template engine' => [
