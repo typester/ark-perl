@@ -58,6 +58,19 @@ sub remove {
     delete $self->session_data->{ $key };
 }
 
+sub regenerate {
+    my ($self) = @_;
+
+    # ignore if session does not exists
+    return unless $self->session_id;
+
+    my $session_data = $self->session_data;
+    $self->remove_session_data($self->session_id);
+
+    $self->initialize_session_data;
+    $self->set_session_data($self->session_id => $session_data);
+}
+
 sub initialize_session_data {
     my $self = shift;
 

@@ -37,6 +37,12 @@ use Test::Base;
 
         $c->res->body( $count );
     }
+
+    sub regen :Local {
+        my ($self, $c) = @_;
+        $c->session->regenerate;
+        $c->res->body('regenerated');
+    }
 }
 
 plan 'no_plan';
@@ -59,4 +65,23 @@ use Ark::Test 'TestApp',
 
     is(get('/incr'), 1, 're-increment first ok'); # XXX: this is test for Ark::Test: should be sepalate test.
     is(get('/incr'), 2, 're-increment second ok');
+}
+
+{
+    # sid regeneration
+    reset_app;
+
+    my $res;
+    $res = request(GET => '/incr');
+    is $res->content, 1, 'request ok';
+
+    my ($sid) = $res->header('Set-Cookie') =~ /testapp_session=(\w+)/;
+    ok $sid, 'sid ok';
+
+    $res = request(GET => '/regen');
+    is $res->content, 'regenerated', 'sid regenerated';
+    my ($new_sid) = $res->header('Set-Cookie') =~ /testapp_session=(\w+)/;
+
+    is get('/incr'), 2, 'session continued ok';
+    isnt $sid, $new_sid, 'but session_id updated ok';
 }
