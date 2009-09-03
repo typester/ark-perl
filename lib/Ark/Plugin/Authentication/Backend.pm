@@ -21,6 +21,7 @@ has realms => (
 
 sub persist_user {
     my ($self, $user) = @_;
+    $self->context->session->regenerate;
     $self->context->session->set( __user => $user->for_session );
 }
 
