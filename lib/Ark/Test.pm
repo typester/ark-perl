@@ -73,7 +73,7 @@ sub import {
             if ($cookie) {
                 $req->uri( URI->new('http://localhost' . $req->uri->path ) );
                 $req->header( Host => 'localhost' );
-                $cookie->add_cookie_header($req);
+                $cookie->add_cookie_header($req) unless $req->header('Cookie');
             }
 
             my $res = HTTP::Engine->new(
