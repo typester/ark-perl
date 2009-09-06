@@ -43,6 +43,12 @@ use Test::Base;
         $c->session->regenerate;
         $c->res->body('regenerated');
     }
+
+    sub regen_and_incr :Local {
+        my ($self, $c) = @_;
+        $c->forward('regen');
+        $c->forward('incr');
+    }
 }
 
 plan 'no_plan';
@@ -84,6 +90,8 @@ use Ark::Test 'TestApp',
 
     is get('/incr'), 2, 'session continued ok';
     isnt $sid, $new_sid, 'but session_id updated ok';
+
+    is get('/regen_and_incr'), 3, 'modified session data and regenerated sid on the same request ok';
 
     # old sid is now removed
     my $request = HTTP::Request->new(GET => '/incr');

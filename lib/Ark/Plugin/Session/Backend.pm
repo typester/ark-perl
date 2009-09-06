@@ -69,6 +69,7 @@ sub regenerate {
 
     $self->initialize_session_data;
     $self->set_session_data($self->session_id => $session_data);
+    $self->session_data($session_data);
 }
 
 sub initialize_session_data {
