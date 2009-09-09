@@ -1,4 +1,4 @@
-package Ark::PlackAdaptor;
+package Ark::PlackAdapter;
 use strict;
 use warnings;
 use HTTP::Engine;

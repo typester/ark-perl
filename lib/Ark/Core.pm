@@ -610,7 +610,7 @@ sub handle_request {
     return $context->response;
 }
 
-sub plack_adapter { '+Ark::PlackAdaptor' }
+sub plack_adapter { '+Ark::PlackAdapter' }
 
 1;
 
