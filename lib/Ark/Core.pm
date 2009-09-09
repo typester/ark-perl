@@ -610,5 +610,8 @@ sub handle_request {
     return $context->response;
 }
 
+sub plack_adapter { '+Ark::PlackAdaptor' }
+
 1;
+
 
