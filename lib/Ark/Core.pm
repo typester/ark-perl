@@ -610,7 +610,18 @@ sub handle_request {
     return $context->response;
 }
 
-sub plack_adapter { '+Ark::PlackAdapter' }
+sub psgi_handler {
+    my $self = shift;
+
+    my $engine = HTTP::Engine->new(
+        interface => {
+            module => 'PSGI',
+            request_handler => $self->handler,
+        }
+    );
+
+    return sub { $engine->run(@_) };
+}
 
 1;
 
