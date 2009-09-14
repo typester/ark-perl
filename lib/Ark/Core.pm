@@ -613,6 +613,7 @@ sub handle_request {
 sub psgi_handler {
     my $self = shift;
 
+    $self->ensure_class_loaded('HTTP::Engine');
     my $engine = HTTP::Engine->new(
         interface => {
             module => 'PSGI',
