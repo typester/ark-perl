@@ -443,7 +443,7 @@ sub model {
     my ($self, $name) = @_;
 
     if (my $class = $self->external_model_class) {
-        return $name ? $class->get($name) : $class;
+        return @_ >= 2 ? $class->get($name) : $class;
     }
 
     return unless $name;
