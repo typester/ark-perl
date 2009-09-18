@@ -91,16 +91,11 @@ sub check_password {
     }
     elsif ($self->cred_password_password_type eq 'hashed') {
         my $digest = $self->cred_password_password_digest_model;
-        $digest->reset;
         $digest->add( $self->cred_password_password_pre_salt );
         $digest->add( $password );
         $digest->add( $self->cred_password_password_post_salt );
 
-        my $hashed = $digest->hexdigest;
-
-        $digest->reset;
-
-        return $hashed eq $password_expected;
+        return $digest->hexdigest eq $password_expected;
     }
     else {
         die qq/Unknown password type "$self->{password_type}"/;

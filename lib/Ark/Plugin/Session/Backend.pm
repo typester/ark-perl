@@ -88,14 +88,9 @@ sub initialize_session_data {
         $digest = Digest::SHA1->new;
     }
 
-    $digest->reset;
     $digest->add( $uuid->create );
 
-    my $sid = $digest->hexdigest;
-
-    $digest->reset;
-
-    $self->set_session_id( $sid );
+    $self->set_session_id( $digest->hexdigest );
     $self->session_data({});
 }
 
