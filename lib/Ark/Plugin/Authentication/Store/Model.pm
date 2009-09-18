@@ -7,7 +7,8 @@ has store_model => (
     lazy    => 1,
     default => sub {
         my $self = shift;
-        $self->class_config->{model};
+        $self->class_config->{model}
+            or die q[Plugin::Authentication::Store::Model: required "model" config];
     },
 );
 
