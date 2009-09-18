@@ -44,7 +44,8 @@ sub class_config {
 
     return unless $self->app;
 
-    (my $name = $class) =~ s/^.*?::(Controller|View|Model|Plugin)::/$1::/;
+    (my $name = $class)
+        =~ s/^.*?::(Controller|ActionClass|View|Model|Plugin)::/$1::/;
 
     my $classconfig = $self->app->config->{ $name } ||= {};
     if ($config) {
