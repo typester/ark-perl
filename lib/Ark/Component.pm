@@ -29,11 +29,13 @@ sub config {
     $class->__component_config;
 }
 
+our $class_config_re = qr/^.*?::(Controller|ActionClass|View|Model|Plugin)::/;
+
 sub component_name {
     my $class = shift;
     $class = ref $class if ref $class;
 
-    (my $name = $class) =~ s/^.*?::(Controller|View|Model|Plugin)::/$1::/;
+    (my $name = $class) =~ s/$class_config_re/$1::/;
     $name;
 }
 
@@ -44,8 +46,7 @@ sub class_config {
 
     return unless $self->app;
 
-    (my $name = $class)
-        =~ s/^.*?::(Controller|ActionClass|View|Model|Plugin)::/$1::/;
+    (my $name = $class) =~ s/$class_config_re/$1::/;
 
     my $classconfig = $self->app->config->{ $name } ||= {};
     if ($config) {
