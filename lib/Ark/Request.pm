@@ -1,8 +1,6 @@
 package Ark::Request;
 use Mouse;
 
-extends 'HTTP::Engine::Request';
-
 has action => (
     is  => 'rw',
     isa => 'Ark::Action',
@@ -35,6 +33,29 @@ has captures => (
 }
 
 no Mouse;
+
+sub wrap {
+    my ($class, $req) = @_;
+
+    if ($req->isa('Plack::Request')) {
+        $class->meta->superclasses('Plack::Request');
+        $class->meta->add_method( base => sub {
+            my $self = shift;
+            my $vpath = $self->path;
+            my $path  = $self->uri->path;
+
+            (my $base = $path) =~ s/$vpath$//;
+            return $base;
+        });
+
+        return  $class->new( $req->env );
+    }
+    else {
+        $class->meta->superclasses('HTTP::Engine::Request');
+        return $class->new(%$req);
+    }
+
+}
 
 1;
 

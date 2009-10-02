@@ -25,6 +25,24 @@ has handler => (
     },
 );
 
+has psgi_handler => (
+    is      => 'rw',
+    isa     => 'CodeRef',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        $self->ensure_class_loaded('Plack::Request');
+        $self->ensure_class_loaded('Plack::Response');
+
+        sub {
+            my $req = Plack::Request->new(shift);
+            my $res = $self->handle_request($req);
+            $res->finalize;
+        };
+    },
+    predicate => 'is_psgi',
+);
+
 has logger_class => (
     is      => 'rw',
     isa     => 'Str',
@@ -592,6 +610,8 @@ sub path_to {
 sub handle_request {
     my ($self, $req) = @_;
 
+    $req = Ark::Request->wrap($req);
+
     my $context = $self->context_class->new( app => $self, request => $req );
     $self->context($context)->process;
     $self->context(undef);
@@ -608,20 +628,6 @@ sub handle_request {
     }
 
     return $context->response;
-}
-
-sub psgi_handler {
-    my $self = shift;
-
-    $self->ensure_class_loaded('HTTP::Engine');
-    my $engine = HTTP::Engine->new(
-        interface => {
-            module => 'PSGI',
-            request_handler => $self->handler,
-        }
-    );
-
-    return sub { $engine->run(@_) };
 }
 
 1;
