@@ -44,7 +44,8 @@ sub wrap {
             my $vpath = $self->path;
             my $path  = $self->uri->path;
 
-            (my $base = $path) =~ s/$vpath$//;
+            (my $base = $path) =~ s/$vpath$/\//;
+
             return $base;
         });
 
