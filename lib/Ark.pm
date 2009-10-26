@@ -1,25 +1,19 @@
 package Ark;
 use 5.008001;
-use Mouse;
+use Any::Moose;
+use Any::Moose '::Exporter';
 
 our $VERSION = '0.10';
 
-sub import {
-    my $class  = shift;
-    my @target = @_;
+do {
+    my @super;
+    sub init_meta {
+        my ($class) = @_;
+        require utf8; import utf8;
 
-    require strict; strict->import;
-    require warnings; warnings->import;
-    require utf8; utf8->import;
-
-    my $caller = caller;
-
-    {
-        no strict 'refs';
-
-        my @super;
-        push @target, 'Core' unless @target;
-        for my $target (@target) {
+        my @superclasses;
+        push @super, 'Core' unless @super;
+        for my $target (@super) {
             my $pkg;
             if ($target =~ /^\+/) {
                 ($pkg = $target) =~ s/^\+//;
@@ -27,35 +21,40 @@ sub import {
             else {
                 $pkg = "Ark::${target}";
             }
-            push @super, $pkg;
-            Mouse::load_class($pkg) unless Mouse::is_class_loaded($pkg);
+            push @superclasses, $pkg;
+            Any::Moose::load_class($pkg) unless Any::Moose::is_class_loaded($pkg);
 
+            no strict 'refs';
             for my $keyword (@{$pkg . '::EXPORT'}) {
-                *{ $caller . '::' . $keyword } = *{ $pkg . '::' . $keyword };
+                *{ $class . '::' . $keyword } = *{ $pkg . '::' . $keyword };
             }
 
             if (my $exporter = $pkg->can('EXPORT')) {
-                $exporter->($pkg, $caller);
+                $exporter->($pkg, $class);
             }
         }
 
-        for my $keyword (@Mouse::EXPORT) {
-            *{ $caller . '::' . $keyword } = *{ 'Mouse::' . $keyword };
-        }
+        my $meta = any_moose('::Meta::Class')->initialize($class);
+        $meta->superclasses(@superclasses);
 
-        my $meta = Mouse::Meta::Class->initialize($caller);
-        $meta->superclasses(@super);
-        *{ $caller . '::meta' } = sub { $meta };
+        $meta;
     }
-}
 
-sub unimport {
-    my $caller = caller;
-
-    no strict 'refs';
-    for my $keyword (@Mouse::EXPORT) {
-        delete ${ $caller . '::' }{$keyword};
+    my $next;
+    BEGIN {
+        any_moose('::Exporter')->setup_import_methods(
+            also => any_moose,
+        );
+        $next = __PACKAGE__->can('import');
     }
-}
+
+    no warnings 'redefine';
+    sub import {
+        my ($class, @target) = @_;
+        @super = @target;
+        @_ = ($class);
+        goto \&$next;
+    }
+};
 
 1;
