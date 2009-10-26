@@ -17,6 +17,7 @@ do {
             exporting_package => $caller,
             also => any_moose('::Role'),
         );
+        $EXPORTS{$caller} = $unimport;
 
         $caller->$import({ into => $caller });
 
@@ -29,6 +30,10 @@ do {
 
             return sub { $sub->($self, @_) };
         };
+    }
+
+    sub unimport {
+        goto \&{ $EXPORTS{ scalar caller } };
     }
 };
 

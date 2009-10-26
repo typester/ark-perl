@@ -31,7 +31,7 @@ do {
 
             no strict 'refs';
             for my $keyword (@{ $pkg . '::EXPORT' }) {
-                push @{ $EXPORTS{$class} }, $keyword;
+                push @{ $EXPORTS{$caller} }, $keyword;
                 *{ $class . '::' . $keyword } = *{ $pkg . '::' . $keyword };
             }
 
@@ -49,6 +49,22 @@ do {
 
         $caller->$import({ into => $caller });
         $caller->meta->superclasses(@super);
+
+        push @{ $EXPORTS{$class} }, $unimport;
+    }
+
+    sub unimport {
+        my $caller  = caller;
+
+        for my $item (@{ $EXPORTS{$caller} || [] }) {
+            if (ref $item eq 'CODE') {
+                $caller->$item;
+            }
+            else {
+                no strict 'refs';
+                delete ${ $caller . '::' }{ $item };
+            }
+        }
     }
 };
 
