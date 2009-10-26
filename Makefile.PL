@@ -12,7 +12,7 @@ perl_version '5.008001';
 
 requires 'Plack';
 requires 'Plack::Request';
-requires 'Mouse'        => '0.21';
+requires 'Any::Moose'   => '0.10';
 requires 'Path::Class'  => '0.16';
 requires 'URI';
 requires 'URI::WithBase';
