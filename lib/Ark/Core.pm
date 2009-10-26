@@ -56,6 +56,10 @@ has log_level => (
     is      => 'rw',
     isa     => 'Str',
     default => sub {
+        # XXX: how detect plackup -E env in application?
+        if ($INC{'Plack/Middleware/StackTrace.pm'}) {
+            $ENV{ARK_DEBUG} =1;
+        }
         $ENV{ARK_DEBUG} ? 'debug' : 'error';
     },
 );
