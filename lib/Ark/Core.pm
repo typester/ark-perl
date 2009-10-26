@@ -195,13 +195,16 @@ sub class_wrapper {
         if Any::Moose::is_class_loaded($classname) && $classname->isa($args->{base});
 
     my $moose_class = any_moose;
-    eval qq{
-        package ${classname};
-        use ${moose_class};
-        extends '$args->{base}';
-        1;
-    };
-    die $@ if $@;
+    {
+        local $@;
+        eval qq{
+            package ${classname};
+            use ${moose_class};
+            extends '$args->{base}';
+            1;
+        };
+        die $@ if $@;
+    }
 
     for my $plugin (@{ $self->lazy_roles->{ $args->{name} } || [] }) {
         $plugin->meta->apply( $classname->meta )
