@@ -3,6 +3,7 @@ use Any::Moose;
 use Any::Moose '::Util::TypeConstraints';
 
 use Scalar::Util ();
+use Try::Tiny;
 
 our $DETACH = 'ARK_DETACH';
 
@@ -209,11 +210,16 @@ sub execute {
         as_string => "${class}->${method}"
     };
 
-    $self->execute_action($obj, $method, @args);
+    my $error;
+    try {
+        $self->execute_action($obj, $method, @args);
+    } catch {
+        $error = $_;
+    };
 
     pop @{ $self->stack };
 
-    if (my $error = $@) {
+    if ($error) {
         if ($error =~ /^${DETACH} at /) {
             die $DETACH if ($self->depth >= 1);
             $self->detached(1);
@@ -230,10 +236,8 @@ sub execute {
 sub execute_action {
     my ($self, $obj, $method, @args) = @_;
 
-    eval {
-        my $state = $obj->$method($self, @args);
-        $self->state( defined $state ? $state : undef );
-    };
+    my $state = $obj->$method($self, @args);
+    $self->state( defined $state ? $state : undef );
 }
 
 sub redirect {
