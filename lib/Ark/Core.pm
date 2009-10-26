@@ -6,6 +6,9 @@ use Ark::Action;
 use Ark::ActionContainer;
 use Ark::Request;
 
+use Plack::Request;
+use Plack::Response;
+
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;
 
@@ -17,22 +20,9 @@ __PACKAGE__->mk_classdata($_)
 has handler => (
     is      => 'rw',
     isa     => 'CodeRef',
-    default => sub {
-        my $self = shift;
-        sub {
-            $self->handle_request(@_);
-        };
-    },
-);
-
-has psgi_handler => (
-    is      => 'rw',
-    isa     => 'CodeRef',
     lazy    => 1,
     default => sub {
         my $self = shift;
-        $self->ensure_class_loaded('Plack::Request');
-        $self->ensure_class_loaded('Plack::Response');
 
         sub {
             my $req = Plack::Request->new(shift);
@@ -631,5 +621,3 @@ sub handle_request {
 }
 
 1;
-
-

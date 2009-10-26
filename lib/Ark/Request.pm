@@ -39,23 +39,11 @@ sub wrap {
 
     if ($req->isa('Plack::Request')) {
         $class->meta->superclasses('Plack::Request');
-        $class->meta->add_method( base => sub {
-            my $self = shift;
-            my $vpath = $self->path;
-            my $path  = $self->uri->path;
-
-            (my $base = $path) =~ s/$vpath$/\//;
-
-            return $base;
-        });
-
         return  $class->new( $req->env );
     }
     else {
-        $class->meta->superclasses('HTTP::Engine::Request');
-        return $class->new(%$req);
+        die "Request class should be inheritance Plack::Request";
     }
-
 }
 
 1;
