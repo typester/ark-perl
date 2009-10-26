@@ -1,6 +1,8 @@
 package Ark::Request;
 use Mouse;
 
+use URI::WithBase;
+
 has action => (
     is  => 'rw',
     isa => 'Ark::Action',

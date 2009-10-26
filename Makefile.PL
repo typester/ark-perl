@@ -15,6 +15,7 @@ requires 'Plack::Request';
 requires 'Mouse'        => '0.21';
 requires 'Path::Class'  => '0.16';
 requires 'URI';
+requires 'URI::WithBase';
 requires 'Text::SimpleTable';
 requires 'Module::Pluggable::Object';
 requires 'Data::Util';
