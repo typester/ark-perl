@@ -6,6 +6,9 @@ use Ark::Action;
 use Ark::ActionContainer;
 use Ark::Request;
 
+use Plack::Request;
+use Plack::Response;
+
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;
 
@@ -17,12 +20,17 @@ __PACKAGE__->mk_classdata($_)
 has handler => (
     is      => 'rw',
     isa     => 'CodeRef',
+    lazy    => 1,
     default => sub {
         my $self = shift;
+
         sub {
-            $self->handle_request(@_);
+            my $req = Plack::Request->new(shift);
+            my $res = $self->handle_request($req);
+            $res->finalize;
         };
     },
+    predicate => 'is_psgi',
 );
 
 has logger_class => (
@@ -48,6 +56,10 @@ has log_level => (
     is      => 'rw',
     isa     => 'Str',
     default => sub {
+        # XXX: how detect plackup -E env in application?
+        if ($INC{'Plack/Middleware/StackTrace.pm'}) {
+            $ENV{ARK_DEBUG} =1;
+        }
         $ENV{ARK_DEBUG} ? 'debug' : 'error';
     },
 );
@@ -592,6 +604,8 @@ sub path_to {
 sub handle_request {
     my ($self, $req) = @_;
 
+    $req = Ark::Request->wrap($req);
+
     my $context = $self->context_class->new( app => $self, request => $req );
     $self->context($context)->process;
     $self->context(undef);
@@ -611,4 +625,3 @@ sub handle_request {
 }
 
 1;
-

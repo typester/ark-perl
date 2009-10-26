@@ -10,7 +10,8 @@ test_requires 'Test::Output';
 
 perl_version '5.008001';
 
-requires 'HTTP::Engine' => '0.001008';
+requires 'Plack';
+requires 'Plack::Request';
 requires 'Mouse'        => '0.21';
 requires 'Path::Class'  => '0.16';
 requires 'URI';
@@ -27,7 +28,6 @@ requires 'Exporter::AutoClean';
 requires 'Object::Container' => '0.03002';
 
 # for build-in server
-requires 'HTTP::Engine::Middleware' => '0.17';
 requires 'MIME::Types';
 requires 'MouseX::Types::Path::Class';
 requires 'Getopt::Long' => '2.36';

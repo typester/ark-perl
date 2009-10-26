@@ -2,33 +2,34 @@ package Ark::Context;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use Ark::Request;
-use HTTP::Engine::Response;
 use Scalar::Util ();
 
 our $DETACH = 'ARK_DETACH';
 
 extends 'Ark::Component';
 
-coerce 'Ark::Request'
-    => from 'Object'
-    => via {
-        $_->isa('Ark::Request') ? $_ : Ark::Request->new(%$_);
-    };
-
 has request => (
     is       => 'rw',
-    isa      => 'Ark::Request',
+    isa      => 'Object',
     required => 1,
-    coerce   => 1,
 );
 
 has response => (
     is      => 'rw',
-    isa     => 'HTTP::Engine::Response',
+    isa     => 'Plack::Response',
     lazy    => 1,
     default => sub {
-        HTTP::Engine::Response->new;
+        my $self = shift;
+
+        if ($self->app->is_psgi) {
+            my $res = Plack::Response->new;
+            $res->status(200);
+            $res->header( 'Content-Type' => 'text/html' );
+            return $res;
+        }
+        else {
+            return HTTP::Engine::Response->new;
+        }
     },
 );
 
@@ -100,12 +101,15 @@ sub prepare_action {
     my $self = shift;
     my $req  = $self->request;
 
-    my $vpath = $req->uri->rel->path;
-    $vpath =~ s!^\.\./[^/]+!!;                    # fix ../foo/path => /path
-    $vpath =~ s!^\./!!;                           # fix ./path => /path
-    $vpath = '/' . $vpath unless $vpath =~ m!^/!; # path should be / first
+    my @path = split /\//, $req->path;
+    unless ($self->app->is_psgi) { # HTTP::Engine is required this trick
+        my $vpath = $req->uri->rel->path;
+        $vpath =~ s!^\.\./[^/]+!!;                    # fix ../foo/path => /path
+        $vpath =~ s!^\./!!;                           # fix ./path => /path
+        $vpath = '/' . $vpath unless $vpath =~ m!^/!; # path should be / first
+        @path = split /\//, $vpath;
+    }
 
-    my @path = split /\//, $vpath;
     unshift @path, '' unless @path;
 
  DESCEND: while (@path) {

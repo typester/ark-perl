@@ -25,6 +25,25 @@ sub setup_template_vars {
 __DATA__
 
 ---
+file: app.psgi
+template: |
+  use Plack::Builder;
+  use Plack::Middleware::Static;
+  
+  use [% module %];
+  
+  my $app = MyApp->new;
+  $app->setup;
+  
+  builder {
+      enable 'Plack::Middleware::Static',
+          path => qr{^/(js/|css/|swf/|images?/|imgs?/|static/|[^/]+\.[^/]+$)},
+          root => $app->path_to('root')->stringify;
+  
+      $app->handler;
+  };
+  
+---
 file: Makefile.PL
 template: |
   use inc::Module::Install;

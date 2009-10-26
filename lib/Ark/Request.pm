@@ -1,8 +1,6 @@
 package Ark::Request;
 use Mouse;
 
-extends 'HTTP::Engine::Request';
-
 has action => (
     is  => 'rw',
     isa => 'Ark::Action',
@@ -35,6 +33,18 @@ has captures => (
 }
 
 no Mouse;
+
+sub wrap {
+    my ($class, $req) = @_;
+
+    if ($req->isa('Plack::Request')) {
+        $class->meta->superclasses('Plack::Request');
+        return  $class->new( $req->env );
+    }
+    else {
+        die "Request class should be inheritance Plack::Request";
+    }
+}
 
 1;
 

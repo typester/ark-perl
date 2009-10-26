@@ -2,8 +2,8 @@ package Ark::Test;
 use Mouse;
 
 use HTTP::Request;
-use HTTP::Engine;
 use HTTP::Cookies;
+use Plack::Test;
 
 use FindBin;
 use Path::Class qw/dir/;
@@ -76,12 +76,14 @@ sub import {
                 $cookie->add_cookie_header($req) unless $req->header('Cookie');
             }
 
-            my $res = HTTP::Engine->new(
-                interface => {
-                    module          => 'Test',
-                    request_handler => $app->handler,
+            my $res;
+            test_psgi(
+                app    => $app->handler,
+                client => sub {
+                    my $cb = shift;
+                    $res = $cb->($req);
                 },
-            )->run($req, env => \%ENV);
+            );
 
             if ($cookie) {
                 $res->{_request} = $req;

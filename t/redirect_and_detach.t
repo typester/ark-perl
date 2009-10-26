@@ -32,13 +32,13 @@ use Ark::Test 'T', components => [qw/Controller::Root/];
     ok( my $res = request(GET => '/normal') );
     is($res->code, 302, 'redirect status ok');
     is($res->content, '', 'content does not set');
-    is($res->header('Location'), '/redirected', 'redirect header ok');
+    is($res->header('Location'), 'http://localhost/redirected', 'redirect header ok');
 }
 
 {
     ok( my $res = request(GET => '/with_status') );
     is($res->code, 301, 'redirect status');
     is($res->content, '', 'content does not set');
-    is($res->header('Location'), '/redirected_301', 'redirect header ok');
+    is($res->header('Location'), 'http://localhost/redirected_301', 'redirect header ok');
 }
 
