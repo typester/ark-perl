@@ -28,7 +28,6 @@ requires 'Exporter::AutoClean';
 requires 'Object::Container' => '0.03002';
 
 # for build-in server
-requires 'HTTP::Engine::Middleware' => '0.17';
 requires 'MIME::Types';
 requires 'MouseX::Types::Path::Class';
 requires 'Getopt::Long' => '2.36';

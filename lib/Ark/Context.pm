@@ -2,7 +2,6 @@ package Ark::Context;
 use Mouse;
 use Mouse::Util::TypeConstraints;
 
-use HTTP::Engine::Response;
 use Scalar::Util ();
 
 our $DETACH = 'ARK_DETACH';
@@ -17,7 +16,7 @@ has request => (
 
 has response => (
     is      => 'rw',
-    isa     => 'HTTP::Engine::Response | Plack::Response',
+    isa     => 'Plack::Response',
     lazy    => 1,
     default => sub {
         my $self = shift;
