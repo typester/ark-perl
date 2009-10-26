@@ -9,22 +9,22 @@ use Test::Base;
 
     sub begin :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'begin1' );
+        $c->res->body( ($c->res->body || '') . 'begin1' );
     }
 
     sub auto :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'auto1' );
+        $c->res->body( ($c->res->body || '') . 'auto1' );
     }
 
     sub index :Path {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'action1' );
+        $c->res->body( ($c->res->body || '') . 'action1' );
     }
 
     sub end :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'end1' );
+        $c->res->body( ($c->res->body || '') . 'end1' );
     }
 
     package TestApp::Controller::Order::Cascade;
@@ -32,22 +32,22 @@ use Test::Base;
 
     sub begin :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'begin2' );
+        $c->res->body( ($c->res->body || '') . 'begin2' );
     }
 
     sub auto :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'auto2' );
+        $c->res->body( ($c->res->body || '') . 'auto2' );
     }
 
     sub index :Path {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'action2' );
+        $c->res->body( ($c->res->body || '') . 'action2' );
     }
 
     sub end :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'end2' );
+        $c->res->body( ($c->res->body || '') . 'end2' );
     }
 
     package TestApp::Controller::StopAuto;
@@ -55,23 +55,23 @@ use Test::Base;
 
     sub begin :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'begin1' );
+        $c->res->body( ($c->res->body || '') . 'begin1' );
     }
 
     sub auto :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'auto1' );
+        $c->res->body( ($c->res->body || '') . 'auto1' );
         return;
     }
 
     sub index :Path {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'action1' );
+        $c->res->body( ($c->res->body || '') . 'action1' );
     }
 
     sub end :Private {
         my ($self, $c) = @_;
-        $c->res->body( $c->res->body . 'end1' );
+        $c->res->body( ($c->res->body || '') . 'end1' );
     }
 }
 
