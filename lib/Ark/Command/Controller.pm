@@ -1,9 +1,9 @@
 package Ark::Command::Controller;
-use Mouse;
+use Any::Moose;
 
 with 'Ark::Command::Interface::ModuleSetup';
 
-1;
+__PACKAGE__->meta->make_immutable;
 
 __END__
 

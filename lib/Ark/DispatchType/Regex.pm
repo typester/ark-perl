@@ -1,5 +1,5 @@
 package Ark::DispatchType::Regex;
-use Mouse;
+use Any::Moose;
 
 extends 'Ark::DispatchType::Path';
 
@@ -18,7 +18,7 @@ has compiled => (
 
 has list => (
     is      => 'rw',
-    isa     => 'Text::SimpleTable | Undef',
+    isa     => 'Maybe[Object]',
     lazy    => 1,
     default => sub {
         my $self = shift;
@@ -33,7 +33,7 @@ has list => (
     },
 );
 
-no Mouse;
+no Any::Moose;
 
 sub register {
     my ($self, $action) = @_;
@@ -82,5 +82,5 @@ sub used {
     scalar @{ $self->compiled };
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 

@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 
 {
     package TestApp;
@@ -9,7 +9,7 @@ use Test::Base;
 
     has '+namespace' => default => '';
 
-    sub default :Path :Args {
+    sub default :Path Args {
         my ($self, $c) = @_;
         $c->res->status(404);
         $c->res->content('404');

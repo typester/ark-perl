@@ -1,7 +1,7 @@
 package Ark::Model;
-use Mouse;
+use Any::Moose;
 
 extends 'Ark::Component';
 
-1;
+__PACKAGE__->meta->make_immutable;
 

@@ -71,7 +71,8 @@ around authenticate => sub {
 
     my $id = $info->{ $self->cred_password_user_field };
     if (my $user = $self->find_user($id, $info)) {
-        if ($self->method('check_password')->($info, $user)) {
+        my $check_password = __PACKAGE__->can('check_password');
+        if ($check_password->($self, $info, $user)) {
             $self->persist_user($user);
             return $user;
         }

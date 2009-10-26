@@ -1,5 +1,5 @@
 package Ark::DispatchType::Chained;
-use Mouse;
+use Any::Moose;
 
 use Ark::ActionChain;
 
@@ -32,7 +32,7 @@ has endpoints => (
 
 has list => (
     is      => 'rw',
-    isa     => 'Text::SimpleTable | Undef',
+    isa     => 'Maybe[Object]',
     lazy    => 1,
     default => sub {
         my $self = shift;
@@ -83,7 +83,7 @@ has list => (
     },
 );
 
-no Mouse;
+no Any::Moose;
 
 sub match {
     my ($self, $req, $path) = @_;
@@ -205,5 +205,5 @@ sub used {
     scalar @{ $self->endpoints }
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 

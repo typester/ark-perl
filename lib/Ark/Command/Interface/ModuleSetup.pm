@@ -1,5 +1,5 @@
 package Ark::Command::Interface::ModuleSetup;
-use Mouse::Role;
+use Any::Moose '::Role';
 
 with 'Ark::Command::Interface';
 
@@ -24,7 +24,7 @@ has module_setup_options => (
     },
 );
 
-no Mouse::Role;
+no Any::Moose '::Role';
 
 sub option_list {
     qw/flavor=s init app=s/
@@ -58,4 +58,4 @@ sub run {
     }
 }
 
-1;
+__PACKAGE__->meta->make_immutable;

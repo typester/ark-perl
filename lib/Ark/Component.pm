@@ -1,7 +1,7 @@
 package Ark::Component;
-use Mouse;
+use Any::Moose;
 
-extends 'Mouse::Object', 'Class::Data::Inheritable';
+extends any_moose('::Object'), 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata(qw/__component_config/);
 
@@ -12,7 +12,7 @@ has app => (
     handles  => ['log', 'context', 'ensure_class_loaded', 'path_to'],
 );
 
-no Mouse;
+no Any::Moose;
 
 sub config {
     my $class  = shift;
@@ -66,4 +66,4 @@ sub class_stash {
     $self->app->class_stash->{ $class } ||= {};
 }
 
-1;
+__PACKAGE__->meta->make_immutable;

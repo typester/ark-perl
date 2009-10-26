@@ -3,16 +3,16 @@ use Ark 'Component';
 
 has session_id => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => 'Maybe[Str]',
     lazy    => 1,
     builder => 'get_session_id',
 );
 
 has session_data => (
     is      => 'rw',
-    isa     => 'HashRef',
+    isa     => 'Maybe[HashRef]',
     lazy    => 1,
-    builder => sub {
+    default => sub {
         my $self = shift;
         return unless $self->session_id;
         $self->get_session_data( $self->session_id );

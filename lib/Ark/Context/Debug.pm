@@ -1,5 +1,5 @@
 package Ark::Context::Debug;
-use Mouse::Role;
+use Any::Moose '::Role';
 
 has debug_report => (
     is      => 'rw',
@@ -270,4 +270,5 @@ sub debug_print_context {
 }
 
 1;
+
 

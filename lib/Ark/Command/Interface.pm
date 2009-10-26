@@ -1,5 +1,5 @@
 package Ark::Command::Interface;
-use Mouse::Role;
+use Any::Moose '::Role';
 
 use Cwd qw/cwd/;
 use Path::Class qw/dir/;
@@ -24,7 +24,7 @@ around run => sub {
     $next->($self, @args);
 };
 
-no Mouse::Role;
+no Any::Moose '::Role';
 
 sub show_usage {
     my ($self, $exitval, $message, $caller) = @_;
@@ -85,5 +85,5 @@ sub search_app {
     $app;
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 

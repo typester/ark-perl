@@ -1,6 +1,6 @@
 package Ark::Context;
-use Mouse;
-use Mouse::Util::TypeConstraints;
+use Any::Moose;
+use Any::Moose '::Util::TypeConstraints';
 
 use Scalar::Util ();
 
@@ -274,5 +274,5 @@ sub finalize {
 sub finalize_headers {}
 sub finalize_body {}
 
-1;
+__PACKAGE__->meta->make_immutable;
 

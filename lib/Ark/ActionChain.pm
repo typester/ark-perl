@@ -1,5 +1,5 @@
 package Ark::ActionChain;
-use Mouse;
+use Any::Moose;
 
 extends 'Ark::Action';
 
@@ -36,5 +36,5 @@ sub from_chain {
     $self->new({ %$final, chain => $actions });
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 

@@ -1,5 +1,5 @@
 package Ark::ActionContainer;
-use Mouse;
+use Any::Moose;
 
 has namespace => (
     is       => 'rw',
@@ -13,7 +13,7 @@ has actions => (
     default => sub { {} },
 );
 
-no Mouse;
+no Any::Moose;
 
-1;
+__PACKAGE__->meta->make_immutable;
 

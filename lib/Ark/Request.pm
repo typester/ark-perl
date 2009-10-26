@@ -1,5 +1,5 @@
 package Ark::Request;
-use Mouse;
+use Any::Moose;
 
 use URI::WithBase;
 
@@ -34,7 +34,7 @@ has captures => (
     *args = \&arguments;
 }
 
-no Mouse;
+no Any::Moose;
 
 sub wrap {
     my ($class, $req) = @_;

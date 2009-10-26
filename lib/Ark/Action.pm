@@ -1,5 +1,7 @@
 package Ark::Action;
-use Mouse;
+use Any::Moose;
+
+use Ark::Controller;
 
 has [qw/namespace reverse name/] => (
     is       => 'rw',
@@ -29,7 +31,7 @@ has args => (
     },
 );
 
-no Mouse;
+no Any::Moose;
 
 sub match {
     my ($self, $req) = @_;
@@ -101,5 +103,5 @@ sub dispatch_end {
     return !@{ $context->error };
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 

@@ -3,57 +3,52 @@ use 5.008001;
 use Any::Moose;
 use Any::Moose '::Exporter';
 
+use Ark::Core;
+
 our $VERSION = '0.10';
 
 do {
-    my @super;
-    sub init_meta {
-        my ($class) = @_;
+    my %EXPORTS;
+
+    sub import {
+        my ($class, @bases) = @_;
+
+        my $caller = caller;
+
         require utf8; import utf8;
 
-        my @superclasses;
-        push @super, 'Core' unless @super;
-        for my $target (@super) {
+        my @super;
+        push @bases, 'Core' unless @bases;
+        for my $base (@bases) {
             my $pkg;
-            if ($target =~ /^\+/) {
-                ($pkg = $target) =~ s/^\+//;
+            if ($base =~ /^\+/) {
+                ($pkg = $base) =~ s/^\+//;
+            } else {
+                $pkg = "Ark::${base}";
             }
-            else {
-                $pkg = "Ark::${target}";
-            }
-            push @superclasses, $pkg;
-            Any::Moose::load_class($pkg) unless Any::Moose::is_class_loaded($pkg);
+            push @super, $pkg;
+            Ark::Core->ensure_class_loaded($pkg);
 
             no strict 'refs';
-            for my $keyword (@{$pkg . '::EXPORT'}) {
+            for my $keyword (@{ $pkg . '::EXPORT' }) {
+                push @{ $EXPORTS{$class} }, $keyword;
                 *{ $class . '::' . $keyword } = *{ $pkg . '::' . $keyword };
             }
 
             if (my $exporter = $pkg->can('EXPORT')) {
-                $exporter->($pkg, $class);
+                $exporter->($pkg, $caller);
             }
         }
 
-        my $meta = any_moose('::Meta::Class')->initialize($class);
-        $meta->superclasses(@superclasses);
+        any_moose('::Meta::Class')->initialize($caller);
 
-        $meta;
-    }
-
-    my $next;
-    BEGIN {
-        any_moose('::Exporter')->setup_import_methods(
+        my ($import, $unimport) = any_moose('::Exporter')->build_import_methods(
+            exporting_package => $caller,
             also => any_moose,
         );
-        $next = __PACKAGE__->can('import');
-    }
 
-    no warnings 'redefine';
-    sub import {
-        my ($class, @target) = @_;
-        @super = @target;
-        @_ = ($class);
-        goto \&$next;
+        $caller->$import({ into => $caller });
+        $caller->meta->superclasses(@super);
     }
 };
 

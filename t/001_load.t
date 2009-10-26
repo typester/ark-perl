@@ -1,6 +1,7 @@
-use Test::Base;
+use Test::More;
 
 plan 'no_plan';
 
-use_ok('Ark');
+package DummyApp;
+Test::More::use_ok('Ark');
 

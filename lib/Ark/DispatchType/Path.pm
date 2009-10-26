@@ -1,5 +1,5 @@
 package Ark::DispatchType::Path;
-use Mouse;
+use Any::Moose;
 
 use URI;
 
@@ -18,7 +18,7 @@ has paths => (
 
 has list => (
     is      => 'rw',
-    isa     => 'Text::SimpleTable | Undef',
+    isa     => 'Maybe[Object]',
     lazy    => 1,
     default => sub {
         my $self = shift;
@@ -36,7 +36,7 @@ has list => (
     },
 );
 
-no Mouse;
+no Any::Moose;
 
 sub match {
     my ($self, $req, $path) = @_;
@@ -97,4 +97,4 @@ sub used {
     scalar( keys %{$self->paths} );
 }
 
-1;
+__PACKAGE__->meta->make_immutable;

@@ -1,12 +1,12 @@
 package Ark::Command::Server;
-use Mouse;
+use Any::Moose;
 
 with 'Ark::Command::Interface';
 
 use Cwd qw/cwd/;
 use Path::Class qw/dir/;
 
-no Mouse;
+no Any::Moose;
 
 sub option_list {
     qw/help debug port=i address=s/
@@ -17,7 +17,7 @@ sub run {
     $self->show_usage(0);
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 
 __END__
 

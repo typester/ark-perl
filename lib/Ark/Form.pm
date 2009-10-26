@@ -1,13 +1,13 @@
 package Ark::Form;
 use utf8;
-use Mouse;
+use Any::Moose;
 
 use Clone 'clone';
 use Exporter::AutoClean;
 use HTML::Shakan;
 use HTML::Shakan::Utils;
 
-extends 'Mouse::Object', 'Class::Data::Inheritable';
+extends any_moose('::Object'), 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata('_fields_data');
 __PACKAGE__->mk_classdata('_fields_data_order');
@@ -20,7 +20,7 @@ has _shakan => (
     handles  => [
         qw/has_error load_function_message get_error_messages is_error is_valid
            set_error set_message/, # _shakan->_fvl
-        qw/submitted submitted_and_valid fillin_param fillin_params request
+        qw/submitted submitted_and_valid fillin_param fillin_params
           param params upload uploads widgets/, # _shakan
     ],
 );
@@ -92,7 +92,7 @@ has fields => (
     },
 );
 
-no Mouse;
+no Any::Moose;
 
 sub EXPORT {
     my ($class, $target) = @_;
@@ -349,4 +349,4 @@ sub message_format {
     '<span class="error">%s</span>';
 }
 
-1;
+__PACKAGE__->meta->make_immutable;

@@ -1,10 +1,10 @@
 package Ark::Command;
-use Mouse;
+use Any::Moose;
 
 use Pod::Usage;
 use Getopt::Long qw/GetOptionsFromArray/;
 
-no Mouse;
+no Any::Moose;
 
 sub run {
     my $self = shift;
@@ -54,7 +54,7 @@ sub show_usage {
     pod2usage( -exitval => $exitval, -input => $file, -message => $message );
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 
 __END__
 

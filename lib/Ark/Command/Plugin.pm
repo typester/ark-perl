@@ -1,8 +1,8 @@
 package Ark::Command::Plugin;
-use Mouse;
+use Any::Moose;
 
 extends 'Mouse::Object', 'Module::Setup::Plugin';
 
-no Mouse;
+no Any::Moose;
 
 1;

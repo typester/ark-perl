@@ -1,5 +1,5 @@
 package Ark::ActionClass::Form;
-use Mouse::Role;
+use Any::Moose '::Role';
 
 use Ark::Form;
 
@@ -19,7 +19,7 @@ before ACTION => sub {
     $self->context->stash->{form} = $form;
 };
 
-no Mouse::Role;
+no Any::Moose '::Role';
 
 sub _parse_Form_attr {
     my ($self, $name, $value) = @_;
@@ -27,4 +27,5 @@ sub _parse_Form_attr {
 }
 
 1;
+
 

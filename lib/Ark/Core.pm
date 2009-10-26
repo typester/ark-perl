@@ -1,5 +1,5 @@
 package Ark::Core;
-use Mouse;
+use Any::Moose;
 
 use Ark::Context;
 use Ark::Action;
@@ -12,7 +12,7 @@ use Plack::Response;
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;
 
-extends 'Mouse::Object', 'Class::Data::Inheritable';
+extends any_moose('::Object'), 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata($_)
     for qw/context configdata plugins _class_stash external_model_class/;
@@ -124,6 +124,7 @@ has context_class => (
             base => 'Ark::Context',
         );
     },
+    predicate => 'context_class_detected',
 );
 
 has setup_finished => (
@@ -146,7 +147,7 @@ has lazy_roles => (
     default => sub { {} },
 );
 
-no Mouse;
+no Any::Moose;
 
 sub EXPORT {
     my ($class, $target) = @_;
@@ -191,11 +192,12 @@ sub class_wrapper {
 
     my $classname = "${pkg}::Ark::$args->{name}";
     return $classname
-        if Mouse::is_class_loaded($classname) && $classname->isa($args->{base});
+        if Any::Moose::is_class_loaded($classname) && $classname->isa($args->{base});
 
+    my $moose_class = any_moose;
     eval qq{
         package ${classname};
-        use Mouse;
+        use ${moose_class};
         extends '$args->{base}';
         1;
     };
@@ -205,6 +207,7 @@ sub class_wrapper {
         $plugin->meta->apply( $classname->meta )
             unless $classname->meta->does_role( $plugin );
     }
+    $classname->meta->make_immutable if $self->context_class_detected;
 
     $classname;
 }
@@ -374,11 +377,15 @@ sub setup_plugin {
 sub setup_plugins {
     my $self = shift;
 
+    $self->meta->make_mutable unless any_moose eq 'Mouse';
+
     for my $plugin (@{ $self->plugins || [] }) {
         $self->setup_plugin($plugin);
     }
 
     $self->setup_default_plugins;
+
+    $self->meta->make_immutable unless any_moose eq 'Mouse';
 }
 
 sub setup_default_plugins {
@@ -587,7 +594,7 @@ sub get_containers {
 
 sub ensure_class_loaded {
     my ($self, $class) = @_;
-    Mouse::load_class($class) unless Mouse::is_class_loaded($class);
+    Any::Moose::load_class($class) unless Any::Moose::is_class_loaded($class);
 }
 
 sub path_to {
@@ -624,4 +631,4 @@ sub handle_request {
     return $context->response;
 }
 
-1;
+__PACKAGE__->meta->make_immutable;

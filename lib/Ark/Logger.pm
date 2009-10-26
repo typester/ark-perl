@@ -1,5 +1,5 @@
 package Ark::Logger;
-use Mouse;
+use Any::Moose;
 use utf8;
 
 has log_level => (
@@ -21,7 +21,7 @@ has log_levels => (
     },
 );
 
-no Mouse;
+no Any::Moose;
 
 {
     no strict 'refs';
@@ -43,5 +43,5 @@ sub log {
     print STDERR sprintf("[%s] ${msg}\n", $type, @args);
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 
