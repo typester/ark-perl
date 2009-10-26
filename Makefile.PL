@@ -55,6 +55,11 @@ features(
         recommends('Net::OpenID::Consumer'),
         recommends('LWPx::ParanoidAgent'),
     ],
+    'Support I18N' => [
+        -default => 1,
+        recommends('Locale::Maketext::Lexicon'),
+        recommends('Locale::Maketext::Simple'),
+    ],
 );
 
 use_test_base;
