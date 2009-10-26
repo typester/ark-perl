@@ -138,6 +138,7 @@ h2 {
 <div id="stacktrace">
 <h2>StackTrace</h2>
 ? for my $frame (@{ $_[0]->debug_stack_traces }) {
+? last if $frame->package =~ /^Ark::/;
 <div class="trace">
 <h3><?= $frame->package ?> - line:<?= $frame->line ?></h3>
 <pre><code><?= encoded_string( $_[0]->debug_print_context( $frame->filename, $frame->line, 3 ) ) ?>
