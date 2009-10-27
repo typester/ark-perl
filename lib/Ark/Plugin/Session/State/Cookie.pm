@@ -13,7 +13,7 @@ has cookie_name => (
 
 has cookie_domain => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => 'Maybe[Str]',
     lazy    => 1,
     default => sub {
         my $self = shift;
@@ -23,7 +23,7 @@ has cookie_domain => (
 
 has cookie_path => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => 'Maybe[Str]',
     lazy    => 1,
     default => sub {
         my $self = shift;

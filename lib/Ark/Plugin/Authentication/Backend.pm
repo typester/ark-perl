@@ -3,7 +3,7 @@ use Ark 'Component';
 
 has user => (
     is      => 'rw',
-    isa     => 'Ark::Plugin::Authentication::User',
+    isa     => 'Maybe[Ark::Plugin::Authentication::User]',
     lazy    => 1,
     builder => 'restore_user',
 );
