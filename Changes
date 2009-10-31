@@ -1,4 +1,7 @@
 Revision history for Perl module Ark
 
+0.11 2009-10-31T11:51:49+09:00
+     - some fixes for Mouse 0.40
+
 0.10 2009-10-26T12:26:26+09:00
      - original version
