@@ -85,5 +85,4 @@ sub search_app {
     $app;
 }
 
-__PACKAGE__->meta->make_immutable;
-
+1;
