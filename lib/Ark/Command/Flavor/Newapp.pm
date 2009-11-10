@@ -32,7 +32,7 @@ template: |
   
   use [% module %];
   
-  my $app = MyApp->new;
+  my $app = [% module %]->new;
   $app->setup;
   
   builder {
