@@ -41,7 +41,8 @@ sub import {
     }
 
     unshift @_, $pkg, $flag;
-    goto $pkg->can('SUPER::import');
+#    goto $pkg->can('SUPER::import');
+    goto &Object::Container::import; # Some perl does not run avobe code, this is a quick fix for it.
 }
 
 sub initialize {
