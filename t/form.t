@@ -2,9 +2,6 @@ use Test::Base;
 use FindBin;
 use lib "$FindBin::Bin/form/lib";
 
-plan skip_all => 'HTML::Shakan is currently not Moose friendly, skip this with Moose'
-    if $Any::Moose::PREFERRED eq 'Moose';
-
 plan 'no_plan';
 
 use Ark::Test 'T';
