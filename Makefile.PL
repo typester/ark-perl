@@ -39,7 +39,7 @@ requires 'Module::Setup';
 requires 'FindBin::libs';
 
 # build-in form generator/validator
-requires 'HTML::Shakan';
+requires 'HTML::Shakan' => '0.03';
 
 features(
     'Support MicroTemplate template engine' => [
