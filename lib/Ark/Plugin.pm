@@ -1,24 +1,28 @@
 package Ark::Plugin;
 use Mouse::Role;
+use Mouse::Exporter;
 
-sub import {
-    my $class   = shift;
-    my $target_context = shift || '';
+do {
+    my %EXPORTS;
 
-    require strict; strict->import;
-    require warnings; warnings->import;
-    require utf8; utf8->import;
+    sub import {
+        my ($class, $context) = @_;
 
-    my $caller = caller;
-    my $meta   = Mouse::Meta::Role->initialize($caller);
+        require utf8; utf8->import;
 
-    {
+        my $caller = caller;
+        Mouse::Meta::Role->initialize($caller);
+
+        my ($import, $unimport) = Mouse::Exporter->build_import_methods(
+            exporting_package => $caller,
+            also => 'Mouse::Role',
+        );
+        $EXPORTS{$caller} = $unimport;
+
+        $caller->$import({ into => $caller });
+
         no strict 'refs';
-        for my $keyword (@Mouse::Role::EXPORT) {
-            *{ $caller . '::' . $keyword } = *{ 'Mouse::Role::' . $keyword };
-        }
-        *{ $caller . '::meta' }           = sub { $meta };
-        *{ $caller . '::plugin_context' } = sub { $target_context };
+        *{ $caller . '::plugin_context' } = sub { $context };
         *{ $caller . '::method' } = sub {
             my ($self, $method) = @_;
             my $caller = caller;
@@ -27,6 +31,10 @@ sub import {
             return sub { $sub->($self, @_) };
         };
     }
-}
+
+    sub unimport {
+        goto \&{ $EXPORTS{ scalar caller } };
+    }
+};
 
 1;
