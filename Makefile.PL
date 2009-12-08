@@ -10,8 +10,8 @@ test_requires 'Test::Output';
 
 perl_version '5.008001';
 
-requires 'HTTP::Engine' => '0.001008';
-requires 'Mouse'        => '0.40';
+requires 'HTTP::Engine' => '0.03002';
+requires 'Mouse'        => '0.43';
 requires 'Path::Class'  => '0.16';
 requires 'URI';
 requires 'Text::SimpleTable';
