@@ -38,11 +38,12 @@ requires 'FindBin::libs';
 
 # build-in form generator/validator
 requires 'HTML::Shakan' => '0.03';
+requires 'Clone';
 
 features(
     'Support MicroTemplate template engine' => [
         -default => 1,
-        recommends('Text::MicroTemplate::Extended' => '0.04'),
+        recommends('Text::MicroTemplate::Extended' => '0.09'),
     ],
     'Support DBIx::Class OR Mapper' => [
         -default => 0,
