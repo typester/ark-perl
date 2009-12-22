@@ -483,6 +483,11 @@ sub use_model {
     $self->ensure_class_loaded( $model_class );
     $self->external_model_class( $model_class );
     $model_class->initialize if $model_class->can('initialize');
+
+    my $conf = $self->model('conf');
+    if ($conf) {
+        $self->config($conf);
+    }
 }
 
 sub register_actions {
