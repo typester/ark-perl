@@ -58,6 +58,7 @@ around from_session => sub {
         }
     }
     else {
+        $user = { %$user };
         $user->{obj_builder} = sub { $user->{hash} };
     }
 
