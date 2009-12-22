@@ -62,6 +62,7 @@ around from_session => sub {
         $user->{obj_builder} = sub { $user->{hash} };
     }
 
+    $self->ensure_class_loaded('Ark::Plugin::Authentication::User');
     return Ark::Plugin::Authentication::User->new(
         %$user,
         store => 'Model',
