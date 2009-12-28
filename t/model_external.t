@@ -1,6 +1,9 @@
 use Test::Base;
+use File::Temp qw/tempdir/;
 
 plan 'no_plan';
+
+BEGIN { $ENV{ARK_HOME} = tempdir( CLEANUP => 1 ) }
 
 {
     package T::Models;

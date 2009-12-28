@@ -51,7 +51,7 @@ sub initialize {
     # build-in models: home, conf
     $pkg->register(
         home => sub {
-            return $ENV{ARK_HOME} if $ENV{ARK_HOME};
+            return dir($ENV{ARK_HOME}) if $ENV{ARK_HOME};
 
             my $class = shift;
 
