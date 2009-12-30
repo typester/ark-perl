@@ -99,5 +99,5 @@ sub process {
     $c->res->body($output);
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 

@@ -75,4 +75,4 @@ sub process {
     $c->response->body( $self->render );
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
