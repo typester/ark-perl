@@ -17,14 +17,13 @@ has request => (
 
 has response => (
     is      => 'rw',
-    isa     => 'Plack::Response',
+    isa     => 'Ark::Response',
     lazy    => 1,
     default => sub {
         my $self = shift;
 
         if ($self->app->is_psgi) {
-            my $res = Plack::Response->new;
-            $res->status(200);
+            my $res = Ark::Response->new;
             $res->header( 'Content-Type' => 'text/html' );
             return $res;
         }
