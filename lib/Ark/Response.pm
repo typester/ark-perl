@@ -5,6 +5,7 @@ use Carp ();
 use Scalar::Util ();
 use CGI::Simple::Cookie ();
 use HTTP::Headers;
+use Plack::Util;
 
 has status => (
     is      => 'rw',
@@ -34,12 +35,18 @@ has cookies => (
 );
 
 has streaming => (
-    is      => 'rw',
-    isa     => 'Bool',
-    default => 0,
+    is        => 'rw',
+    isa       => 'CodeRef',
+    predicate => 'is_streaming',
 );
 
-has streaming_writer => (
+has deferred => (
+    is        => 'rw',
+    isa       => 'CodeRef',
+    predicate => 'is_deferred',
+);
+
+has deferred_response => (
     is  => 'rw',
     isa => 'CodeRef',
 );
@@ -73,29 +80,55 @@ sub finalize {
 
     $self->_finalize_cookies();
 
-    my $response = [
-        $self->status,
-        +[
-            map {
-                my $k = $_;
-                map { ( $k => $_ ) } $self->headers->header($_);
-            } $self->headers->header_field_names
-        ],
-    ];
+    if ($self->is_deferred) {
+        if (my $cb = $self->deferred_response) {
+            my $body = $self->_body;
 
-    if ($self->streaming) {
-        my $res = sub {
-            my $respond = shift;
-            my $writer  = $respond->($response);
-            $self->streaming_writer($writer);
-        };
-        Scalar::Util::weaken($self);
+            my $response = [
+                $self->status,
+                +[
+                    map {
+                        my $k = $_;
+                        map { ( $k => $_ ) } $self->headers->header($_);
+                    } $self->headers->header_field_names
+                ],
+                $body,
+            ];
 
-        return $res;
+            $cb->($response);
+        }
+        else {
+            my $r = sub {
+                my $respond = shift;
+                $self->deferred_response($respond);
+                $self->deferred->($respond);
+            };
+            Scalar::Util::weaken($self);
+            return $r;
+        }
     }
     else {
-        push @$response, $self->_body;
-        return $response;
+        my $response = [
+            $self->status,
+            +[
+                map {
+                    my $k = $_;
+                    map { ( $k => $_ ) } $self->headers->header($_);
+                } $self->headers->header_field_names
+            ],
+        ];
+
+        if ($self->is_streaming) {
+            return sub {
+                my $respond = shift;
+                my $writer  = $respond->($response);
+                $self->streaming->($writer);
+            };
+        }
+        else {
+            push @$response, $self->_body;
+            return $response;
+        }
     }
 }
 
