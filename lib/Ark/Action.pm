@@ -58,7 +58,7 @@ sub dispatch {
         $self->controller( $context->app->load_component($self->{controller}) );
     }
 
-    $self->controller->ACTION( $self, @args );
+    $self->controller->ACTION( $self, $context, @args );
 }
 
 sub dispatch_chain {
@@ -69,7 +69,8 @@ sub dispatch_chain {
         and $self->dispatch($context);
 
     $context->detached(0);
-    $self->dispatch_end($context);
+    $self->dispatch_end($context)
+        unless $context->res->is_deferred or $context->res->is_streaming;
 }
 
 sub dispatch_begin {

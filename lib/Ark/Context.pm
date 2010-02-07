@@ -5,7 +5,9 @@ use Any::Moose '::Util::TypeConstraints';
 use Scalar::Util ();
 use Try::Tiny;
 
-our $DETACH = 'ARK_DETACH';
+our $DETACH    = 'ARK_DETACH';
+our $DEFERRED  = 'ARK_DEFERRED';
+our $STREAMING = 'ARK_STREAMING';
 
 extends 'Ark::Component';
 
@@ -17,20 +19,11 @@ has request => (
 
 has response => (
     is      => 'rw',
-    isa     => 'Plack::Response',
+    isa     => 'Ark::Response',
     lazy    => 1,
     default => sub {
         my $self = shift;
-
-        if ($self->app->is_psgi) {
-            my $res = Plack::Response->new;
-            $res->status(200);
-            $res->header( 'Content-Type' => 'text/html' );
-            return $res;
-        }
-        else {
-            return HTTP::Engine::Response->new;
-        }
+        Ark::Response->new( context => $self );
     },
 );
 
@@ -69,7 +62,7 @@ has error => (
     default => sub { [] },
 );
 
-has detached => (
+has [qw/detached finalized/] => (
     is      => 'rw',
     isa     => 'Bool',
     default => 0,
@@ -86,7 +79,7 @@ sub process {
 
     $self->prepare;
     $self->dispatch;
-    $self->finalize;
+    $self->finalize unless $self->response->is_deferred;
 }
 
 sub prepare {
@@ -270,13 +263,29 @@ sub uri_for {
 sub finalize {
     my $self = shift;
 
+    my $is_deferred = $self->response->is_deferred;
+
+    if ($is_deferred) {
+        my $action = $self->request->action;
+        if ($action) {
+            $action->dispatch_end($self);
+        }
+    }
+
     $self->finalize_headers;
     $self->finalize_body;
     $self->finalize_encoding;
+    $self->response->finalize if $self->response->is_deferred;
+    $self->finalized(1);
 }
 
 sub finalize_headers {}
 sub finalize_body {}
+
+sub DEMOLISH {
+    my $self = shift;
+    $self->finalize unless $self->finalized;
+}
 
 __PACKAGE__->meta->make_immutable;
 

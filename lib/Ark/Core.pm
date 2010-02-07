@@ -5,9 +5,9 @@ use Ark::Context;
 use Ark::Action;
 use Ark::ActionContainer;
 use Ark::Request;
+use Ark::Response;
 
 use Plack::Request;
-use Plack::Response;
 
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;

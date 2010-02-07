@@ -33,8 +33,8 @@ sub MODIFY_CODE_ATTRIBUTES {
 }
 
 sub ACTION {
-    my ($self, $action, @args) = @_;
-    $self->context->execute( $self, $action->name, @args );
+    my ($self, $action, $context, @args) = @_;
+    $context->execute( $self, $action->name, @args );
 }
 
 sub _parse_Path_attr {
