@@ -6,7 +6,7 @@ use Test::More;
 
     use_plugins qw{
         Session
-        Session::State::MixiMobile
+        Session::State::OpenSocial
         Session::Store::Memory
     };
 

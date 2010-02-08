@@ -1,4 +1,4 @@
-package Ark::Plugin::Session::State::MixiMobile;
+package Ark::Plugin::Session::State::OpenSocial;
 use Ark::Plugin 'Session';
 
 around get_session_id => sub {
