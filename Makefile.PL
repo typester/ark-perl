@@ -50,7 +50,6 @@ features(
     'Support DBIx::Class OR Mapper' => [
         -default => 0,
         recommends('DBIx::Class'),
-        recommends('DBIx::Class::Schema::Loader'),
         recommends('DBD::SQLite'),
     ],
     'Support OpenID Authentication' => [
@@ -62,6 +61,13 @@ features(
         -default => 1,
         recommends('Locale::Maketext::Lexicon'),
         recommends('Locale::Maketext::Simple'),
+    ],
+    'Support Mobile App' => [
+        -default => 0,
+        recommends('Encode::JP::Mobile'),
+        recommends('HTTP::MobileAgent'),
+        recommends('HTTP::MobileAgent::Plugin::Charset'),
+        recommends('OAuth::Lite'),
     ],
 );
 
