@@ -48,5 +48,19 @@ sub wrap {
     }
 }
 
+sub uri_with {
+    my ($self, $args) = @_;
+
+    my $uri = $self->uri->clone;
+
+    my %params = $uri->query_form;
+    while (my ($k, $v) = each %$args) {
+        $params{$k} = $v;
+    }
+    $uri->query_form(%params);
+
+    return $uri;
+}
+
 1;
 
