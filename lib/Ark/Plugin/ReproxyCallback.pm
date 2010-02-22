@@ -17,6 +17,8 @@ sub reproxy {
     if (my $callback = $args->{callback}) {
         $res->header('X-Reproxy-Callback' => $callback);
     }
+
+    $res->body('') unless $res->has_body;
 }
 
 1;
