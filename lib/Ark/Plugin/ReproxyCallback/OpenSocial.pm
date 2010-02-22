@@ -50,6 +50,24 @@ around reproxy => sub {
     $next->($c, $args);
 };
 
+sub reproxy_opensocial {
+    my $c      = shift;
+    my $method = shift;
+    my $path   = shift;
+    my $args   = @_ > 1 ? {@_} : $_[0];
+
+    my $cb     = delete $args->{callback};
+    my $params = delete $args->{params};
+
+    my $uri = URI->new( $c->reproxy_callback_opensocial_api_endpoint . $path );
+    $uri->query_form(%$params) if $params;
+
+    $c->reproxy(
+        request  => HTTP::Request->new( $method => $uri ),
+        callback => $cb,
+    );
+}
+
 sub reproxy_people {
     my $cb = pop @_;
     my ($c, $guid, $target, $params) = @_;
