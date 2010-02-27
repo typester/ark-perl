@@ -85,7 +85,7 @@ sub initialize {
             for my $fn (qw/config.pl config_local.pl/) {
                 my $file = $home->file($fn);
                 if (-e $file) {
-                    my $c = require $file;
+                    my $c = do $file;
                     die 'config should return HASHREF'
                         unless ref($c) and ref($c) eq 'HASH';
 
