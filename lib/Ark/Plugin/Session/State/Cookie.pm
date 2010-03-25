@@ -74,7 +74,7 @@ around 'get_session_id' => sub {
 
     unless ($self->cookie_remove_marker) {
         if ( my $cookie = $request->cookies->{ $self->cookie_name } ) {
-            my $sid = $cookie->value;
+            my $sid = ref $cookie ? $cookie->value : $cookie;
             $self->log( debug => q[Found sessionid "%s" in cookie], $sid );
             return $sid if $sid;
         }
