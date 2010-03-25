@@ -28,10 +28,27 @@ sub prepare_encoding {
     my ($c) = @_;
     my $req = $c->request;
 
-    for my $value (values %{ $req->parameters }) {
-        next if ref $value and ref $value ne 'ARRAY';
-        $_ = decode($c->encoding, $_) for ref $value ? @$value : ($value);
-    }
+    my $encode = sub {
+        my ($p, $skip) = @_;
+
+        if (blessed $p and $p->isa('Hash::MultiValue')) {
+            return if $skip;
+            $p->each(sub {
+                $_[1] = decode($c->encoding, $_[1]);
+            });
+        }
+        else {
+            # backward compat
+            for my $value (values %$p) {
+                next if ref $value and ref $value ne 'ARRAY';
+                $_ = decode($c->encoding, $_) for ref $value ? @$value : ($value);
+            }
+        }
+    };
+
+    $encode->($req->query_parameters);
+    $encode->($req->body_parameters);
+    $encode->($req->parameters, 1)
 }
 
 my %htmlspecialchars = ( '&' => '&amp;', '<' => '&lt;', '>' => '&gt;', '"' => '&quot;' );
