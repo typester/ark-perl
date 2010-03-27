@@ -1,6 +1,8 @@
 package Ark::Action;
 use Mouse;
 
+use Ark::Controller;
+
 has [qw/namespace reverse name/] => (
     is       => 'rw',
     isa      => 'Str',
