@@ -18,7 +18,7 @@ has compiled => (
 
 has list => (
     is      => 'rw',
-    isa     => 'Text::SimpleTable | Undef',
+    isa     => 'Maybe[Object]',
     lazy    => 1,
     default => sub {
         my $self = shift;

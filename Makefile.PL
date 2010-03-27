@@ -11,7 +11,7 @@ test_requires 'Test::Output';
 perl_version '5.008001';
 
 requires 'HTTP::Engine' => '0.03002';
-requires 'Mouse'        => '0.43';
+requires 'Mouse'        => '0.51';
 requires 'Path::Class'  => '0.16';
 requires 'URI';
 requires 'Text::SimpleTable';
