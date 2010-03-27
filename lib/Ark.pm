@@ -2,7 +2,6 @@ package Ark;
 use 5.008001;
 use Any::Moose;
 use Any::Moose '::Exporter';
-use B::Hooks::EndOfScope;
 
 use Ark::Core;
 
@@ -52,8 +51,6 @@ do {
         $caller->meta->superclasses(@super);
 
         push @{ $EXPORTS{$class} }, $unimport;
-
-        on_scope_end { $caller->meta->make_immutable };
     }
 
     sub unimport {
