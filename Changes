@@ -1,5 +1,8 @@
 Revision history for Perl module Ark
 
+0.1202 2010-03-27T15:20:41+09:00
+     - support Mouse 0.51
+
 0.1201 2009-12-10T20:03:05+09:00
      - add missing prereq, Clone (Thanks to oinume)
      - update prereqs
