@@ -13,7 +13,7 @@ perl_version '5.008001';
 requires 'Plack';
 requires 'Plack::Request';
 requires 'CGI::Simple';
-requires 'Any::Moose'   => '0.10';
+requires 'Any::Moose'   => '0.11';
 requires 'Try::Tiny' => '0.02';
 requires 'Path::Class'  => '0.16';
 requires 'URI';
