@@ -1,7 +1,7 @@
 package Ark::Models;
 use Any::Moose;
 
-extends 'Object::Container', any_moose('::Object');
+extends any_moose('::Object'), 'Object::Container';
 
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;
