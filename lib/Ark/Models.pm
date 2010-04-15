@@ -1,7 +1,7 @@
 package Ark::Models;
 use Any::Moose;
 
-extends 'Object::Container';
+extends 'Object::Container', any_moose('::Object');
 
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;
@@ -11,6 +11,8 @@ has registered_namespaces => (
     isa     => 'HashRef',
     default => sub { {} },
 );
+
+has [qw/registered_classes objects/] => ( is => 'rw', default => sub { {} } );
 
 no Any::Moose;
 

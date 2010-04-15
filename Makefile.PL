@@ -28,7 +28,7 @@ requires 'Digest::SHA1';
 requires 'Devel::StackTrace';
 requires 'Class::Method::Modifiers::Fast';
 requires 'Exporter::AutoClean';
-requires 'Object::Container' => '0.03002';
+requires 'Object::Container' => '0.08';
 
 # for build-in server
 requires 'MIME::Types';
