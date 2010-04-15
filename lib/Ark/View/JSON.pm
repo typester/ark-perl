@@ -88,7 +88,8 @@ sub process {
     my $output;
 
     ## add UTF-8 BOM if the client is Safari ### XXXX
-    if (($c->req->user_agent || '') =~ m/Safari/ and
+    if ($self->allow_callback and
+            ($c->req->user_agent || '') =~ m/Safari/ and
             ($c->req->user_agent || '') !~ m/Chrome/) {
         $output = "\xEF\xBB\xBF";
     }
