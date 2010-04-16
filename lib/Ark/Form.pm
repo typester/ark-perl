@@ -63,6 +63,10 @@ has fields => (
                 $params{custom_validation} = sub { $cv->($self, @_) };
             }
 
+            if (ref $params{choices} eq 'CODE') {
+                $params{choices} = $params{choices}->();
+            }
+
             if ($self->needs_localize) {
                 if (my $label = delete $params{label}) {
                     $params{label} = $self->localize($label);
