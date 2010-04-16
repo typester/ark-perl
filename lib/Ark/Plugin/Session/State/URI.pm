@@ -49,7 +49,8 @@ has uri_session_disabled => (
 );
 
 around get_session_id => sub {
-    my $prev = shift->(@_);
+    my $next = shift;
+    my $prev = $next->(@_);
     return $prev if $prev;
 
     my ($self) = @_;
