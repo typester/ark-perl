@@ -169,4 +169,8 @@ sub get {
     }
 }
 
+sub ensure_class_loaded {
+    Any::Moose::load_class($_[1]);
+}
+
 __PACKAGE__->meta->make_immutable;
