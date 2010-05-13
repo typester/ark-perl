@@ -217,7 +217,7 @@ sub input {
     my ($self, $name) = @_;
 
     my $field = $self->field($name) or return;
-    $self->widgets->render( $self->_shakan, $field );
+    $self->widgets->render( $self, $field );
 }
 
 sub render {
