@@ -27,6 +27,11 @@ has body => (
     predicate => 'has_body',
 );
 
+has binary => (
+    is      => 'rw',
+    default => 0,
+);
+
 has cookies => (
     is      => 'rw',
     isa     => 'HashRef',

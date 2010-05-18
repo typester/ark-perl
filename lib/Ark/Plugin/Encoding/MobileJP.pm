@@ -57,7 +57,7 @@ my $htmlspecialchars = join '', keys %htmlspecialchars;
 sub finalize_encoding {
     my ($c) = @_;
 
-    if ($c->res->has_body) {
+    if (!$c->res->binary and $c->res->has_body) {
         my $body = $c->res->body;
 
         $body = encode($c->encoding, $body, sub {

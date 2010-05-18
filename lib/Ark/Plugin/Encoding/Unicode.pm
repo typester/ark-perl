@@ -32,7 +32,8 @@ sub prepare_encoding {
 sub finalize_encoding {
     my $self = shift;
 
-    utf8::encode( $self->response->{body} ) if defined $self->response->{body};
+    my $res = $self->response;
+    utf8::encode( $res->{body} ) if !$res->binary and $res->has_body;
 };
 
 1;
