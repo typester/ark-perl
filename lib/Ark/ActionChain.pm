@@ -14,18 +14,18 @@ sub dispatch {
 
     my $req = $context->request;
 
-    my @captures = @{ $req->captures || [] };
-    my @chain    = @{ $self->chain };
-    my $last     = pop @chain;
+    my @chain = @{ $self->chain };
+    my $last  = pop @chain;
 
     for my $action (@chain) {
         my @args;
         if (my $cap = $action->attributes->{CaptureArgs}) {
-            @args = splice @captures, 0, $cap->[0];
+            @args = splice @{ $req->captures }, 0, $cap->[0];
         }
         local $req->{args} = \@args;
         $action->dispatch($context, @args);
     }
+
     $last->dispatch($context, @{ $req->args });
 }
 
