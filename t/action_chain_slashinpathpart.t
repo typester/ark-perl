@@ -20,7 +20,7 @@ use Test::More;
     }
 }
 
-use Ark::Test 'T1';
+use Ark::Test 'T1', components => [qw/Controller::Root/];
 
 is get('/foo/bar/hoge/fuga'), 'bar',
     'slash in pathpart ok';
