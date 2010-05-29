@@ -114,11 +114,11 @@ sub EXPORT {
                     );
                 }
             }
-            $class->set_param_data(@_);
+            $target->set_param_data(@_);
         },
         widgets => sub {
             Any::Moose::load_class($_[0]);
-            $class->_widgets_class($_[0]);
+            $target->_widgets_class($_[0]);
         },
     );
 
