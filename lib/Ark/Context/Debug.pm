@@ -1,6 +1,8 @@
 package Ark::Context::Debug;
 use Any::Moose '::Role';
 
+use Try::Tiny;
+
 has debug_report => (
     is      => 'rw',
     isa     => 'Text::SimpleTable',
@@ -191,24 +193,31 @@ around execute_action => sub {
     my $next = shift;
     my ($self, $obj, $method, @args) = @_;
 
-    local $SIG{__DIE__} = sub {
-        $self->ensure_class_loaded('Devel::StackTrace');
-        my $trace = Devel::StackTrace->new(
-            ignore_package => [
-                qw/Ark::Core
-                   Ark::Action
-                   Ark::Context::Debug
-                   Ark::Context/,
-            ],
-            no_refs => 1,
-        );
-        $self->debug_stack_traces([ $trace->frames ]);
-    };
-
     $self->ensure_class_loaded('Time::HiRes');
     $self->stack->[-1]->{start} = [Time::HiRes::gettimeofday()];
 
-    my $res = $next->(@_);
+    my ($res, $err);
+    my @__args = @_;
+    try {
+        local $SIG{__DIE__} = sub {
+            $self->ensure_class_loaded('Devel::StackTrace');
+            my $trace = Devel::StackTrace->new(
+                ignore_package => [
+                    qw/Ark::Core
+                       Ark::Action
+                       Ark::Context::Debug
+                       Ark::Context
+                       Try::Tiny/,
+                ],
+                no_refs => 1,
+            );
+            $self->debug_stack_traces([ $trace->frames ]);
+        };
+
+        $res = $next->(@__args);
+    } catch {
+        $err = $_;
+    };
 
     my $last    = $self->stack->[-1];
     my $elapsed = Time::HiRes::tv_interval($last->{start});
@@ -240,6 +249,7 @@ around execute_action => sub {
         }
     }
 
+    die $err if defined $err;
     $res;
 };
 
