@@ -68,6 +68,8 @@ sub dispatch_chain {
         and $self->dispatch_auto($context)
         and $self->dispatch($context);
 
+    return if (@{ $context->{error} });
+
     $context->detached(0);
     $self->dispatch_end($context)
         unless $context->res->is_deferred or $context->res->is_streaming;
