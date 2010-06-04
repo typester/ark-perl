@@ -110,7 +110,14 @@ around 'finalize_session' => sub {
     my $next   = shift;
     my ($self, $res) = @_;
 
-    if (my $cookie = $self->update_cookie) {
+    my $cookie = $self->update_cookie;
+    my $sid    = $self->get_session_id;
+
+    if (!$cookie && $sid) {
+        $cookie = $self->make_cookie($sid);
+    }
+
+    if ($cookie) {
         $res->cookies->{ $self->cookie_name } = $cookie;
     }
 
