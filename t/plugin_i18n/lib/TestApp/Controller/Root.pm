@@ -5,7 +5,7 @@ has '+namespace' => default => '';
 
 sub maketext :Local :Args(1) {
     my ($self, $c, $key) = @_;
-    $c->res->body( $c->localize($key) );
+    $c->res->body($c->stash->{body} = $c->localize($key));
 }
 
 sub current_language :Local {
