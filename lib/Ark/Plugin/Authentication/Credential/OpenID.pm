@@ -21,8 +21,8 @@ around authenticate => sub {
     my $c = $self->context;
 
     my $claimed_uri = $c->req->method eq 'GET'
-        ? $c->req->query_params->{openid_identifier}
-        : $c->req->body_params->{openid_identifier};
+        ? $c->req->query_parameters->{openid_identifier}
+        : $c->req->body_parameters->{openid_identifier};
 
     unless ($claimed_uri or $c->req->param('openid-check')) {
         return;
@@ -41,7 +41,7 @@ around authenticate => sub {
 
     my $csr = Net::OpenID::Consumer->new(
         ua              => LWPx::ParanoidAgent->new,
-        args            => $c->req->params,
+        args            => $c->req->parameters->mixed,
         consumer_secret => $secret,
     );
 
