@@ -232,7 +232,7 @@ sub render {
 sub valid_param {
     my ($self, $name) = @_;
     return '' if $self->is_error($name);
-    return $self->param($name) || '';
+    return defined($self->param($name)) ? $self->param($name) : '';
 }
 
 sub ignore_error {
