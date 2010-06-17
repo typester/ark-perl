@@ -474,7 +474,9 @@ sub model {
 
 sub view {
     my ($self, $name) = @_;
-    return unless $name;
+    unless (defined $name) {
+        $name = $self->config->{default_view} or return;
+    }
     $self->component('View::' . $name);
 }
 
