@@ -627,11 +627,11 @@ sub handle_request {
     $self->context($context)->process;
     $self->context(undef);
 
-    if ( my $error = $context->error->[-1] ) {
+    if ( my $error = $context->error->[0] ) {
         chomp $error;
         $self->log( error => 'Caught exception in engine "%s"', $error );
 
-        unless ($self->debug) {
+        unless ($self->debug or $context->response->status eq '500') {
             my $res = $context->response;
             $res->status(500);
             $res->body('Internal Server Error');
