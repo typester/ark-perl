@@ -134,7 +134,7 @@ h2 {
 <h1>500 Internal Server Error</h1>
 
 <div id="error">
-<pre><?= join "\n", @{ $_[0]->error } ?></pre>
+<pre><?= $_[0]->error->[0] ?></pre>
 </div>
 
 <div id="stacktrace">
@@ -211,7 +211,8 @@ around execute_action => sub {
                 ],
                 no_refs => 1,
             );
-            $self->debug_stack_traces([ $trace->frames ]);
+            $self->debug_stack_traces([ $trace->frames ])
+                unless scalar @{ $self->debug_stack_traces };
         };
 
         $res = $next->(@__args);
