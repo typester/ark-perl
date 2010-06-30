@@ -458,7 +458,7 @@ sub component {
 sub controller {
     my ($self, $name) = @_;
     return unless $name;
-    $self->components('Controller::' . $name);
+    $self->component('Controller::' . $name);
 }
 
 sub model {
