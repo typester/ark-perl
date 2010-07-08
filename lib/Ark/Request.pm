@@ -2,36 +2,17 @@ package Ark::Request;
 use Any::Moose;
 
 use URI::WithBase;
-
-has action => (
-    is  => 'rw',
-    isa => 'Ark::Action',
-);
+use Path::AttrRouter::Match;
 
 has match => (
     is      => 'rw',
-    isa     => 'Str',
-    lazy    => 1,
-    default => sub { '' },
-);
-
-has arguments => (
-    is      => 'rw',
-    isa     => 'ArrayRef',
-    lazy    => 1,
-    default => sub { [] },
-);
-
-has captures => (
-    is      => 'rw',
-    isa     => 'ArrayRef',
-    lazy    => 1,
-    default => sub { [] },
+    isa     => 'Path::AttrRouter::Match',
+    handles => [qw/action args captures/],
 );
 
 {
     no warnings 'once';
-    *args = \&arguments;
+    *arguments = \&args;
 }
 
 no Any::Moose;

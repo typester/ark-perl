@@ -11,9 +11,9 @@ plan 'no_plan';
 
     around ACTION => sub {
         my $next = shift;
-        my ($controller, $action, @args) = @_;
+        my ($controller, $action, $context, @args) = @_;
 
-        my $r = $controller->context->response;
+        my $r = $context->response;
         $r->body( 'before' );
 
         my $res = $next->(@_);

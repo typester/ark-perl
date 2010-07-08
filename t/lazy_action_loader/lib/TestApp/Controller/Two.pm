@@ -9,5 +9,5 @@ sub index :Path :Args(0) {
     $c->res->{body} .= '/two/index';
 }
 
-1;
+__PACKAGE__->meta->make_immutable;
 

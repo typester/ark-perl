@@ -2,8 +2,6 @@ package Ark::Core;
 use Any::Moose;
 
 use Ark::Context;
-use Ark::Action;
-use Ark::ActionContainer;
 use Ark::Request;
 use Ark::Response;
 
@@ -11,6 +9,7 @@ use Plack::Request;
 
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;
+use Path::AttrRouter;
 
 extends any_moose('::Object'), 'Class::Data::Inheritable';
 
@@ -79,39 +78,6 @@ has components => (
     default => sub { {} },
 );
 
-has actions => (
-    is      => 'rw',
-    isa     => 'HashRef',
-    default => sub { {} },
-);
-
-has action_cache => (
-    is      => 'rw',
-    isa     => 'Object',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        $self->path_to('action.cache');
-    },
-);
-
-has dispatch_types => (
-    is      => 'rw',
-    isa     => 'ArrayRef',
-    lazy    => 1,
-    default => sub {
-        my $self = shift;
-        $self->ensure_class_loaded($_) for qw/Ark::DispatchType::Path
-                                              Ark::DispatchType::Regex
-                                              Ark::DispatchType::Chained/;
-        [
-            Ark::DispatchType::Path->new,
-            Ark::DispatchType::Regex->new,
-            Ark::DispatchType::Chained->new,
-        ];
-    },
-);
-
 has context_class => (
     is      => 'rw',
     isa     => 'Str',
@@ -145,6 +111,28 @@ has lazy_roles => (
     isa     => 'HashRef',
     lazy    => 1,
     default => sub { {} },
+);
+
+has action_cache => (
+    is      => 'rw',
+    isa     => 'Object',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        $self->path_to('action.cache');
+    },
+);
+
+has use_cache => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
+);
+
+has router => (
+    is  => 'rw',
+    isa => 'Path::AttrRouter',
+    handles => ['get_action', 'get_actions'],
 );
 
 no Any::Moose;
@@ -243,7 +231,7 @@ sub setup {
     # setup components
     $self->ensure_class_loaded('Module::Pluggable::Object');
 
-    my @paths = qw/::Controller ::View ::Model/;
+    my @paths = qw/::View/;
     my $locator = Module::Pluggable::Object->new(
         search_path => [ map { $class . $_ } @paths ],
     );
@@ -307,8 +295,6 @@ sub setup_retrieve {
 
     $self->actions($state->{actions});
 
-    $self->log( debug => 'Minimal setup finished');
-    $self->setup_finished(1)
 }
 
 sub setup_minimal {
@@ -323,8 +309,11 @@ sub setup_minimal {
     $self->action_cache( $self->path_to($option{action_cache}) )
         if $option{action_cache};
 
-    $self->setup_retrieve;
-    $self->setup_store unless $self->setup_finished;
+    $self->use_cache(1);
+    $self->setup_actions;
+
+    $self->log( debug => 'Minimal setup finished');
+    $self->setup_finished(1)
 }
 
 sub setup_debug_mode {
@@ -405,17 +394,15 @@ sub setup_default_plugins {
 sub setup_actions {
     my $self = shift;
 
-    for my $component (values %{ $self->components }) {
-        $self->register_actions( $component )
-            if $component->isa('Ark::Controller');
-    }
+    my $router = Path::AttrRouter->new(
+        search_path  => ref($self) . '::Controller',
+        action_class => 'Ark::Action',
+        $self->use_cache ? ( action_cache => $self->action_cache . '' ) : (),
+    );
+    $self->router($router);
 
     if ($self->debug) {
-        for my $type (@{ $self->dispatch_types }) {
-            my $table = $type->list or next;
-
-            $self->log( debug => "Loaded %s actions:\n%s", $type->name, $table->draw );
-        }
+        $self->log( debug => $router->routing_table->draw );
     }
 }
 

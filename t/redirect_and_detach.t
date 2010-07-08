@@ -7,7 +7,7 @@ use Test::Base;
     package T::Controller::Root;
     use Ark 'Controller';
 
-    __PACKAGE__->config( namespace => '' );
+    has '+namespace' => default => '';
 
     sub normal :Local :Args(0) {
         my ($self, $c) = @_;

@@ -9,14 +9,14 @@ has form => (
 );
 
 before ACTION => sub {
-    my ($self, $action, @args) = @_;
+    my ($self, $action, $context, @args) = @_;
     my $form_class = $action->attributes->{Form}->[0] or return;
 
-    $self->ensure_class_loaded($form_class);
-    my $form = $form_class->new( $self->context->request, $self->context );
+    $context->ensure_class_loaded($form_class);
+    my $form = $form_class->new( $context->request, $context );
 
     $self->form( $form );
-    $self->context->stash->{form} = $form;
+    $context->stash->{form} = $form;
 };
 
 no Any::Moose '::Role';

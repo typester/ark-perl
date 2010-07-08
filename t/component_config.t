@@ -23,7 +23,7 @@ use Test::Base;
     package TestApp::Controller::Two;
     use Ark 'Controller';
 
-    __PACKAGE__->config( namespace => 'two_changed' );
+#    __PACKAGE__->config( namespace => 'two_changed' );
 
     sub index :Path {
         my ($self, $c) = @_;
@@ -49,6 +49,8 @@ use Ark::Test 'TestApp',
                      /];
 
 is(get('/one_changed'), 'one', 'one ok');
-is(get('/two_changed'), 'two', 'two ok');
-is(get('/three_changed'), 'three', 'three ok');
+
+# no more supported
+#is(get('/two_changed'), 'two', 'two ok');
+#is(get('/three_changed'), 'three', 'three ok');
 

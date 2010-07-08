@@ -10,7 +10,7 @@ require Ark::Test;
 
     use Test::More;
 
-    __PACKAGE__->config( namespace => '' );
+    has '+namespace' => default => '';
 
     sub default :Path {
         my ($self, $c) = @_;
@@ -31,7 +31,7 @@ require Ark::Test;
 
     use Test::More;
 
-    __PACKAGE__->config( namespace => '' );
+    has '+namespace' => default => '';
 
     sub default :Path {
         my ($self, $c) = @_;

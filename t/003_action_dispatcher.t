@@ -75,12 +75,7 @@ use Test::Base;
     }
 }
 
-use Ark::Test 'TestApp',
-    components => [qw/
-                         Controller::Order
-                         Controller::Order::Cascade
-                         Controller::StopAuto
-                     /];
+use Ark::Test 'TestApp';
 
 plan 'no_plan';
 

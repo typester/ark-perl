@@ -76,11 +76,9 @@ plan 'no_plan';
 
 require Ark::Test;
 
-import Ark::Test 'T1',
-    components => [qw/Controller::Root/];
+import Ark::Test 'T1';
 
 is(get('/one/one/end/end'), 'oneend', 'simple request ok');
-
 
 import Ark::Test 'T2', components => [qw/Controller::Root Controller::Status/];
 

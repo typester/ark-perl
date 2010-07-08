@@ -2,8 +2,6 @@ use Test::Base;
 use FindBin;
 use lib "$FindBin::Bin/lazy_action_loader/lib";
 
-use TestApp;
-
 use Ark::Test 'TestApp', minimal_setup => 1;
 
 plan 'no_plan';

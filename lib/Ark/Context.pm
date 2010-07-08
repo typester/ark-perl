@@ -33,7 +33,8 @@ has app => (
     required => 1,
     weak_ref => 1,
     handles  => ['debug', 'log', 'get_actions', 'get_action', 'ensure_class_loaded',
-                 'component', 'controller', 'view', 'model', 'path_to', 'config',],
+                 'component', 'controller', 'view', 'model', 'path_to', 'config',
+                 'router',],
 );
 
 has stash => (
@@ -95,32 +96,7 @@ sub prepare_action {
     my $self = shift;
     my $req  = $self->request;
 
-    my @path = split /\//, $req->path;
-    unless ($self->app->is_psgi) { # HTTP::Engine is required this trick
-        my $vpath = $req->uri->rel->path;
-        $vpath =~ s!^\.\./[^/]+!!;                    # fix ../foo/path => /path
-        $vpath =~ s!^\./!!;                           # fix ./path => /path
-        $vpath = '/' . $vpath unless $vpath =~ m!^/!; # path should be / first
-        @path = split /\//, $vpath;
-    }
-
-    unshift @path, '' unless @path;
-
- DESCEND: while (@path) {
-        my $path = join '/', @path;
-        $path =~ s!^/!!;
-
-        for my $type (@{ $self->app->dispatch_types }) {
-            last DESCEND if $type->match( $req, $path );
-        }
-
-        my $arg = pop @path;
-        $arg =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
-        unshift @{ $req->arguments }, $arg;
-    }
-
-    s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg
-        for grep {defined} @{ $req->captures || [] };
+    $req->match( $self->router->match($req->path) );
 }
 
 sub prepare_headers {}
@@ -129,8 +105,12 @@ sub prepare_body {}
 
 sub forward {
     my ($self, $target, @args) = @_;
-
     return 0 unless $target;
+
+    unless (@args) {
+        @args = @{ $self->req->captures } ? @{ $self->req->captures }
+                                          : @{ $self->req->args };
+    }
 
     if (Scalar::Util::blessed($target)) {
         if ($target->isa('Ark::Action')) {
@@ -153,6 +133,7 @@ sub forward {
         }
         else {
             my $last = $self->stack->[-1];
+            
             if ($last
                  and $last->{obj}->isa('Ark::Controller')
                  and my $action = $self->get_action($target, $last->{obj}->namespace)) {
@@ -178,13 +159,52 @@ sub detach {
 sub dispatch {
     my $self = shift;
 
-    my $action = $self->request->action;
-    if ($action) {
-        $action->dispatch_chain($self);
+    my $match = $self->request->match;
+    if ($match) {
+        $self->dispatch_private_action('begin')
+            and $self->dispatch_auto_action
+                and $match->dispatch($self);
+
+        $self->detached(0);
+        $self->dispatch_private_action('end')
+            unless $self->res->is_deferred or $self->res->is_streaming;
     }
     else {
         $self->log( error => 'no action found' );
     }
+}
+
+sub dispatch_action {
+    my ($self, $name) = @_;
+
+    my $action = ($self->router->get_actions($name, $self->req->action->namespace))[-1]
+        or return 1;
+    $action->dispatch($self);
+
+    !@{ $self->error };
+}
+
+sub dispatch_private_action {
+    my ($self, $name) = @_;
+
+    my $action = ($self->router->get_actions($name, $self->req->action->namespace))[-1];
+    return 1 unless ($action and $action->attributes->{Private});
+    
+    $action->dispatch($self);
+
+    !@{ $self->error };
+}
+
+sub dispatch_auto_action {
+    my $self = shift;
+
+    for my $auto ($self->router->get_actions('auto', $self->req->action->namespace)) {
+        next unless $auto->attributes->{Private};
+        $auto->dispatch($self);
+        return 0 unless $self->state;
+    }
+
+    1;
 }
 
 sub depth {
