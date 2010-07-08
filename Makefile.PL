@@ -31,15 +31,6 @@ requires 'Exporter::AutoClean';
 requires 'Object::Container' => '0.08';
 requires 'Path::AttrRouter';
 
-# for build-in server
-requires 'MIME::Types';
-requires 'MouseX::Types::Path::Class';
-requires 'Getopt::Long' => '2.36';
-
-# build-in helper script
-requires 'Module::Setup';
-requires 'FindBin::libs';
-
 # build-in form generator/validator
 requires 'HTML::Shakan' => '0.03';
 requires 'Clone';
@@ -74,8 +65,6 @@ features(
 );
 
 use_test_base;
-
-install_script 'script/ark.pl';
 
 if ($ENV{ANY_MOOSE_TEST} && author_context) {
     # gfx++
