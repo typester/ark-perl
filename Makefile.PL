@@ -29,6 +29,7 @@ requires 'Devel::StackTrace';
 requires 'Class::Method::Modifiers::Fast';
 requires 'Exporter::AutoClean';
 requires 'Object::Container' => '0.08';
+requires 'Path::AttrRouter';
 
 # for build-in server
 requires 'MIME::Types';
