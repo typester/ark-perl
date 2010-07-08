@@ -245,58 +245,6 @@ sub setup {
     $self->setup_actions;
 }
 
-sub setup_store {
-    my $self = shift;
-
-    $self->setup unless $self->setup_finished;
-
-    my $cache = $self->action_cache or die q[action_cache does not specified];
-    $self->ensure_class_loaded('Storable');
-
-    my $used_dispatch_types
-        = [ grep { $_->used } @{ $self->dispatch_types } ];
-
-    # decompile regexp action because storable doen't recognize compiled regexp
-    my ($regex_type) = grep { $_->name eq 'Regex' } @{ $self->dispatch_types };
-    if ($regex_type->used) {
-        for my $compiled (@{ $regex_type->compiled }) {
-            $compiled->{re} = "$compiled->{re}";
-        }
-    }
-
-    for my $namespace (keys %{ $self->actions }) { # TODO: clone this
-        my $container = $self->actions->{$namespace};
-        for my $name (keys %{ $container->actions }) {
-            my $action = $container->actions->{$name};
-            $action->{controller} = ref $action->{controller};
-        }
-    }
-
-    my $state = {
-        dispatch_types => $used_dispatch_types,
-        actions        => $self->actions,
-    };
-
-    Storable::store($state, $cache);
-}
-
-sub setup_retrieve {
-    my $self = shift;
-
-    my $cache = $self->action_cache or die q[action_cache does not specified];
-    $self->ensure_class_loaded('Storable');
-
-    my $state = eval { Storable::retrieve($cache) }
-        or return;
-
-    $self->ensure_class_loaded(ref $_) for @{ $state->{dispatch_types} || [] };
-    $self->dispatch_types($state->{dispatch_types});
-    $self->log( debug => $_ ) for grep {$_} map { $_->list } @{ $self->dispatch_types };
-
-    $self->actions($state->{actions});
-
-}
-
 sub setup_minimal {
     my ($self, %option) = @_;
 
@@ -479,70 +427,6 @@ sub use_model {
     }
 }
 
-sub register_actions {
-    my ($self, $controller) = @_;
-    my $controller_class = ref $controller || $controller;
-
-    $controller->_method_cache([ @{$controller->_method_cache} ]);
-
-    $self->ensure_class_loaded('Data::Util');
-    while (my $attr = shift @{ $controller->_attr_cache || [] }) {
-        my ($pkg, $method) = Data::Util::get_code_info($attr->[0]);
-        push @{ $controller->_method_cache }, [$method, $attr->[1]];
-    }
-
-    for my $cache (@{ $controller->_method_cache || [] }) {
-        my ($method, $attrs) = @$cache;
-        $attrs = $self->parse_action_attrs( $controller, $method, @$attrs );
-
-        my $ns      = $controller->namespace;
-        my $reverse = $ns ? "$ns/$method" : $method;
-
-        $self->register_action(Ark::Action->new(
-            name       => $method,
-            reverse    => $reverse,
-            namespace  => $ns,
-            attributes => $attrs,
-            controller => $controller,
-        ));
-    }
-}
-
-sub register_action {
-    my ($self, $action) = @_;
-
-    for my $type (@{ $self->dispatch_types || [] }) {
-        $type->register($action);
-    }
-
-    my $container = $self->actions->{ $action->namespace }
-        ||= Ark::ActionContainer->new( namespace => $action->namespace );
-    $container->actions->{ $action->name } = $action;
-}
-
-sub parse_action_attrs {
-    my ($self, $controller, $name, @attrs) = @_;
-
-    my %parsed;
-    for my $attr (@attrs) {
-        if (my ($k, $v) = ( $attr =~ /^(.*?)(?:\(\s*(.+?)\s*\))?$/ )) {
-            ( $v =~ s/^'(.*)'$/$1/ ) || ( $v =~ s/^"(.*)"/$1/ )
-                if defined $v;
-
-            my $initializer = "_parse_${k}_attr";
-            if ($controller->can($initializer)) {
-                ($k, $v) = $controller->$initializer($name, $v);
-                push @{ $parsed{$k} }, $v;
-            }
-            else {
-                # TODO logger & log invalid attributes
-            }
-        }
-    }
-
-    return \%parsed;
-}
-
 sub log {
     my $self = shift;
 
@@ -553,40 +437,6 @@ sub log {
         # keep backward compatibility
         $self->logger->log(@_);
     }
-}
-
-sub get_action {
-    my ($self, $action, $namespace) = @_;
-    return unless $action;
-
-    $namespace ||= '';
-    $namespace = '' if $namespace eq '/';
-
-    my $container = $self->actions->{$namespace} or return;
-    $container->actions->{ $action };
-}
-
-sub get_actions {
-    my ($self, $action, $namespace) = @_;
-    return () unless $action;
-    grep { defined } map { $_->actions->{ $action } } $self->get_containers($namespace);
-}
-
-sub get_containers {
-    my ($self, $namespace) = @_;
-    $namespace ||= '';
-    $namespace = '' if $namespace eq '/';
-
-    my @containers;
-    if (length $namespace) {
-        do {
-            my $container = $self->actions->{$namespace};
-            push @containers, $container if $container;
-        } while $namespace =~ s!/[^/]+$!!;
-    }
-    push @containers, $self->actions->{''} if $self->actions->{''};
-
-    reverse @containers;
 }
 
 sub ensure_class_loaded {
