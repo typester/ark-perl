@@ -139,6 +139,11 @@ sub BUILDARGS {
 
 sub BUILD {
     my $self = shift;
+    $self->reset;
+}
+
+sub reset {
+    my $self = shift;
 
     my $fields = $self->fields;
 
