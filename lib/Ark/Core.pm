@@ -11,6 +11,8 @@ use Exporter::AutoClean;
 use Path::Class qw/file dir/;
 use Path::AttrRouter;
 
+BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } if any_moose eq 'Mouse' }
+
 extends any_moose('::Object'), 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata($_)
