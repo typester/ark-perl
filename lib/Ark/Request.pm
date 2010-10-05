@@ -1,6 +1,19 @@
 package Ark::Request;
 use Any::Moose;
 
+BEGIN {
+    if (any_moose eq 'Mouse') {
+        eval q[use MouseX::Foreign; 1]
+            or die $@;        
+    }
+    else {
+        eval q[use MooseX::NonMoose; 1]
+            or die $@;
+    }
+}
+
+extends 'Plack::Request';
+
 use URI::WithBase;
 use Path::AttrRouter::Match;
 
@@ -20,13 +33,7 @@ no Any::Moose;
 sub wrap {
     my ($class, $req) = @_;
 
-    if ($req->isa('Plack::Request')) {
-        $class->meta->superclasses('Plack::Request');
-        return  $class->new( $req->env );
-    }
-    else {
-        die "Request class should be inheritance Plack::Request";
-    }
+    return $class->new( $req->env );
 }
 
 sub uri_with {

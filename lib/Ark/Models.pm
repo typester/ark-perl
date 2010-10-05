@@ -1,6 +1,13 @@
 package Ark::Models;
 use Any::Moose;
 
+BEGIN {
+    if (any_moose eq 'Mouse') {
+        eval q[use MouseX::Foreign; 1]
+            or die $@;        
+    }
+}
+
 extends any_moose('::Object'), 'Object::Container';
 
 use Exporter::AutoClean;
