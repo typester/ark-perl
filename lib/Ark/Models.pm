@@ -1,12 +1,7 @@
 package Ark::Models;
 use Any::Moose;
 
-BEGIN {
-    if (any_moose eq 'Mouse') {
-        eval q[use MouseX::Foreign; 1]
-            or die $@;        
-    }
-}
+BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } if any_moose eq 'Mouse' }
 
 extends any_moose('::Object'), 'Object::Container';
 

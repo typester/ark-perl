@@ -1,18 +1,9 @@
 package Ark::Request;
 use Any::Moose;
 
-BEGIN {
-    if (any_moose eq 'Mouse') {
-        eval q[use MouseX::Foreign; 1]
-            or die $@;        
-    }
-    else {
-        eval q[use MooseX::NonMoose; 1]
-            or die $@;
-    }
-}
+BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } if any_moose eq 'Mouse' }
 
-extends 'Plack::Request';
+extends any_moose('::Object'), 'Plack::Request';
 
 use URI::WithBase;
 use Path::AttrRouter::Match;
