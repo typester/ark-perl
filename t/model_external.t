@@ -33,4 +33,5 @@ T::Models->register( foo => sub { bless { foo => 'bar' }, 'Foo' } );
 
 is( get('/'), 'bar', 'model replacement ok' );
 
-
+ok( T::Models->get('home'), 'home is defined ok' );
+isa_ok( T::Models->get('home'), 'Path::Class::Dir');
