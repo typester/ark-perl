@@ -1,6 +1,9 @@
 use Test::Base;
 use FindBin;
 
+eval { require Text::MicroTemplate::Extended; };
+plan skip_all => 'this test required Text::MicroTemplate::Extended' if $@;
+
 {
     package TestApp;
     use Ark;

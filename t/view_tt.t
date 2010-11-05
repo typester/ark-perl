@@ -1,6 +1,9 @@
 use Test::Base;
 use FindBin;
 
+eval { require Template; };
+plan skip_all => 'this test required Template-Toolkit' if $@;
+
 {
     package TestApp;
     use Ark;
