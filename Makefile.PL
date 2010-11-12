@@ -66,8 +66,9 @@ features(
 );
 
 use_test_base;
+author_tests('xt');
 
-if ($ENV{ANY_MOOSE_TEST} && author_context) {
+if ($ENV{ANY_MOOSE_TEST} && author_context()) {
     # gfx++
     # repeat testing
     # see also ExtUtils::MM_Any::test_via_harness()

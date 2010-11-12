@@ -1,13 +1,13 @@
 Changes
 eg/app.psgi
 inc/Module/Install.pm
+inc/Module/Install/AuthorTests.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
 inc/Module/Install/Fetch.pm
 inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
-inc/Module/Install/Scripts.pm
 inc/Module/Install/TestBase.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
@@ -20,19 +20,6 @@ inc/Test/More.pm
 lib/Ark.pm
 lib/Ark/Action.pm
 lib/Ark/ActionClass/Form.pm
-lib/Ark/Command.pm
-lib/Ark/Command/Controller.pm
-lib/Ark/Command/Flavor/Controller.pm
-lib/Ark/Command/Flavor/Model.pm
-lib/Ark/Command/Flavor/Newapp.pm
-lib/Ark/Command/Flavor/View.pm
-lib/Ark/Command/Interface.pm
-lib/Ark/Command/Interface/ModuleSetup.pm
-lib/Ark/Command/Model.pm
-lib/Ark/Command/Newapp.pm
-lib/Ark/Command/Plugin.pm
-lib/Ark/Command/Server.pm
-lib/Ark/Command/View.pm
 lib/Ark/Component.pm
 lib/Ark/Context.pm
 lib/Ark/Context/Debug.pm
@@ -78,10 +65,10 @@ lib/Ark/View.pm
 lib/Ark/View/JSON.pm
 lib/Ark/View/MT.pm
 lib/Ark/View/TT.pm
+LICENSE
 Makefile.PL
 MANIFEST			This list of files
 META.yml
-script/ark.pl
 t/001_load.t
 t/002_action_path.t
 t/003_action_dispatcher.t
