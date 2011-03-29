@@ -14,7 +14,11 @@ has store_model => (
 has store_model_key_prefix => (
     is      => 'rw',
     isa     => 'Str',
-    default => 'session:',
+    default => sub {
+        my $self = shift;
+        defined $self->class_config->{key_prefix} ? $self->class_config->{key_prefix}
+                                                  : 'session:';
+    },
 );
 
 around 'get_session_data' => sub {
