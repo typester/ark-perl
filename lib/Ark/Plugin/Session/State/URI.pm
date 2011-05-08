@@ -61,6 +61,9 @@ around get_session_id => sub {
         my $agent = $self->context->can('mobile_agent')
             or $self->log( debug => q[Require MobileAgent plugin for this feature] );
         if ($agent && $self->context->mobile_agent->is_non_mobile) {
+            $self->log(
+                warn => q[Disabled uri_session because the user agent is detected as non mobile]
+            );
             $self->uri_session_disabled(1);
             return;
         }
