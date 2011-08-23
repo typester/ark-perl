@@ -65,6 +65,7 @@ lib/Ark/View.pm
 lib/Ark/View/JSON.pm
 lib/Ark/View/MT.pm
 lib/Ark/View/TT.pm
+lib/Ark/View/Xslate.pm
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
@@ -142,5 +143,10 @@ t/view_tt/forward.tt
 t/view_tt/include.tt
 t/view_tt/include_target.tt
 t/view_tt/render.tt
+t/view_xslate.t
+t/view_xslate/forward.tx
+t/view_xslate/include.tx
+t/view_xslate/include_target.tx
+t/view_xslate/render.tx
 tools/force-moose.pl
 tools/test_format_junit.pl
