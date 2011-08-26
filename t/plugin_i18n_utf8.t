@@ -4,7 +4,7 @@ use FindBin;
 use lib "$FindBin::Bin/plugin_i18n/lib";
 
 eval "require Locale::Maketext::Lexicon; require Locale::Maketext::Simple; 1";
-plan skip_all => 'DBIx::Class::Schema::Loader required to run this test' if $@;
+plan skip_all => 'Locale::Maketext::Lexicon and Locale::Maketext::Simple required to run this test' if $@;
 
 plan 'no_plan';
 
