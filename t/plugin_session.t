@@ -24,9 +24,19 @@ use Test::Base;
         $c->session->set('test', 'dummy');
     }
 
+    sub test_flash_set :Local {
+        my ($self, $c) = @_;
+        $c->session->set('test', 'dummy_flash');
+    }
+
     sub test_get :Local {
         my ($self, $c) = @_;
         $c->res->body( $c->session->get('test') );
+    }
+
+    sub test_flash_get :Local {
+        my ($self, $c) = @_;
+        $c->res->body( $c->session->remove('test') || "" );
     }
 
     sub incr :Local {
@@ -62,6 +72,14 @@ use Ark::Test 'TestApp',
     like( $res->header('Set-Cookie'), qr/testapp_session=/, 'session id ok');
 
     is(get('/test_get'), 'dummy', 'session get ok');
+}
+
+{
+    my $res = request(GET => '/test_flash_set');
+    like( $res->header('Set-Cookie'), qr/testapp_session=/, 'session id ok');
+
+    is(get('/test_flash_get'), 'dummy_flash', 'flash get ok');
+    is(get('/test_flash_get'), '', 'flash cleaered ok');
 }
 
 {
