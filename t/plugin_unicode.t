@@ -17,10 +17,10 @@ use Test::Base;
         my $test = 'テスト';
         Test::More::ok( utf8::is_utf8($test), 'utf8 flag automatically on by Ark' );
 
-        Test::More::ok(utf8::is_utf8( $c->req->params->{foo} ), 'request is utf8');
-        Test::More::is($c->req->params->{foo}, $test, 'request ok');
+        Test::More::ok(utf8::is_utf8( $c->req->parameters->{foo} ), 'request is utf8');
+        Test::More::is($c->req->parameters->{foo}, $test, 'request ok');
 
-        $c->res->body( $c->req->params->{foo} );
+        $c->res->body( $c->req->parameters->{foo} );
     }
 }
 
