@@ -1,3 +1,4 @@
+.gitignore
 Changes
 eg/app.psgi
 inc/Module/Install.pm
@@ -45,6 +46,7 @@ lib/Ark/Plugin/Authentication/User.pm
 lib/Ark/Plugin/Encoding/MobileJP.pm
 lib/Ark/Plugin/Encoding/Null.pm
 lib/Ark/Plugin/Encoding/Unicode.pm
+lib/Ark/Plugin/FormValidator/Lite.pm
 lib/Ark/Plugin/I18N.pm
 lib/Ark/Plugin/MobileAgent.pm
 lib/Ark/Plugin/ReproxyCallback.pm
@@ -91,6 +93,9 @@ t/form/lib/T.pm
 t/form/lib/T/Controller/Root.pm
 t/form/lib/T/Form/Login.pm
 t/form/lib/T/Models.pm
+t/form_validator_lite.t
+t/form_validator_lite/lib/T.pm
+t/form_validator_lite/lib/T/Controller/Root.pm
 t/lazy_action_loader.t
 t/lazy_action_loader/lib/TestApp.pm
 t/lazy_action_loader/lib/TestApp/Controller/One.pm
