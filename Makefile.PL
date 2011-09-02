@@ -29,7 +29,7 @@ requires 'Devel::StackTrace';
 requires 'Class::Method::Modifiers::Fast';
 requires 'Exporter::AutoClean';
 requires 'Object::Container' => '0.08';
-requires 'Path::AttrRouter';
+requires 'Path::AttrRouter' => '0.02';
 requires 'MouseX::Foreign';
 
 # build-in form generator/validator
