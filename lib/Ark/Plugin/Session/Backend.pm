@@ -35,6 +35,12 @@ has digest_model => (
     isa => 'Str',
 );
 
+has expire => (
+    is      => "rw",
+    isa     => "Int",
+    default => 0,
+);
+
 after $_ => sub { shift->session_updated(1); }
     for qw/get set remove/;
 

@@ -38,8 +38,12 @@ around 'set_session_data' => sub {
     my ($self, $key, $value) = @_;
     $key = $self->store_model_key_prefix . $key;
 
-    $self->store_model->set( $key, $value );
-
+    if ( my $expire = $self->expire ) {
+        $self->store_model->set( $key, $value, $expire );
+    }
+    else {
+        $self->store_model->set( $key, $value );
+    }
     $next->(@_);
 };
 

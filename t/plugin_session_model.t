@@ -14,6 +14,10 @@ plan skip_all => 'Cache::MemoryCache required to run this test' if $@;
         Session::Store::Model
         /;
 
+    conf 'Plugin::Session' => {
+        expire => 3,
+    };
+
     conf 'Plugin::Session::Store::Model' => {
         model => 'Session',
     };
@@ -96,4 +100,13 @@ use Ark::Test 'T1',
 
 {
     is(get('/prefix'), 'key_prefix_of_session:', 'specified prefix used');
+}
+
+{
+    request(GET => '/test_set');
+    is(get('/test_get'), 'testdata', 'session get ok');
+    sleep 1;
+    is(get('/test_get'), 'testdata', 'session get after 1sec ok');
+    sleep 3;
+    is(get('/test_get'), '', 'session expired ok');
 }
