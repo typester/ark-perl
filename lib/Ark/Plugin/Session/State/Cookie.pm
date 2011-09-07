@@ -34,13 +34,14 @@ has cookie_path => (
 
 has cookie_expires => (
     is      => 'rw',
-    isa     => 'Str',
     lazy    => 1,
     default => sub {
         my $self = shift;
-        $self->class_config->{cookie_expires}
-            || $self->app->config->{'Plugin::Session'}->{expires}
-            || '+1d';    # 1day
+        exists $self->class_config->{cookie_expires}
+             ? $self->class_config->{cookie_expires}
+      : exists $self->app->config->{'Plugin::Session'}->{expires}
+             ? $self->app->config->{'Plugin::Session'}->{expires}
+      :        '+1d';    # 1day
     },
 );
 

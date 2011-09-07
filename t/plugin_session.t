@@ -70,6 +70,7 @@ use Ark::Test 'TestApp',
 {
     my $res = request(GET => '/test_set');
     like( $res->header('Set-Cookie'), qr/testapp_session=/, 'session id ok');
+    like( $res->header('Set-Cookie'), qr/expires=./, 'session expire ok');
 
     is(get('/test_get'), 'dummy', 'session get ok');
 }

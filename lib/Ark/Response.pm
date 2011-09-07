@@ -159,14 +159,17 @@ sub _finalize_cookies {
             my $cookie = (
                 Scalar::Util::blessed($val)
                 ? $val
-                : CGI::Simple::Cookie->new(
-                    -name    => $name,
-                    -value   => $val->{value},
-                    -expires => $val->{expires},
-                    -domain  => $val->{domain},
-                    -path    => $val->{path},
-                    -secure  => ( $val->{secure} || 0 )
-                )
+                : do {
+                    my %args = (
+                        -name    => $name,
+                        -value   => $val->{value},
+                        -domain  => $val->{domain},
+                        -path    => $val->{path},
+                        -secure  => ( $val->{secure} || 0 )
+                    );
+                    $args{"-expires"} = $val->{expires} if defined $val->{expires};
+                    CGI::Simple::Cookie->new(%args);
+                }
             );
 
             $self->headers->push_header( 'Set-Cookie' => $cookie->as_string );
