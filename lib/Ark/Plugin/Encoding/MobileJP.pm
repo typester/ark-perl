@@ -27,7 +27,6 @@ has encoding => (
 sub prepare_encoding {
     my ($c) = @_;
     my $req = $c->request;
-
     my $encode = sub {
         my ($p, $skip) = @_;
 
@@ -48,7 +47,7 @@ sub prepare_encoding {
 
     $encode->($req->query_parameters);
     $encode->($req->body_parameters);
-    $encode->($req->parameters, 1)
+    $encode->($req->parameters, $req->env->{'plack.request.merged'} ? 0 : 1) ;
 }
 
 my %htmlspecialchars = ( '&' => '&amp;', '<' => '&lt;', '>' => '&gt;', '"' => '&quot;' );
