@@ -48,7 +48,9 @@ sub prepare_encoding {
 
     $encode->($req->query_parameters);
     $encode->($req->body_parameters);
-    $encode->($req->parameters, 1)
+
+    $req->env->{'plack.request.merged'} = undef; #clear cache
+    $encode->($req->parameters, 1);
 }
 
 my %htmlspecialchars = ( '&' => '&amp;', '<' => '&lt;', '>' => '&gt;', '"' => '&quot;' );
