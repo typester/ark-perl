@@ -4,6 +4,12 @@ use HTTP::Request::Common;
 use Test::More;
 use utf8;
 
+eval "use Encode::JP::Mobile";
+plan skip_all => 'this test required Encode::JP::Mobile' if $@;
+
+eval "use HTTP::MobileAgent::Plugin::Charset";
+plan skip_all => 'this test required HTTP::MobileAgent::Plugin::Charset' if $@;
+
 {
     package T;
     use Ark;
@@ -16,7 +22,6 @@ use utf8;
 
     package T::Encoding::Test;
     use Ark::Plugin;
-    use Ark::Plugin::Encoding::MobileJP;
 
     sub prepare_encoding {
         my ($c) = @_;
