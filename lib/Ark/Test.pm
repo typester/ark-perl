@@ -71,8 +71,10 @@ sub import {
 
             my $req = ref($_[0]) eq 'HTTP::Request' ? $_[0] : HTTP::Request->new(@_);
             if ($cookie) {
-                $req->uri( URI->new('http://localhost' . $req->uri->path_query ) );
-                $req->header( Host => 'localhost' );
+                unless ($req->uri->can('host') and $req->uri->host) {
+                    $req->uri( URI->new('http://localhost' . $req->uri->path_query ) );
+                    $req->header( Host => 'localhost' );
+                }
                 $cookie->add_cookie_header($req) unless $req->header('Cookie');
             }
 
