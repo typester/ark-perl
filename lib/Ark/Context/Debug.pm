@@ -170,14 +170,18 @@ around process => sub {
     $self->log( debug =>
                   "Request took ${elapsed}s (${av}/s)\n%s", $self->debug_report->draw);
 
+    $res;
+};
+
+after dispatch => sub {
+    my ($self) = @_;
+
     if (my @error = @{ $self->error }) {
         $self->ensure_class_loaded('Text::MicroTemplate');
 
         $self->res->status(500);
-        $self->res->body( $self->debug_screen_tamplate->($self)->as_string );
+        $self->res->body( my $body = $self->debug_screen_tamplate->($self)->as_string );
     }
-
-    $res;
 };
 
 after prepare_action => sub {
