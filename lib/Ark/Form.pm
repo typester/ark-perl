@@ -73,6 +73,7 @@ has fields => (
                 }
 
                 if (my $choices = delete $params{choices}) {
+                    $params{choices} = [];
                     while (my ($v, $l) = splice @$choices, 0, 2) {
                         push @{ $params{choices} }, $v, $self->localize($l);
                     }
