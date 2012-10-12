@@ -272,9 +272,12 @@ sub uri_for {
     my ($self, @path) = @_;
     my $params = ref $path[-1] eq 'HASH' ? pop @path : {};
 
+    my $base = $self->req->base;
+    $base =~ s!/*$!!;
+
     (my $path = join '/', @path) =~ s!/{2,}!/!g;
     $path =~ s!^/+!!;
-    my $uri = URI::WithBase->new($path, $self->req->base);
+    my $uri = URI::WithBase->new($path, $base . '/');
     $uri->query_form($params);
 
     $uri->abs;
