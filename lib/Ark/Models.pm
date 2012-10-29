@@ -36,11 +36,6 @@ sub import {
             die q[Don't use Ark::Model directly. You must create your own subclasses];
         }
 
-        if ($caller->can($flag)) {
-            die
-              qq[Can't initialize $pkg, method "$flag" is already defined in "$caller"];
-        }
-
         $pkg->initialize;
     }
 
