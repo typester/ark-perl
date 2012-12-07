@@ -5,7 +5,7 @@ license 'perl';
 
 all_from 'lib/Ark.pm';
 
-test_requires 'Test::More';
+test_requires 'Test::More' => '0.96';
 test_requires 'Test::Output';
 
 perl_version '5.008001';

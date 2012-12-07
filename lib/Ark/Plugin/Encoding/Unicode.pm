@@ -2,38 +2,37 @@ package Ark::Plugin::Encoding::Unicode;
 use Ark::Plugin;
 use Scalar::Util 'blessed';
 
+use Encode;
+
 sub prepare_encoding {
     my $self = shift;
     my $req  = $self->request;
 
     my $encode = sub {
-        my ($p, $skip) = @_;
+        my ($p) = @_;
 
-        if (blessed $p and $p->isa('Hash::MultiValue')) {
-            return if $skip;
-            $p->each(sub {
-                utf8::decode($_[1]);
-            });
-        }
-        else {
-            # backward compat
-            for my $value (values %$p) {
-                next if ref $value and ref $value ne 'ARRAY';
-                utf8::decode($_) for ref $value ? @$value : ($value);
-            }
-        }
+        my $decoded = Hash::MultiValue->new;
+
+        $p->each(sub {
+            $decoded->add( $_[0], decode_utf8($_[1]) );
+        });
+
+        $decoded;
     };
 
-    $encode->($req->query_parameters);
-    $encode->($req->body_parameters);
-    $encode->($req->parameters, 1)
+    $req->env->{'plack.request.query'} = $encode->($req->query_parameters);
+    $req->env->{'plack.request.body'}  = $encode->($req->body_parameters);
+
+    if ($req->env->{'plack.request.merged'}) {
+        $req->env->{'plack.request.merged'} = $encode->($req->env->{'plack.request.merged'});
+    }
 };
 
 sub finalize_encoding {
     my $self = shift;
 
     my $res = $self->response;
-    utf8::encode( $res->{body} ) if !$res->binary and $res->has_body;
+    $res->body(encode_utf8 $res->body ) if !$res->binary and $res->has_body;
 };
 
 1;

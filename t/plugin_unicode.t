@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
 {
     package TestApp;
@@ -27,8 +29,6 @@ use Test::Base;
 use Ark::Test 'TestApp',
     components => [qw/Controller::Root/];
 
-plan 'no_plan';
-
 use URI;
 my $uri = URI->new('/');
 $uri->query_form({ foo => 'テスト' });
@@ -38,3 +38,4 @@ ok($res->is_success, 'request ok');
 ok(!utf8::is_utf8($res->content), 'response is binary');
 is($res->content, 'テスト', 'response content ok');
 
+done_testing;
