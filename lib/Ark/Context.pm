@@ -291,7 +291,7 @@ sub finalize {
     if ($is_deferred) {
         my $action = $self->request->action;
         if ($action) {
-            $action->dispatch_end($self);
+            $self->dispatch_private_action('end');
         }
     }
 
