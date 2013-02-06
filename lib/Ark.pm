@@ -1,7 +1,7 @@
 package Ark;
 use 5.008001;
-use Any::Moose;
-use Any::Moose '::Exporter';
+use Mouse;
+use Mouse::Exporter;
 
 use Ark::Core;
 
@@ -40,11 +40,11 @@ do {
             }
         }
 
-        any_moose('::Meta::Class')->initialize($caller);
+        Mouse::Meta::Class->initialize($caller);
 
-        my ($import, $unimport) = any_moose('::Exporter')->build_import_methods(
+        my ($import, $unimport) = Mouse::Exporter->build_import_methods(
             exporting_package => $caller,
-            also => any_moose,
+            also => "Mouse",
         );
 
         $caller->$import({ into => $caller });

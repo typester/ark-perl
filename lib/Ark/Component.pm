@@ -1,7 +1,7 @@
 package Ark::Component;
-use Any::Moose;
+use Mouse;
 
-extends any_moose('::Object'), 'Class::Data::Inheritable';
+extends 'Mouse::Object', 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata(qw/__component_config/);
 
@@ -12,7 +12,7 @@ has app => (
     handles  => ['log', 'context', 'ensure_class_loaded', 'path_to'],
 );
 
-no Any::Moose;
+no Mouse;
 
 sub config {
     my $class  = shift;

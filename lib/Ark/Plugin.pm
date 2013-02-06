@@ -1,6 +1,6 @@
 package Ark::Plugin;
-use Any::Moose '::Role';
-use Any::Moose '::Exporter';
+use Mouse::Role;
+use Mouse::Exporter;
 
 do {
     my %EXPORTS;
@@ -11,11 +11,11 @@ do {
         require utf8; utf8->import;
 
         my $caller = caller;
-        any_moose('::Meta::Role')->initialize($caller);
+        Mouse::Meta::Role->initialize($caller);
 
-        my ($import, $unimport) = any_moose('::Exporter')->build_import_methods(
+        my ($import, $unimport) = Mouse::Exporter->build_import_methods(
             exporting_package => $caller,
-            also => any_moose('::Role'),
+            also => "Mouse::Role",
         );
         $EXPORTS{$caller} = $unimport;
 

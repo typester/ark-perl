@@ -7,7 +7,7 @@ plan 'no_plan';
     use Ark;
 
     package T::ActionClass::Foo;
-    use Any::Moose '::Role';
+    use Mouse::Role;
 
     around ACTION => sub {
         my $next = shift;

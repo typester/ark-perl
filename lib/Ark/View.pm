@@ -1,5 +1,5 @@
 package Ark::View;
-use Any::Moose;
+use Mouse;
 
 extends 'Ark::Component';
 

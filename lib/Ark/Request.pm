@@ -1,9 +1,9 @@
 package Ark::Request;
-use Any::Moose;
+use Mouse;
 
-BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } if any_moose eq 'Mouse' }
+BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } }
 
-extends any_moose('::Object'), 'Plack::Request';
+extends 'Mouse::Object', 'Plack::Request';
 
 use URI::WithBase;
 use Path::AttrRouter::Match;
@@ -19,7 +19,7 @@ has match => (
     *arguments = \&args;
 }
 
-no Any::Moose;
+no Mouse;
 
 sub wrap {
     my ($class, $req) = @_;

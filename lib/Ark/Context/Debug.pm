@@ -1,5 +1,5 @@
 package Ark::Context::Debug;
-use Any::Moose '::Role';
+use Mouse::Role;
 
 use Try::Tiny;
 

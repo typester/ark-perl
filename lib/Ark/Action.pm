@@ -1,9 +1,9 @@
 package Ark::Action;
-use Any::Moose;
+use Mouse;
 
 extends 'Path::AttrRouter::Action';
 
-no Any::Moose;
+no Mouse;
 
 sub dispatch {
     my ($self, $c, @args) = @_;

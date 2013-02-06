@@ -1,13 +1,13 @@
 package Ark::Form;
 use utf8;
-use Any::Moose;
+use Mouse;
 
 use Clone 'clone';
 use Exporter::AutoClean;
 use HTML::Shakan;
 use HTML::Shakan::Utils;
 
-extends any_moose('::Object'), 'Class::Data::Inheritable';
+extends 'Mouse::Object', 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata('_fields_data');
 __PACKAGE__->mk_classdata('_fields_data_order');
@@ -97,7 +97,7 @@ has fields => (
     },
 );
 
-no Any::Moose;
+no Mouse;
 
 sub EXPORT {
     my ($class, $target) = @_;
@@ -118,7 +118,7 @@ sub EXPORT {
             $target->set_param_data(@_);
         },
         widgets => sub {
-            Any::Moose::load_class($_[0]);
+            Mouse::load_class($_[0]);
             $target->_widgets_class($_[0]);
         },
     );

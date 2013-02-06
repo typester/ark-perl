@@ -1,12 +1,12 @@
 package Ark::Controller;
-use Any::Moose;
+use Mouse;
 use Path::AttrRouter::Controller;
 
 BEGIN {
     extends 'Path::AttrRouter::Controller';
 }
 
-no Any::Moose;
+no Mouse;
 
 sub ACTION {
     my ($self, $action, $context, @args) = @_;
