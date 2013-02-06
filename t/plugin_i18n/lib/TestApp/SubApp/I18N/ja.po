@@ -1,0 +1,22 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR Free Software Foundation, Inc.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"PO-Revision-Date: 2009-11-25 11:21+0900\n"
+"Last-Translator: Daisuke Murase <murase@kayac.com\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Hello"
+msgstr "こんにちは"
+
+#. ($c->user->obj->username)
+#: root/common/base.mt:18
+msgid "logined as %1"
+msgstr "%1 としてログインしています"
+

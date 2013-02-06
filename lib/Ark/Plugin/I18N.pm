@@ -13,7 +13,9 @@ sub BUILD {
     return if $stash->{setup_finished};
 
     my $class = ref($self->app);
-    my $path  = $self->path_to('lib', $class, 'I18N');
+    (my $module_path = $class) =~ s!::!/!g;
+
+    my $path  = $self->path_to('lib', $module_path, 'I18N');
 
     eval <<"";
         package $class;
