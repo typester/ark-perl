@@ -19,7 +19,7 @@ before ACTION => sub {
     $context->stash->{form} = $form;
 };
 
-no Mouse '::Role';
+no Mouse::Role;
 
 sub _parse_Form_attr {
     my ($self, $name, $value) = @_;
