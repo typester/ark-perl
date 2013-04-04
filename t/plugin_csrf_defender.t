@@ -28,6 +28,8 @@ use Test::Base;
     sub test_get :Local {
         my ($self, $c) = @_;
         $c->session->remove('csrf_token');
+
+        $c->res->body('<form></form>');
     }
 }
 
@@ -63,5 +65,5 @@ use Ark::Test 'TestApp',
 
 {
     my ($res, $c) = ctx_request(GET => '/test_get');
-    like $c->html_filter_for_csrf('<form></form>'), qr/name="csrf_token"/;
+    like $c->res->body, qr/name="csrf_token"/;
 }

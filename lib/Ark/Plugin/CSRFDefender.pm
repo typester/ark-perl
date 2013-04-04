@@ -54,17 +54,6 @@ sub validate_csrf_token {
     return 1; # good
 }
 
-sub html_filter_for_csrf {
-    my ($c, $html) = @_;
-    return if !$html;
-
-    my $param_name = $c->csrf_defender_param_name;
-    my $token      = $c->csrf_token;
-    $html =~ s!(<form\s*.*?>)!$1\n<input type="hidden" name="$param_name" value="$token" />!isg;
-
-    return $html;
-}
-
 sub _is_need_validated {
     my ($method) = @_;
     return () if !$method;
@@ -74,6 +63,19 @@ sub _is_need_validated {
         $method eq 'PUT'    ? 1 :
         $method eq 'DELETE' ? 1 : ();
 }
+
+after finalize_body => sub {
+    my $c = shift;
+
+    return if $c->res->binary;
+    my $html = $c->res->body or return;
+
+    my $param_name = $c->csrf_defender_param_name;
+    my $token      = $c->csrf_token;
+    $html =~ s!(<form\s*.*?>)!$1\n<input type="hidden" name="$param_name" value="$token" />!isg;
+
+    $c->res->body($html);
+};
 
 1;
 __END__
