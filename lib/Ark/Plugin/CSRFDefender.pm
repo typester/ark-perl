@@ -43,7 +43,7 @@ sub validate_csrf_token {
     my $c = shift;
     my $req = $c->request;
 
-    if (_is_need_validated($req->method)) {
+    if ($c->_is_csrf_validation_needed) {
         my $param_token   = $req->param($c->csrf_defender_param_name);
         my $session_token = $c->session->get($c->csrf_defender_session_name);
 
@@ -54,8 +54,9 @@ sub validate_csrf_token {
     return 1; # good
 }
 
-sub _is_need_validated {
-    my ($method) = @_;
+sub _is_csrf_validation_needed {
+    my $c = shift;
+    my $method = $c->req->method;
     return () if !$method;
 
     return
