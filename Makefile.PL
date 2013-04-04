@@ -26,7 +26,6 @@ requires 'HTML::Entities';
 requires 'Data::UUID';
 requires 'Digest::SHA1';
 requires 'Devel::StackTrace';
-requires 'Class::Method::Modifiers::Fast';
 requires 'Exporter::AutoClean';
 requires 'Object::Container' => '0.08';
 requires 'Path::AttrRouter' => '0.02';
