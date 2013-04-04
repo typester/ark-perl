@@ -2,22 +2,39 @@ package Ark::Plugin::CSRFDefender;
 use strict;
 use warnings;
 use Ark::Plugin;
+use Data::UUID;
 
-our $SESSION_NAME = 'csrf_token';
-our $PARAM_NAME   = 'csrf_token';
-our $RANDOM_STRING_SIZE = 16;
+has csrf_defender_param_name => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub {
+        shift->class_config->{param_name} || 'csrf_token';
+    },
+);
 
+has csrf_defender_session_name => (
+    is      => 'ro',
+    isa     => 'Str',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        $self->class_config->{session_name} || $self->csrf_defender_param_name;
+    },
+);
+
+my $uuid = Data::UUID->new;
 sub csrf_token {
     my $c = shift;
     my $req = $c->request;
 
-    if (my $token = $c->session->get($SESSION_NAME)) {
+    if (my $token = $c->session->get($c->csrf_defender_session_name)) {
         return $token;
     }
     else {
-        my $token = _random_string($RANDOM_STRING_SIZE);
+        my $token = $uuid->create_str;
 
-        $c->session->set($SESSION_NAME => $token);
+        $c->session->set($c->csrf_defender_session_name => $token);
         return $token;
     }
 }
@@ -27,11 +44,11 @@ sub validate_csrf_token {
     my $req = $c->request;
 
     if (_is_need_validated($req->method)) {
-        my $param_token   = $req->param($PARAM_NAME);
-        my $session_token = $c->session->get($SESSION_NAME);
+        my $param_token   = $req->param($c->csrf_defender_param_name);
+        my $session_token = $c->session->get($c->csrf_defender_session_name);
 
         if (!$param_token || !$session_token || ($param_token ne $session_token)) {
-            return 0; # bad
+            return (); # bad
         }
     }
     return 1; # good
@@ -41,30 +58,21 @@ sub html_filter_for_csrf {
     my ($c, $html) = @_;
     return if !$html;
 
-    my $token = $c->csrf_token;
-    $html =~ s!(<form\s*.*?>)!$1\n<input type="hidden" name="$PARAM_NAME" value="$token" />!isg;
+    my $param_name = $c->csrf_defender_param_name;
+    my $token      = $c->csrf_token;
+    $html =~ s!(<form\s*.*?>)!$1\n<input type="hidden" name="$param_name" value="$token" />!isg;
 
     return $html;
 }
 
 sub _is_need_validated {
     my ($method) = @_;
-    return 0 if !$method;
+    return () if !$method;
 
     return
         $method eq 'POST'   ? 1 :
         $method eq 'PUT'    ? 1 :
-        $method eq 'DELETE' ? 1 : 0;
-}
-
-sub _random_string {
-    my $length = shift;
-    my @chars = ('A'..'Z', 'a'..'z', '0'..'9', '$', '!');
-    my $ret;
-    for (1..$length) {
-        $ret .= $chars[int rand @chars];
-    }
-    return $ret;
+        $method eq 'DELETE' ? 1 : ();
 }
 
 1;

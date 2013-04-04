@@ -44,7 +44,7 @@ use Ark::Test 'TestApp',
 
 {
     my ($res, $c) = ctx_request(GET => '/test_get');
-    is length $c->csrf_token, 16;
+    is length $c->csrf_token, 36;
 }
 
 {
@@ -57,7 +57,7 @@ use Ark::Test 'TestApp',
 {
     for my $method (qw(POST PUT DELETE)) {
         my ($res, $c) = ctx_request($method => '/test_set?csrf_token=fuga');
-        is $c->validate_csrf_token, 0;
+        ok !$c->validate_csrf_token;
     }
 }
 
