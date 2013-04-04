@@ -1,5 +1,5 @@
 package Ark::Core;
-use Any::Moose;
+use Mouse;
 
 use Ark::Context;
 use Ark::Request;
@@ -11,9 +11,9 @@ use Exporter::AutoClean;
 use Path::Class qw/file dir/;
 use Path::AttrRouter;
 
-BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } if any_moose eq 'Mouse' }
+BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } }
 
-extends any_moose('::Object'), 'Class::Data::Inheritable';
+extends 'Mouse::Object', 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata($_)
     for qw/context configdata plugins _class_stash external_model_class/;
@@ -137,7 +137,7 @@ has router => (
     handles => ['get_action', 'get_actions'],
 );
 
-no Any::Moose;
+no Mouse;
 
 sub EXPORT {
     my ($class, $target) = @_;
@@ -182,14 +182,13 @@ sub class_wrapper {
 
     my $classname = "${pkg}::Ark::$args->{name}";
     return $classname
-        if Any::Moose::is_class_loaded($classname) && $classname->isa($args->{base});
+        if Mouse::is_class_loaded($classname) && $classname->isa($args->{base});
 
-    my $moose_class = any_moose;
     {
         local $@;
         eval qq{
             package ${classname};
-            use ${moose_class};
+            use Mouse;
             extends '$args->{base}';
             1;
         };
@@ -319,7 +318,7 @@ sub setup_plugin {
 sub setup_plugins {
     my $self = shift;
 
-    $self->meta->make_mutable unless any_moose eq 'Mouse';
+    $self->meta->make_mutable;
 
     for my $plugin (@{ $self->plugins || [] }) {
         $self->setup_plugin($plugin);
@@ -327,7 +326,7 @@ sub setup_plugins {
 
     $self->setup_default_plugins;
 
-    $self->meta->make_immutable unless any_moose eq 'Mouse';
+    $self->meta->make_immutable;
 }
 
 sub setup_default_plugins {
@@ -443,7 +442,7 @@ sub log {
 
 sub ensure_class_loaded {
     my ($self, $class) = @_;
-    Any::Moose::load_class($class) unless Any::Moose::is_class_loaded($class);
+    Mouse::load_class($class) unless Mouse::is_class_loaded($class);
 }
 
 sub path_to {

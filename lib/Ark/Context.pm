@@ -1,6 +1,6 @@
 package Ark::Context;
-use Any::Moose;
-use Any::Moose '::Util::TypeConstraints';
+use Mouse;
+use Mouse::Util::TypeConstraints;
 
 use Scalar::Util ();
 use Try::Tiny;

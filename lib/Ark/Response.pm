@@ -1,5 +1,5 @@
 package Ark::Response;
-use Any::Moose;
+use Mouse;
 
 use Carp ();
 use Scalar::Util ();
@@ -56,7 +56,7 @@ has deferred_response => (
     isa => 'CodeRef',
 );
 
-no Any::Moose;
+no Mouse;
 
 sub code { shift->status(@_) }
 sub content { shift->body(@_) }

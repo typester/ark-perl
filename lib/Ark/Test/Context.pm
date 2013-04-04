@@ -1,10 +1,10 @@
 package Ark::Test::Context;
-use Any::Moose '::Role';
+use Mouse::Role;
 
 before process => sub {
     Ark::Test::context($_[0]);
 };
 
-no Any::Moose '::Role';
+no Mouse::Role;
 
 1;

@@ -1,5 +1,5 @@
 package Ark::Logger;
-use Any::Moose;
+use Mouse;
 use utf8;
 
 has log_level => (
@@ -21,7 +21,7 @@ has log_levels => (
     },
 );
 
-no Any::Moose;
+no Mouse;
 
 {
     no strict 'refs';

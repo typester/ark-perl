@@ -1,9 +1,9 @@
 package Ark::Models;
-use Any::Moose;
+use Mouse;
 
-BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } if any_moose eq 'Mouse' }
+BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } }
 
-extends any_moose('::Object'), 'Object::Container';
+extends 'Mouse::Object', 'Object::Container';
 
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;
@@ -16,7 +16,7 @@ has registered_namespaces => (
 
 has [qw/registered_classes objects/] => ( is => 'rw', default => sub { {} } );
 
-no Any::Moose;
+no Mouse;
 
 sub import {
     my $pkg    = shift;
@@ -167,7 +167,7 @@ sub get {
 }
 
 sub ensure_class_loaded {
-    Any::Moose::load_class($_[1]);
+    Mouse::load_class($_[1]);
 }
 
 __PACKAGE__->meta->make_immutable;

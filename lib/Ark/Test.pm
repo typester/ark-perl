@@ -1,5 +1,5 @@
 package Ark::Test;
-use Any::Moose;
+use Mouse;
 
 use HTTP::Request;
 use HTTP::Cookies;
@@ -17,7 +17,7 @@ sub import {
 
     return unless $app_class;
 
-    Any::Moose::load_class($app_class) unless Any::Moose::is_class_loaded($app_class);
+    Mouse::load_class($app_class) unless Mouse::is_class_loaded($app_class);
 
     my $persist_app = undef;
     my $cookie;
@@ -108,9 +108,9 @@ sub import {
 
         *{ $caller . '::ctx_request'} = sub {
             unless (Ark::Context->meta->does_role('Ark::Test::Context')) {
-                Ark::Context->meta->make_mutable unless any_moose eq 'Mouse';
+                Ark::Context->meta->make_mutable;
                 Ark::Test::Context->meta->apply( Ark::Context->meta );
-                Ark::Context->meta->make_immutable unless any_moose eq 'Mouse';
+                Ark::Context->meta->make_immutable;
             }
 
             my $res = &{$caller . '::request'}(@_);
