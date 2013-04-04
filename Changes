@@ -1,4 +1,8 @@
 Revision history for Perl module Ark
 
+0.30    Thu Apr  4 22:26:51 JST 2013
+     - use Mouse; no Any::Moose
+     - Plugin::CSRFDefender
+
 0.10 2009-10-26T12:26:26+09:00
      - original version

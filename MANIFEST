@@ -1,4 +1,3 @@
-.gitignore
 Changes
 eg/app.psgi
 inc/Module/Install.pm
@@ -82,7 +81,12 @@ t/action_chain.t
 t/action_chain_slashinpathpart.t
 t/action_class.t
 t/action_path_order.t
+t/action_path_root.t
+t/action_path_root/lib/TestApp.pm
+t/action_path_root/lib/TestApp/Controller.pm
+t/action_path_root/lib/TestApp/Controller/Foo.pm
 t/component_config.t
+t/context_uri_for.t
 t/default_view.t
 t/detach_action_chain.t
 t/detach_action_chain2.t
@@ -115,6 +119,7 @@ t/models/lib/T/Models/Foo/Bar.pm
 t/models/lib/T/Models/Greetings.pm
 t/models/lib/T2/API/Hello.pm
 t/models/lib/T2/Models.pm
+t/models_bug_redefine.t
 t/path_to.t
 t/path_to/lib/TestApp.pm
 t/plugin_authentication.t
@@ -124,6 +129,8 @@ t/plugin_authentication_store_model.t
 t/plugin_core.t
 t/plugin_csrf_defender.t
 t/plugin_default.t
+t/plugin_encoding_mobilejp.t
+t/plugin_encoding_mobilejp_called_parameters_before.t
 t/plugin_i18n.t
 t/plugin_i18n/lib/TestApp.pm
 t/plugin_i18n/lib/TestApp/Controller/Root.pm
@@ -131,8 +138,13 @@ t/plugin_i18n/lib/TestApp/I18N/de.po
 t/plugin_i18n/lib/TestApp/I18N/en_us.pm
 t/plugin_i18n/lib/TestApp/I18N/fr.pm
 t/plugin_i18n/lib/TestApp/I18N/ja.po
+t/plugin_i18n/lib/TestApp/SubApp.pm
+t/plugin_i18n/lib/TestApp/SubApp/Controller.pm
+t/plugin_i18n/lib/TestApp/SubApp/I18N/ja.po
+t/plugin_i18n_bug.t
 t/plugin_i18n_utf8.t
 t/plugin_session.t
+t/plugin_session_expire.t
 t/plugin_session_model.t
 t/plugin_session_state_opensocial.t
 t/plugin_unicode.t

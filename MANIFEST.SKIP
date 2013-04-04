@@ -1,3 +1,4 @@
+^\.
 \bRCS\b
 \bCVS\b
 ^MANIFEST\.
@@ -12,3 +13,4 @@
 ^9\d_.*\.t
 ^\.git/
 ^\.shipit$
+^MYMETA\.*
