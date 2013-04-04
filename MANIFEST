@@ -43,6 +43,7 @@ lib/Ark/Plugin/Authentication/Store/Minimal.pm
 lib/Ark/Plugin/Authentication/Store/Model.pm
 lib/Ark/Plugin/Authentication/Store/Null.pm
 lib/Ark/Plugin/Authentication/User.pm
+lib/Ark/Plugin/CSRFDefender.pm
 lib/Ark/Plugin/Encoding/MobileJP.pm
 lib/Ark/Plugin/Encoding/Null.pm
 lib/Ark/Plugin/Encoding/Unicode.pm
@@ -121,6 +122,7 @@ t/plugin_authentication_cred_password.t
 t/plugin_authentication_store_dbixclass.t
 t/plugin_authentication_store_model.t
 t/plugin_core.t
+t/plugin_csrf_defender.t
 t/plugin_default.t
 t/plugin_i18n.t
 t/plugin_i18n/lib/TestApp.pm
