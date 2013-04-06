@@ -1,9 +1,7 @@
 package Ark::Models;
 use Mouse;
 
-BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } }
-
-extends 'Mouse::Object', 'Object::Container';
+extends 'Object::Container';
 
 use Exporter::AutoClean;
 use Path::Class qw/file dir/;

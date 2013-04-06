@@ -1,9 +1,7 @@
 package Ark::Request;
 use Mouse;
 
-BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } }
-
-extends 'Mouse::Object', 'Plack::Request';
+extends 'Plack::Request';
 
 use URI::WithBase;
 use Path::AttrRouter::Match;

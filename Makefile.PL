@@ -28,11 +28,10 @@ requires 'Digest::SHA1';
 requires 'Devel::StackTrace';
 requires 'Exporter::AutoClean';
 requires 'Object::Container' => '0.08';
-requires 'Path::AttrRouter' => '0.02';
-requires 'MouseX::Foreign';
+requires 'Path::AttrRouter'  => '0.03';
 
 # build-in form generator/validator
-requires 'HTML::Shakan' => '0.03';
+requires 'HTML::Shakan' => '0.16';
 requires 'Clone';
 
 features(

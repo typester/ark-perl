@@ -11,9 +11,7 @@ use Exporter::AutoClean;
 use Path::Class qw/file dir/;
 use Path::AttrRouter;
 
-BEGIN { do { eval q[use MouseX::Foreign; 1] or die $@ } }
-
-extends 'Mouse::Object', 'Class::Data::Inheritable';
+extends 'Class::Data::Inheritable';
 
 __PACKAGE__->mk_classdata($_)
     for qw/context configdata plugins _class_stash external_model_class/;
