@@ -13,6 +13,7 @@ has registered_namespaces => (
 );
 
 has [qw/registered_classes objects/] => ( is => 'rw', default => sub { {} } );
+has autoloader_rules                 => ( is => 'rw', default => sub { [] } );
 
 no Mouse;
 
