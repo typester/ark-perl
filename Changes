@@ -1,5 +1,8 @@
 Revision history for Perl module Ark
 
+0.32    Mon Apr  8 22:25:07 JST 2013
+     - Fix Ark::Models autoloder bug. Thank acidlemon for reporting.
+
 0.31    Sun Apr  7 02:33:50 JST 2013
      - Remove dependency MouseX::Foreign and now Ark doesn't depend on Any::Moose any more
 

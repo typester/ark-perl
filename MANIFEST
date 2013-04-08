@@ -119,6 +119,8 @@ t/models/lib/T/Models/Foo/Bar.pm
 t/models/lib/T/Models/Greetings.pm
 t/models/lib/T2/API/Hello.pm
 t/models/lib/T2/Models.pm
+t/models/lib/T3/Models.pm
+t/models/lib/T3/Schema/Test.pm
 t/models_bug_redefine.t
 t/path_to.t
 t/path_to/lib/TestApp.pm
