@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More;
 use FindBin;
 use lib "$FindBin::Bin/plugin_i18n/lib";

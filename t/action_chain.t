@@ -1,4 +1,7 @@
+use strict;
+use warnings;
 use Test::More;
+
 plan 'no_plan';
 
 {

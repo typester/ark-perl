@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More;
 use FindBin;
 use lib "$FindBin::Bin/lazy_component_loader/lib";

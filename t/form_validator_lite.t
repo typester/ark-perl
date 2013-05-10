@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More;
 use FindBin;
 use lib "$FindBin::Bin/form_validator_lite/lib";

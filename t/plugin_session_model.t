@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More;
 
 eval "use Cache::MemoryCache";
