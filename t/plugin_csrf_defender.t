@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
 {
     package TestApp;
@@ -33,7 +35,6 @@ use Test::Base;
     }
 }
 
-plan 'no_plan';
 
 use Ark::Test 'TestApp',
     components       => [qw/Controller::Root/],
@@ -67,3 +68,4 @@ use Ark::Test 'TestApp',
     my ($res, $c) = ctx_request(GET => '/test_get');
     like $c->res->body, qr/name="csrf_token"/;
 }
+done_testing;

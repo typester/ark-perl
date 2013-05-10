@@ -1,6 +1,7 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
-plan 'no_plan';
 
 {
     package T;
@@ -52,3 +53,4 @@ ok get('/'), 'zero';
 ok get('/a/b/c/d/e/f/g'), 'inf';
 ok get('/a/b/c/d'), 'four';
 
+done_testing;

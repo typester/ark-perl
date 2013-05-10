@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
 {
     package MyClass;
@@ -56,7 +58,6 @@ use Test::Base;
     );
 }
 
-plan 'no_plan';
 
 use Ark::Test 'TestApp',
     components => [qw/Controller::Root
@@ -65,3 +66,4 @@ use Ark::Test 'TestApp',
 
 is(get('/myclass'), 'hello adaptor', 'adaptor response ok');
 is(get('/hellome'), 'hello typester', 'adaptor with args ok');
+done_testing;

@@ -1,4 +1,7 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
+plan 'no_plan';
 
 {
     package TestApp;
@@ -96,7 +99,6 @@ use Test::Base;
 
 require Ark::Test;
 
-plan 'no_plan';
 
 sub run_tests() {
     {

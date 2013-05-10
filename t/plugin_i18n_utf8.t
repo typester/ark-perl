@@ -1,12 +1,13 @@
 use utf8;
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 use FindBin;
 use lib "$FindBin::Bin/plugin_i18n/lib";
 
 eval "require Locale::Maketext::Lexicon; require Locale::Maketext::Simple; 1";
 plan skip_all => 'Locale::Maketext::Lexicon and Locale::Maketext::Simple required to run this test' if $@;
 
-plan 'no_plan';
 
 use Ark::Test 'TestApp';
 use Encode;
@@ -33,3 +34,4 @@ use Encode;
     
 }
 
+done_testing;

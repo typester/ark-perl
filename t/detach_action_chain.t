@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
 {
     package TestApp;
@@ -31,7 +33,6 @@ use Test::Base;
 use Ark::Test 'TestApp',
     components => [qw/Controller::Root Controller::Entry/];
 
-plan 'no_plan';
 
 {
     my $res = request( GET => '/entry/1' );
@@ -45,3 +46,4 @@ plan 'no_plan';
     is($res->content, '404', 'chained with detach response ok');
 }
 
+done_testing;

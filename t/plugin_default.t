@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 require Ark::Test;
 
 {
@@ -41,7 +43,6 @@ require Ark::Test;
     }
 }
 
-plan 'no_plan';
 
 import Ark::Test 'T1', components => [qw/Controller::Root/];
 
@@ -50,3 +51,4 @@ get('/');
 import Ark::Test 'T2', components => [qw/Controller::Root/];
 
 get('/');
+done_testing;

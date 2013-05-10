@@ -1,8 +1,9 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 use FindBin;
 use lib "$FindBin::Bin/form_validator_lite/lib";
 
-plan 'no_plan';
 
 use Ark::Test 'T';
 use HTTP::Request::Common;
@@ -13,3 +14,4 @@ use HTTP::Request::Common;
     isa_ok(my $form = $c->validator, "FormValidator::Lite");
 }
 
+done_testing;

@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 use FindBin;
 
 eval { require Text::Xslate; };
@@ -43,7 +45,6 @@ plan skip_all => 'this test required Text::Xslate' if $@;
     );
 }
 
-plan 'no_plan';
 
 use Ark::Test 'TestApp',
     components => [qw/Controller::Root View::Xslate/];
@@ -68,3 +69,4 @@ use Ark::Test 'TestApp',
     is($content, 'before included after', 'include ok');
 }
 
+done_testing;

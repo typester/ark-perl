@@ -1,4 +1,4 @@
-use Test::Base qw/no_plan/;
+use Test::More;
 
 {
     package T;
@@ -48,6 +48,8 @@ use Ark::Test 'T',
     ok($res->is_success, 'response ok');
     is($res->content, '404', 'chained with detach response ok');
 }
+
+done_testing;
 
 __END__
 

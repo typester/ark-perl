@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
 {
     package T;
@@ -23,10 +25,10 @@ use Test::Base;
     }
 }
 
-plan 'no_plan';
 
 use Ark::Test 'T',
     components => [qw/Controller::Root/];
 
 is(get('/test'), 'foo', 'extends controller ok');
 
+done_testing;

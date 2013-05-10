@@ -1,7 +1,8 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 use Test::Output;
 
-plan 'no_plan';
 
 {
     package T;
@@ -35,3 +36,4 @@ plan 'no_plan';
 }
 
 
+done_testing;
