@@ -3,6 +3,12 @@ use Ark 'Controller::Form';
 
 has '+namespace' => default => '';
 
+sub index :Path {
+    my ($self, $c) = @_;
+
+    $c->res->body($self->form ? 'NG' : 'OK');
+}
+
 sub login_form_input :Local :Form('T::Form::Login') {
     my ($self, $c) = @_;
 

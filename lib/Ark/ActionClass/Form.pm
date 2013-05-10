@@ -3,20 +3,22 @@ use Mouse::Role;
 
 use Ark::Form;
 
-has form => (
-    is  => 'rw',
-    isa => 'Ark::Form',
-);
+sub form { shift->{form} }
 
-before ACTION => sub {
+around ACTION => sub {
+    my $orig = shift;
+
     my ($self, $action, $context, @args) = @_;
-    my $form_class = $action->attributes->{Form}->[0] or return;
+    local $self->{form};
+    my $form_class = $action->attributes->{Form}->[0];
+    if ($form_class) {
+        $context->ensure_class_loaded($form_class);
+        my $form = $form_class->new( $context->request, $context );
 
-    $context->ensure_class_loaded($form_class);
-    my $form = $form_class->new( $context->request, $context );
-
-    $self->form( $form );
-    $context->stash->{form} = $form;
+        $context->stash->{form} = $form;
+        $self->{form}           = $form;
+    }
+    $orig->(@_);
 };
 
 no Mouse::Role;
