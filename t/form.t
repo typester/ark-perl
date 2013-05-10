@@ -1,8 +1,9 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 use FindBin;
 use lib "$FindBin::Bin/form/lib";
 
-plan 'no_plan';
 
 use Ark::Test 'T';
 use HTTP::Request::Common;
@@ -104,3 +105,4 @@ is(
     ok($form->has_error, 'form has error ok');
     is($form->error_message_plain('login'), 'username or password is wrong', 'custom validation ok');
 }
+done_testing;

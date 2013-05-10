@@ -64,7 +64,6 @@ features(
     ],
 );
 
-use_test_base;
 author_tests('xt');
 
 WriteAll;

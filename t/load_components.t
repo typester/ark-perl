@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
 {
     package TestApp;
@@ -33,7 +35,7 @@ use Ark::Test 'TestApp',
                       Model::DB
                      /];
 
-plan 'no_plan';
 
 is(get('/view'), 'TestApp::View::TT', 'view() ok');
 is(get('/model'), 'TestApp::Model::DB', 'model() ok');
+done_testing;

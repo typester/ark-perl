@@ -1,4 +1,8 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
+
+plan 'no_plan';
 
 {
     package T1;
@@ -72,7 +76,6 @@ use Test::Base;
     }
 }
 
-plan 'no_plan';
 
 require Ark::Test;
 

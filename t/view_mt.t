@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 use FindBin;
 
 eval { require Text::MicroTemplate::Extended; };
@@ -43,7 +45,6 @@ plan skip_all => 'this test required Text::MicroTemplate::Extended' if $@;
     );
 }
 
-plan 'no_plan';
 
 use Ark::Test 'TestApp',
     components => [qw/Controller::Root View::MT/];
@@ -68,3 +69,4 @@ use Ark::Test 'TestApp',
     is($content, 'before included[foo,bar] after', 'include ok');
 }
 
+done_testing;

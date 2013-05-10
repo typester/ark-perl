@@ -1,6 +1,7 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
-plan 'no_plan';
 
 {
     package App::Plugin::ExtendArkCore;
@@ -27,3 +28,4 @@ use Ark::Test 'App';
 
 is(get('/'), 'handled by plugin', 'core plugin ok');
 
+done_testing;

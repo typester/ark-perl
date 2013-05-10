@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
 {
     package T1;
@@ -63,7 +65,6 @@ use Test::Base;
     }
 }
 
-plan 'no_plan';
 
 use Ark::Test 'T1',
     components => [qw/Controller::Root
@@ -75,3 +76,4 @@ use Ark::Test 'T1',
 is(get('/'), 'require login', 'not login ok');
 is(get('/login'), 'login done', 'login ok');
 is(get('/'), 'logined: user1', 'logined ok');
+done_testing;

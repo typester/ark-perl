@@ -1,4 +1,6 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 
 {
     package TestApp;
@@ -25,7 +27,6 @@ use Test::Base;
     }
 }
 
-plan 'no_plan';
 
 use Ark::Test 'TestApp',
     components       => [qw/Controller::Root/],
@@ -36,3 +37,4 @@ use Ark::Test 'TestApp',
     like( $res->header('Set-Cookie'), qr/testapp_session=/, 'session id ok');
     unlike( $res->header('Set-Cookie'), qr/expires=/, 'session expires ok');
 }
+done_testing;

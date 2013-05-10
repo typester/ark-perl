@@ -1,8 +1,9 @@
-use Test::Base;
+use strict;
+use warnings;
+use Test::More;
 use FindBin;
 use lib "$FindBin::Bin/models/lib";
 
-plan 'no_plan';
 
 use T::Models 'm1';
 use T2::Models 'm2';
@@ -19,3 +20,4 @@ is(m2('API::Hello')->hello, 'api hello!', 'custom nemespaces ok');
 
 is(m3('Schema::Test')->test, 'test', 'autoloader ok');
 
+done_testing;
