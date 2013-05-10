@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 
 eval "use Cache::MemoryCache";
 plan skip_all => 'Cache::MemoryCache required to run this test' if $@;
@@ -63,7 +63,6 @@ plan skip_all => 'Cache::MemoryCache required to run this test' if $@;
     }
 }
 
-plan 'no_plan';
 
 use Ark::Test 'T1',
     components => [qw/Controller::Root Model::Session/],
@@ -110,3 +109,4 @@ use Ark::Test 'T1',
     sleep 3;
     is(get('/test_get'), '', 'session expired ok');
 }
+done_testing;

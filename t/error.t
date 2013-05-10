@@ -1,6 +1,5 @@
-use Test::Base;
+use Test::More;
 
-plan 'no_plan';
 
 {
     package T;
@@ -24,3 +23,4 @@ is($res->code, 500, '500 ok');
 is($res->content, 'Internal Server Error', 'error content ok');
 like($c->error->[-1], qr/^Died at/, 'error msg ok');
 
+done_testing;

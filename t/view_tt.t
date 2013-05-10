@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 use FindBin;
 
 eval { require Template; };
@@ -43,7 +43,6 @@ plan skip_all => 'this test required Template-Toolkit' if $@;
     );
 }
 
-plan 'no_plan';
 
 use Ark::Test 'TestApp',
     components => [qw/Controller::Root View::TT/];
@@ -68,3 +67,4 @@ use Ark::Test 'TestApp',
     is($content, 'before included after', 'include ok');
 }
 
+done_testing;

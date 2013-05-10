@@ -1,7 +1,6 @@
-use Test::Base;
+use Test::More;
 use File::Temp qw/tempdir/;
 
-plan 'no_plan';
 
 BEGIN { $ENV{ARK_HOME} = tempdir( CLEANUP => 1 ) }
 
@@ -35,3 +34,4 @@ is( get('/'), 'bar', 'model replacement ok' );
 
 ok( T::Models->get('home'), 'home is defined ok' );
 isa_ok( T::Models->get('home'), 'Path::Class::Dir');
+done_testing;

@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 
 {
     package TestApp;
@@ -35,7 +35,6 @@ use Test::Base;
 use Ark::Test 'TestApp',
     components => [qw/Controller::Root Controller::C1/];
 
-plan 'no_plan';
 
 {
     my $res = request( GET => '/c1' );
@@ -48,3 +47,4 @@ plan 'no_plan';
     ok($res->is_success, 'response ok');
     is($res->content, 'next/end', 'end action after detach' );
 }
+done_testing;

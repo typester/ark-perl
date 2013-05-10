@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 use Test::More;
 
 use HTTP::Request::Common;
@@ -91,4 +91,5 @@ use Ark::Test 'T',
     is $c->req->param('word'), 'こんにちは', 'encoded parameter ok';
 }
 
+done_testing;
 done_testing;

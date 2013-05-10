@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 
 {
     package TestApp;
@@ -77,7 +77,6 @@ use Test::Base;
 
 use Ark::Test 'TestApp';
 
-plan 'no_plan';
 
 {
     my $res = request( GET => '/order' );
@@ -97,3 +96,4 @@ plan 'no_plan';
     is($res->content, 'begin1auto1end1', 'stop auto ok');
 
 }
+done_testing;

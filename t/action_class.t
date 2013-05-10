@@ -1,6 +1,5 @@
-use Test::Base;
+use Test::More;
 
-plan 'no_plan';
 
 {
     package T;
@@ -51,3 +50,4 @@ use Ark::Test 'T', components => [
 
 is(get('/'), 'beforeactionafter', 'action class ok');
 
+done_testing;

@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 
 {
     package TestApp;
@@ -46,7 +46,6 @@ use Ark::Test 'TestApp',
                       Controller::Two
                      /];
 
-plan 'no_plan';
 
 {
     my $res = request( GET => '/one/one' );
@@ -60,3 +59,4 @@ plan 'no_plan';
     is($res->content, 'one_', 'detach response ok');
 }
 
+done_testing;

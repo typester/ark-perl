@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 
 {
     package T1;
@@ -55,7 +55,6 @@ use Test::Base;
     }
 }
 
-plan 'no_plan';
 
 use Ark::Test 'T1', components => [qw/Controller::Root/];
 
@@ -63,3 +62,4 @@ is(get('/2009/01/11/foo/bar'), '2009-01-11: foo,bar');
 is(get('/2009/01/foo/bar/baz'), '2009-01: foo,bar,baz');
 is(get('/2009/foo/bar'), '2009: foo,bar');
 
+done_testing;

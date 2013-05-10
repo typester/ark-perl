@@ -1,8 +1,10 @@
-use Test::Base;
+use Test::More;
 use File::Temp;
 
-eval "use DBI; use DBIx::Class::Schema::Loader";
-plan skip_all => 'DBIx::Class::Schema::Loader required to run this test' if $@;
+BEGIN {
+    eval "use DBI; use DBIx::Class::Schema::Loader";
+    plan skip_all => 'DBIx::Class::Schema::Loader required to run this test' if $@;
+}
 
 my $db = "testdatabase";
 END { unlink $db }
@@ -86,7 +88,6 @@ INSERT INTO user (username, password) values ('user2', 'pass2');
     }
 }
 
-plan 'no_plan';
 
 use Ark::Test 'T1',
     components => [qw/Controller::Root
@@ -99,3 +100,4 @@ is(get('/'), 'require login', 'not login ok');
 is(get('/login'), 'login done', 'login ok');
 is(get('/'), 'logined: user1', 'logined ok');
 
+done_testing;

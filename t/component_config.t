@@ -1,4 +1,4 @@
-use Test::Base;
+use Test::More;
 
 {
     package TestApp;
@@ -40,7 +40,6 @@ use Test::Base;
 
 }
 
-plan 'no_plan';
 
 use Ark::Test 'TestApp',
     components => [qw/Controller::One
@@ -54,3 +53,4 @@ is(get('/one_changed'), 'one', 'one ok');
 #is(get('/two_changed'), 'two', 'two ok');
 #is(get('/three_changed'), 'three', 'three ok');
 
+done_testing;
