@@ -5,18 +5,10 @@ inc/Module/Install/AuthorTests.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
 inc/Module/Install/Fetch.pm
-inc/Module/Install/Include.pm
 inc/Module/Install/Makefile.pm
 inc/Module/Install/Metadata.pm
-inc/Module/Install/TestBase.pm
 inc/Module/Install/Win32.pm
 inc/Module/Install/WriteAll.pm
-inc/Spiffy.pm
-inc/Test/Base.pm
-inc/Test/Base/Filter.pm
-inc/Test/Builder.pm
-inc/Test/Builder/Module.pm
-inc/Test/More.pm
 lib/Ark.pm
 lib/Ark/Action.pm
 lib/Ark/ActionClass/Form.pm
@@ -98,6 +90,7 @@ t/form/lib/T.pm
 t/form/lib/T/Controller/Root.pm
 t/form/lib/T/Form/Login.pm
 t/form/lib/T/Models.pm
+t/form_cleanup.t
 t/form_validator_lite.t
 t/form_validator_lite/lib/T.pm
 t/form_validator_lite/lib/T/Controller/Root.pm

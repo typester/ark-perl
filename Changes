@@ -1,5 +1,9 @@
 Revision history for Perl module Ark
 
+0.33    Fri May 10 20:46:01 JST 2013
+     - fix bug of ActionClass::Form
+     - remove Test::Base dependency
+
 0.32    Mon Apr  8 22:25:07 JST 2013
      - Fix Ark::Models autoloder bug. Thank acidlemon for reporting.
 
