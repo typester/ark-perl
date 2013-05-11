@@ -1,7 +1,7 @@
-use Test::More;
-
-plan 'no_plan';
-
 package DummyApp;
-Test::More::use_ok('Ark');
+use strict;
+use warnings;
+use Test::More;
+use_ok('Ark');
 
+done_testing;
