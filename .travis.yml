@@ -5,9 +5,8 @@ perl:
   - "5.12"
   - "5.10"
 before_install:
-  - perl Makefile.PL | cpanm -n
   - cpanm -n Devel::Cover::Report::Coveralls LWP::Protocol::https
 install:
-  cpanm --mirror=http://cpan.mirrors.travis-ci.org/ --mirror=https://github.com/kayac/orepan/raw/master/ --installdeps --notest .
+  cpanm --with-devel --mirror=http://cpan.mirrors.travis-ci.org/ --mirror=https://github.com/kayac/orepan/raw/master/ --installdeps --notest .
 script:
   perl Makefile.PL && cover -test -report coveralls
