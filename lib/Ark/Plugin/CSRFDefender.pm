@@ -104,18 +104,17 @@ sub validate_csrf_token {
     return 1; # good
 }
 
-sub detach_csrf_error {
+sub forward_csrf_error {
     my $c = shift;
 
     if ($c->csrf_defender_error_action) {
         $c->res->code($c->csrf_defender_error_code);
-        $c->detach($c->csrf_defender_error_action);
+        $c->forward($c->csrf_defender_error_action);
     }
     else {
         $c->res->code($c->csrf_defender_error_code);
         $c->res->body($c->csrf_defender_error_output);
         $c->res->header('Content-Type', 'text/html; charset=UTF-8');
-        $c->detach;
     }
 }
 
@@ -147,12 +146,12 @@ around dispatch => sub {
     my $orig = shift;
     my ($c) = @_;
 
-    if (!$c->csrf_defender_validate_only) {
-        if (!$c->validate_csrf_token) {
-            $c->detach_csrf_error;
-        }
+    if (!$c->csrf_defender_validate_only && !$c->validate_csrf_token) {
+        $c->forward_csrf_error;
     }
-    $orig->(@_);
+    else {
+        $orig->(@_);
+    }
 };
 
 1;

@@ -5,7 +5,7 @@ use Mouse::Exporter;
 
 use Ark::Core;
 
-our $VERSION = '0.34';
+our $VERSION = '0.35';
 
 do {
     my %EXPORTS;

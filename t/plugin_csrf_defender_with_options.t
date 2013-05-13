@@ -44,7 +44,8 @@ use Test::More;
         my ($self, $c) = @_;
 
         if (!$c->validate_csrf_token) {
-            $c->detach_csrf_error;
+            $c->forward_csrf_error;
+            $c->detach;
         }
         $c->res->body('OK');
     }
