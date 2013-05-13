@@ -1,39 +1,18 @@
+use strict;
+use warnings;
+
 use inc::Module::Install;
+$Module::Install::AUTHOR = 0 if $ENV{TRAVIS};
 
 name 'Ark';
 license 'perl';
-
 all_from 'lib/Ark.pm';
 
-test_requires 'Test::More' => '0.96';
-test_requires 'Test::Output';
-
 perl_version '5.008001';
+cpanfile;
 
-requires 'Plack';
-requires 'Plack::Request';
-requires 'CGI::Simple';
-requires 'Mouse'   => '1.0';
-requires 'Try::Tiny' => '0.02';
-requires 'Path::Class'  => '0.16';
-requires 'URI';
-requires 'URI::WithBase';
-requires 'Text::MicroTemplate';
-requires 'Text::SimpleTable';
-requires 'Module::Pluggable::Object';
-requires 'Data::Util';
-requires 'Class::Data::Inheritable';
-requires 'HTML::Entities';
-requires 'Data::UUID';
-requires 'Digest::SHA1';
-requires 'Devel::StackTrace';
-requires 'Exporter::AutoClean';
-requires 'Object::Container' => '0.08';
-requires 'Path::AttrRouter'  => '0.03';
-
-# build-in form generator/validator
-requires 'HTML::Shakan' => '0.16';
-requires 'Clone';
+author_tests('xt');
+no_index directory => qw(t xt inc eg tools);
 
 features(
     'Support MicroTemplate template engine' => [
@@ -63,7 +42,5 @@ features(
         recommends('OAuth::Lite'),
     ],
 );
-
-author_tests('xt');
 
 WriteAll;
