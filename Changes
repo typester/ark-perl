@@ -1,5 +1,10 @@
 Revision history for Perl module Ark
 
+0.34    Mon May 13 21:59:16 JST 2013
+     - [INCOMPATIBLE CHANGE] CSRFDefender displays error output with no question asked
+       when validate_csrf_token failed. To prevent it, you can specify `validate_only` option.
+     - Introduce Module::Install::CPANfile
+
 0.33    Fri May 10 20:46:01 JST 2013
      - fix bug of ActionClass::Form
      - remove Test::Base dependency
