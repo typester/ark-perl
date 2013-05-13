@@ -23,6 +23,56 @@ has csrf_defender_session_name => (
     },
 );
 
+has csrf_defender_validate_only => (
+    is      => 'ro',
+    isa     => 'Bool',
+    lazy    => 1,
+    default => sub {
+        my $self = shift;
+        exists $self->class_config->{validate_only} ? $self->class_config->{validate_only} : undef;
+    },
+);
+
+has csrf_defender_error_output => (
+    is => 'ro',
+    isa => 'Str',
+    lazy => 1,
+    default => sub {
+        shift->class_config->{error_output} || <<'...';
+<!doctype html>
+<html>
+  <head>
+    <title>403 Forbidden</title>
+  </head>
+  <body>
+    <h1>403 Forbidden</h1>
+    <p>
+      Session validation failed.
+    </p>
+  </body>
+</html>
+...
+    }
+);
+
+has csrf_defender_error_code => (
+    is => 'ro',
+    isa => 'Str',
+    lazy => 1,
+    default => sub {
+        shift->class_config->{error_code} || 403;
+    }
+);
+
+has csrf_defender_error_action => (
+    is => 'ro',
+    isa => 'Str',
+    lazy => 1,
+    default => sub {
+        shift->class_config->{error_action} || '';
+    }
+);
+
 my $uuid = Data::UUID->new;
 sub csrf_token {
     my $c = shift;
@@ -54,6 +104,21 @@ sub validate_csrf_token {
     return 1; # good
 }
 
+sub detach_csrf_error {
+    my $c = shift;
+
+    if ($c->csrf_defender_error_action) {
+        $c->res->code($c->csrf_defender_error_code);
+        $c->detach($c->csrf_defender_error_action);
+    }
+    else {
+        $c->res->code($c->csrf_defender_error_code);
+        $c->res->body($c->csrf_defender_error_output);
+        $c->res->header('Content-Type', 'text/html; charset=UTF-8');
+        $c->detach;
+    }
+}
+
 sub _is_csrf_validation_needed {
     my $c = shift;
     my $method = $c->req->method;
@@ -76,6 +141,18 @@ after finalize_body => sub {
     $html =~ s!(<form\s*.*?>)!$1\n<input type="hidden" name="$param_name" value="$token" />!isg;
 
     $c->res->body($html);
+};
+
+around dispatch => sub {
+    my $orig = shift;
+    my ($c) = @_;
+
+    if (!$c->csrf_defender_validate_only) {
+        if (!$c->validate_csrf_token) {
+            $c->detach_csrf_error;
+        }
+    }
+    $orig->(@_);
 };
 
 1;

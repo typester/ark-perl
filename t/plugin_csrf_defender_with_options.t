@@ -13,8 +13,14 @@ use Test::More;
         CSRFDefender
         /;
 
-    conf 'Plugin::Session::State::Cookie' => {
+    config 'Plugin::Session::State::Cookie' => {
         cookie_expires => '+3d',
+    };
+
+    config 'Plugin::CSRFDefender' => {
+        error_code    => 400,
+        error_output  => 'ERROR!',
+        validate_only => 1,
     };
 
     package TestApp::Controller::Root;
@@ -33,16 +39,20 @@ use Test::More;
 
         $c->res->body('<form></form>');
     }
+
+    sub raise_error :Local {
+        my ($self, $c) = @_;
+
+        if (!$c->validate_csrf_token) {
+            $c->detach_csrf_error;
+        }
+        $c->res->body('OK');
+    }
 }
 
 use Ark::Test 'TestApp',
     components       => [qw/Controller::Root/],
     reuse_connection => 1;
-
-subtest 'token_length' => sub {
-    my $c = ctx_get '/test_get';
-    is length $c->csrf_token, 36;
-};
 
 subtest 'token_fix' => sub {
     my $c = ctx_get '/test_set';
@@ -60,17 +70,19 @@ subtest 'validate NG' => sub {
     for my $method (qw(POST PUT DELETE)) {
         my ($res, $c) = ctx_request($method => '/test_set?csrf_token=fuga');
         ok !$c->validate_csrf_token;
-        is $c->res->content, $c->csrf_defender_error_output;
-        is $c->res->code, 403;
+        is $c->res->code, 200;
     }
 
-    my $c = ctx_get '/test_set?csrf_token=fuga';
-    is $c->res->code, 200;
-};
+    for my $method (qw(POST PUT DELETE)) {
+        my ($res, $c) = ctx_request($method => '/raise_error?csrf_token=fuga');
+        ok !$c->validate_csrf_token;
+        is $c->res->content, 'ERROR!';
+        is $c->res->code, 400;
+    }
 
-subtest 'rewrite body' => sub {
-    my $c = ctx_get '/test_get';
-    like $c->res->body, qr/name="csrf_token"/;
+    my $c = ctx_get '/raise_error';
+    is $c->res->code, 200;
+    is $c->res->content, 'OK';
 };
 
 done_testing;
