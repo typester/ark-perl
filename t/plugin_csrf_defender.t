@@ -25,11 +25,12 @@ use Test::More;
     sub test_set :Local {
         my ($self, $c) = @_;
         $c->session->set('csrf_token', 'dummy');
+
+        $c->res->content($c->_has_csrf_token ? 'OK' : 'NG');
     }
 
     sub test_get :Local {
         my ($self, $c) = @_;
-        $c->session->remove('csrf_token');
 
         $c->res->body('<form></form>');
     }
@@ -46,25 +47,29 @@ subtest 'token_length' => sub {
 
 subtest 'token_fix' => sub {
     my $c = ctx_get '/test_set';
+    is length $c->csrf_token, 36;
+    is $c->res->body, 'OK';
+
+    $c = ctx_get '/test_get';
     is length $c->csrf_token, 5;
 };
 
 subtest 'validate_ok' => sub {
     for my $method (qw(GET POST PUT DELETE)) {
-        my ($res, $c) = ctx_request($method => '/test_set?csrf_token=dummy');
+        my ($res, $c) = ctx_request($method => '/test_get?csrf_token=dummy');
         is $c->validate_csrf_token, 1;
     }
 };
 
 subtest 'validate NG' => sub {
     for my $method (qw(POST PUT DELETE)) {
-        my ($res, $c) = ctx_request($method => '/test_set?csrf_token=fuga');
+        my ($res, $c) = ctx_request($method => '/test_get?csrf_token=fuga');
         ok !$c->validate_csrf_token;
         is $c->res->content, $c->csrf_defender_error_output;
         is $c->res->code, 403;
     }
 
-    my $c = ctx_get '/test_set?csrf_token=fuga';
+    my $c = ctx_get '/test_get?csrf_token=fuga';
     is $c->res->code, 200;
 };
 

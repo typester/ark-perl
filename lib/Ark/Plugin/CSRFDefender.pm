@@ -74,29 +74,32 @@ has csrf_defender_error_action => (
 );
 
 my $uuid = Data::UUID->new;
-sub csrf_token {
-    my $c = shift;
-    my $req = $c->request;
+has csrf_token => (
+    is     => 'ro',
+    isa    => 'Str',
+    lazy   => 1,
+    default => sub {
+        my $c = shift;
 
-    if (my $token = $c->session->get($c->csrf_defender_session_name)) {
-        return $token;
-    }
-    else {
-        my $token = $uuid->create_str;
+        if (my $token = $c->session->get($c->csrf_defender_session_name)) {
+            return $token;
+        }
+        else {
+            my $token = $uuid->create_str;
+            $c->session->set($c->csrf_defender_session_name => $token);
 
-        $c->session->set($c->csrf_defender_session_name => $token);
-        return $token;
-    }
-}
+            return $token;
+        }
+    },
+    predicate => '_has_csrf_token',
+);
 
 sub validate_csrf_token {
     my $c = shift;
     my $req = $c->request;
-
     if ($c->_is_csrf_validation_needed) {
         my $param_token   = $req->param($c->csrf_defender_param_name);
-        my $session_token = $c->session->get($c->csrf_defender_session_name);
-
+        my $session_token = $c->csrf_token;
         if (!$param_token || !$session_token || ($param_token ne $session_token)) {
             return (); # bad
         }
@@ -146,6 +149,8 @@ around dispatch => sub {
     my $orig = shift;
     my ($c) = @_;
 
+    # surely asign csrf_token
+    $c->csrf_token;
     if (!$c->csrf_defender_validate_only && !$c->validate_csrf_token) {
         $c->forward_csrf_error;
     }

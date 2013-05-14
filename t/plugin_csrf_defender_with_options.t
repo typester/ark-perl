@@ -55,10 +55,8 @@ use Ark::Test 'TestApp',
     components       => [qw/Controller::Root/],
     reuse_connection => 1;
 
-subtest 'token_fix' => sub {
-    my $c = ctx_get '/test_set';
-    is length $c->csrf_token, 5;
-};
+# set dummy token
+ctx_get '/test_set';
 
 subtest 'validate_ok' => sub {
     for my $method (qw(GET POST PUT DELETE)) {
