@@ -1,5 +1,9 @@
 Revision history for Perl module Ark
 
+0.36    Tue May 14 11:59:34 JST 2013
+     - fix bug. CSRFDefender ultimately hadn't worked!
+     - Can't call $session->(set|remove) method after finalize session
+
 0.35    Mon May 13 22:55:42 JST 2013
      - fix CSRFDefender bug
 
