@@ -76,6 +76,35 @@ use Ark::Test 'TestApp',
     is(get('/test_get'), 'dummy', 'session get ok');
 }
 
+subtest 'dies after finalize' => sub {
+    subtest "can't set" => sub {
+        my $c = ctx_get '/test_set';
+        local $@;
+        eval {
+            $c->session->set('hoge', 1);
+        };
+        like $@, qr/session is already finalized/;
+    };
+
+    subtest "can't remove" => sub {
+        my $c = ctx_get '/test_set';
+        local $@;
+        eval {
+            $c->session->remove('test');
+        };
+        like $@, qr/session is already finalized/;
+    };
+
+    subtest "can get" => sub {
+        my $c = ctx_get '/test_set';
+        local $@;
+        eval {
+            $c->session->get('test');
+        };
+        ok !$@;
+    };
+};
+
 {
     my $res = request(GET => '/test_flash_set');
     like( $res->header('Set-Cookie'), qr/testapp_session=/, 'session id ok');

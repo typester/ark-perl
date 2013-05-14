@@ -41,8 +41,18 @@ has expire => (
     default => 0,
 );
 
+has finalized => (
+    is      => 'rw',
+    isa     => 'Bool',
+    default => 0,
+);
+
 after $_ => sub { shift->session_updated(1); }
     for qw/get set remove/;
+
+before $_ => sub {
+    die "session is already finalized. can't call set or remove method" if shift->finalized;
+} for qw/set remove/;
 
 no Ark;
 
@@ -123,6 +133,7 @@ sub finalize_session {
     if ($self->session_updated and my $sid = $self->session_id) {
         $self->set_session_data( $sid, $self->session_data );
     }
+    $self->finalized(1);
 }
 
 1;
