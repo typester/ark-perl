@@ -69,3 +69,21 @@ do {
 };
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+Ark - light weight Catalyst-ish web application framework
+
+=head1 AUTHOR
+
+Daisuke Murase  E<lt>typester@cpan.orgE<gt>
+
+=head1 SEE ALSO
+
+Ark Advent Calendar 2011 L<http://tech.kayac.com/ark-advent-calendar-2011/>
+
+=cut
